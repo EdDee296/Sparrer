@@ -1,37 +1,46 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+import { ThemeProvider, useNavigation } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { useFonts } from 'expo-font';
+import { NativeWindStyleSheet } from 'nativewind';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
+NativeWindStyleSheet.setOutput({
+  default: "native",
+});
+//Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
+  
+  if (loaded) {
+         SplashScreen.hideAsync();
+}
   if (!loaded) {
     return null;
   }
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <ThemeProvider value={{
+      dark: false,
+      colors: {
+        primary: 'black',
+        background: 'black',
+        card: 'black',
+        text: 'black',
+        border: 'black',
+        notification: 'black'
+      }
+    }}>
+      <Stack
+        screenOptions={{headerShown: false}}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }}  />
+        <Stack.Screen name="index" options={{ headerShown: false }}  />
         <Stack.Screen name="+not-found" />
       </Stack>
     </ThemeProvider>
+
   );
 }
