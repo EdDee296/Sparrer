@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import { useNavigation, CommonActions } from '@react-navigation/native';
+import { ActivityIndicator } from 'react-native';
 
 const AuthContext = createContext(null);
 
@@ -11,6 +12,7 @@ export function useAuth() {
 export const AuthProvider = ({ children }) => {
   const navigation = useNavigation();
   const [user, setUser] = useState<User | null>(null);
+  const [spinnings, setSpinnings] = useState(true);
 
   useEffect(() => {
     const auth = getAuth();
@@ -27,6 +29,8 @@ export const AuthProvider = ({ children }) => {
             ],
           })
         );
+      } else {
+        setSpinnings(false);
       }
     });
 
@@ -35,7 +39,11 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user }}>
-      {children}
+      {spinnings ? (
+        <ActivityIndicator animating={spinnings} />
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };
