@@ -76,8 +76,18 @@ const styles = {
   }
 };
 
+const query  = (data, currentData) => {
+  if (JSON.stringify(data) === JSON.stringify(currentData)){
+    return true;
+  } else {
+    return false;
+  }
+} 
+
 function Simple() {
   const [currentLocation, setLocation] = useState('');
+  const [currentGender, setGender] = useState('');
+  // const [currentSport, setSport] = useState('');
   const [lastDirection, setLastDirection] = useState();
   const [characters, setCharacters] = useState([]); // Use this state to hold your fetched data
   const auth = getAuth();
@@ -85,15 +95,18 @@ function Simple() {
 
   useEffect(() => {
     if (user) {
-      const locationRef = ref(database, 'users/' + user.uid + '/location');
-      onValue(locationRef, (snapshot) => {
+      const userRef = ref(database, 'users/' + user.uid); // Adjusted to point to the user's root node
+      onValue(userRef, (snapshot) => {
         const data = snapshot.val();
-        setLocation(data);
+        // Assuming you have a method to set the user data
+        setLocation(data.location); // This will set the entire user data object
+        setGender(data.gender);
+        // setSport(data.sport);
       });
     }
   }, [user]);
 
-
+  const year = new Date().getFullYear();
 
   useEffect(() => {
     if (currentLocation !== "") {
@@ -102,11 +115,11 @@ function Simple() {
         const snapshot = await get(dataRef);
         let profiles = [];
         snapshot.forEach((profile) => {
-          const { name, url, uid, location } = profile.val();
+          const { name, url, uid, location, gender, exp, sport, weight } = profile.val();
           console.log(profile.val().location, " vs ", currentLocation);
-          if (JSON.stringify(profile.val().location) === JSON.stringify(currentLocation)) {
+          if (query(profile.val().location, currentLocation) && query(profile.val().gender, currentGender)) {
             console.log("true for", name); // Debugging
-            profiles.push({ name, url, uid, location });
+            profiles.push({ name, url, uid, location, gender, exp, sport, weight });
           }
         });
         console.log(profiles); // Debugging
@@ -131,7 +144,7 @@ function Simple() {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text style={styles.header}>React Native Tinder Card</Text>
+        <Text style={styles.header}>React Native Tinder Card {typeof year}</Text>
          {/* <UpdateLocation uid={uid} />   */}
         <View style={styles.cardContainer}>
           {characters.map((character) => (
@@ -150,8 +163,9 @@ function Simple() {
                 {/* ImageBackground now only covers part of the card */}
               </ImageBackground>
               <View style={styles.cardTextContainer}>
-                <Text style={styles.cardTitle} selectable={false}>{character.name}</Text>
+                <Text style={styles.cardTitle} selectable={false}>{character.name}, 20</Text>
                 <Text style={styles.cardLocation} selectable={false}>{character.location[0]}</Text>
+                <Text style={styles.cardLocation} selectable={false}>{character.sport}, {character.weight}</Text>
               </View>
             </View>
           </TinderCard>

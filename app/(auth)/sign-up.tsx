@@ -9,8 +9,8 @@ import { getDatabase, ref as databaseRef, set } from "firebase/database";
 import * as Location from 'expo-location';
 import UpdateLocation from "@/components/UpdateLocation";
 import { auth } from '@/FireBaseConfig';
-  import { StyleSheet } from 'react-native';
-  import { Dropdown } from 'react-native-element-dropdown';
+import { StyleSheet } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
 
 
   const dataSport = [
@@ -138,7 +138,7 @@ import { auth } from '@/FireBaseConfig';
           sport: valueSports,
           gender: valueGender,
           exp: valueExp,
-          weight: valueWeight,
+          
         });
   
         console.log("Done uploading all data to Firebase Realtime Database");
