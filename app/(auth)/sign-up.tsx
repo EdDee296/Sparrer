@@ -24,7 +24,33 @@ import { auth } from '@/FireBaseConfig';
     { label: 'Female', value: 'Women' },
   ];
 
-  const SignUp = () => {
+  const dataExp = [
+    { label: 'Beginner', value: 'Beginner' },
+    { label: 'Intermediate', value: 'Intermediate' },
+    { label: 'Advanced', value: 'Advanced' },
+  ];
+
+  const dataWeight = [
+    {label: "minimumweight, 105 pounds (48 kg)", value: "minimumweight"},
+    {label: "light flyweight, 108 pounds (49 kg)", value: "light flyweight"},
+    {label: "flyweight, 112 pounds (51 kg)", value: "flyweight"},
+    {label: "super flyweight, 115 pounds (52 kg)", value: "super flyweight"},
+    {label: "bantamweight, 118 pounds (53.5 kg)", value: "bantamweight"},
+    {label: "super bantamweight, 122 pounds (55 kg)", value: "super bantamweight"},
+    {label: "featherweight, 126 pounds (57 kg)", value: "featherweight"},
+    {label: "super featherweight, 130 pounds (59 kg)", value: "super featherweight"},
+    {label: "lightweight, 135 pounds (61 kg)", value: "lightweight"},
+    {label: "super lightweight, 140 pounds (63.5 kg)", value: "super lightweight"},
+    {label: "welterweight, 147 pounds (67 kg)", value: "weltherweight"},
+    {label: "super welterweight, 154 pounds (70 kg)", value: "super welterweight"},
+    {label: "middleweight, 160 pounds (72.5 kg)", value: "middleweight"},
+    {label: "super middleweight, 168 pounds (76 kg)", value: "super middleweight"},
+    {label: "light heavyweight, 175 pounds (79 kg)", value: "light heavyweight"},
+    {label: "cruiserweight, 200 pounds (91 kg)", value: "cruiserweight"},
+    {label: "heavyweight, unlimited", value: "heavyweight"},
+  ];
+
+  const SignUp = () => {  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState(''); // Added state for username
@@ -35,30 +61,14 @@ import { auth } from '@/FireBaseConfig';
 
   const [valueSports, setValueSports] = useState(null);
   const [valueGender, setValueGender] = useState(null);
+  const [valueWeight, setValueWeight] = useState(null);
+  const [valueExp, setValueExp] = useState(null);
   const [isFocusSports, setIsFocusSports] = useState(false);
   const [isFocusGender, setIsFocusGender] = useState(false);
-
-  const renderSportsLabel = () => {
-    if (valueSports || isFocusSports) {
-      return (
-        <Text style={[styles.label, isFocusSports && { color: 'white' }]}>
-          Select a sport
-        </Text>
-      );
-    }
-    return null;
-  };
-
-  const renderGenderLabel = () => {
-    if (valueGender || isFocusGender) {
-      return (
-        <Text style={[styles.label, isFocusGender && { color: 'white' }]}>
-          Select your biology sex
-        </Text>
-      );
-    }
-    return null;
-  };
+  const [isFocusExp, setIsFocusExp] = useState(false);
+  const [isFocusWeight, setIsFocusWeight] = useState(false);
+  
+  
 
   const getLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -125,6 +135,10 @@ import { auth } from '@/FireBaseConfig';
           uid: userCredential.user.uid,
           url: downloadURL,
           location: location,
+          sport: valueSports,
+          gender: valueGender,
+          exp: valueExp,
+          weight: valueWeight,
         });
   
         console.log("Done uploading all data to Firebase Realtime Database");
@@ -168,6 +182,7 @@ import { auth } from '@/FireBaseConfig';
               placeholder="Username"
               placeholderTextColor="[#ffffff]"
             />
+
             <Text className="text-[#ffffff] text-lg font-medium pb-2">Email</Text>
             <TextInput
               className='w-full h-14 bg-[#000000] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
@@ -176,6 +191,7 @@ import { auth } from '@/FireBaseConfig';
               placeholder="Email"
               placeholderTextColor="[#ffffff]"
             />
+
             <Text className="text-[#ffffff] text-lg font-medium pb-2">Password</Text>
             <TextInput
               className='w-full h-14  border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
@@ -185,9 +201,10 @@ import { auth } from '@/FireBaseConfig';
               placeholderTextColor="#ffffff"
               secureTextEntry
             />
+
             <View className='grid grid-cols-1 gap-4 content-center justify-center'>
               <View style={styles.container}>
-                  {renderSportsLabel()}
+              <Text className="text-[#ffffff] text-lg font-medium pb-2">Sport</Text>
                   <Dropdown
                     style={[styles.dropdown, isFocusSports && { borderColor: 'white' }]}
                     placeholderStyle={styles.placeholderStyle}
@@ -196,7 +213,7 @@ import { auth } from '@/FireBaseConfig';
                     iconStyle={styles.iconStyle}
                     data={dataSport}
                     search
-                    maxHeight={300}
+                    maxHeight={1000}
                     labelField="label"
                     valueField="value"
                     placeholder={!isFocusSports ? 'Select your sport' : '...'}
@@ -220,7 +237,7 @@ import { auth } from '@/FireBaseConfig';
                   />
               </View>
               <View style={styles.container}>
-                  {renderGenderLabel()}
+              <Text className="text-[#ffffff] text-lg font-medium pb-2">Biology sex</Text>
                   <Dropdown
                     style={[styles.dropdown, isFocusGender && { borderColor: 'white' }]}
                     placeholderStyle={styles.placeholderStyle}
@@ -229,7 +246,7 @@ import { auth } from '@/FireBaseConfig';
                     iconStyle={styles.iconStyle}
                     data={dataGender}
                     search
-                    maxHeight={100}
+                    maxHeight={1000}
                     labelField="label"
                     valueField="value"
                     placeholder={!isFocusGender ? 'Select your biology sex' : '...'}
@@ -252,14 +269,84 @@ import { auth } from '@/FireBaseConfig';
                     )}
                   />
               </View>
+              <View style={styles.container}>
+              <Text className="text-[#ffffff] text-lg font-medium pb-2">Level of experience</Text>
+                  <Dropdown
+                    style={[styles.dropdown, isFocusExp && { borderColor: 'white' }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={dataExp}
+                    search
+                    maxHeight={1000}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocusExp ? 'Select your level of experience' : '...'}
+                    searchPlaceholder="Search..."
+                    value={valueExp}
+                    onFocus={() => setIsFocusExp(true)}
+                    onBlur={() => setIsFocusExp(false)}
+                    onChange={item => {
+                      setValueExp(item.value);
+                      setIsFocusExp(false);
+                      console.log(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={isFocusGender ? 'white' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
+              </View>
+              <View style={styles.container}>
+              <Text className="text-[#ffffff] text-lg font-medium pb-2">Weight class</Text>
+                  <Dropdown
+                    style={[styles.dropdown, isFocusWeight && { borderColor: 'white' }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={dataWeight}
+                    search
+                    maxHeight={1000}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocusWeight ? 'Select your weight class' : '...'}
+                    searchPlaceholder="Search..."
+                    value={valueWeight}
+                    onFocus={() => setIsFocusWeight(true)}
+                    onBlur={() => setIsFocusWeight(false)}
+                    onChange={item => {
+                      setValueWeight(item.value);
+                      setIsFocusWeight(false);
+                      console.log(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={isFocusGender ? 'white' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
+              </View>
+            </View>
+
+            <View className='py-3'>
+              <Text className="text-[#ffffff] text-lg font-medium pb-2 ">Location</Text>
+              <View className="flex-row justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
+                <Text className="text-white text-center">{text}</Text>
+                <TouchableOpacity onPress={getLocation} className="bg-blue-500 p-3 rounded-lg">
+                  <Text className="text-white text-center">Get Location</Text>
+                </TouchableOpacity>
+              </View>
             </View>
             
-            <TouchableOpacity onPress={getLocation} className="mt-4 bg-blue-500 p-3 rounded-lg">
-              <Text className=" text-[#ffffff] text-center">Get Location</Text>
-            </TouchableOpacity>
-            <View>
-              <Text className="text-[#ffffff] text-center" >Location: {text}</Text>
-            </View>
             <View className="flex justify-center items-center ">
               <TouchableOpacity onPress={handleSignUp} className="w-1/2 bg-[#4d87e6] p-4 mx-4 my-6 rounded-xl">
               <View className="flex justify-center items-center">
@@ -279,11 +366,10 @@ export default SignUp;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'black',
-    padding: 16,
   },
   dropdown: {
     height: 50,
-    width: 500,
+    width: '100%',
     borderColor: 'white',
     borderWidth: 0.5,
     borderRadius: 8,
