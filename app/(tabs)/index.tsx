@@ -23,38 +23,50 @@ const styles = {
   cardContainer: {
     width: '90%',
     maxWidth: 260,
-    height: 300,
+    height: 400,
+    innerHeight: 'auto',
+    padding: 0,
   },
   card: {
     position: 'absolute',
     backgroundColor: '#fff',
     width: '100%',
     maxWidth: 260,
-    height: 300,
+    height: 400,
     shadowColor: 'black',
     shadowOpacity: 0.2,
     shadowRadius: 20,
     borderRadius: 20,
     resizeMode: 'cover',
+    paddingBottom: 100, // Reserve space for text below the image
   },
   cardImage: {
     width: '100%',
-    height: '95%',
+    height: '100%', // Adjust this value as needed
     overflow: 'hidden',
     borderRadius: 20,
   },
-  cardTitle: {
+  cardTextContainer: {
     position: 'absolute',
-    bottom: -15,
-    margin: 10,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 10,
+  },
+  cardTitle: {
     color: 'black',
+    fontSize: 20, // Adjust font size as needed
+  },
+  cardLocation: {
+    color: 'black',
+    fontSize: 16, // Adjust font size as needed
   },
   ct: {
     position: 'absolute',
-    bottom: -20,
-    left: -9,
-    margin: 20,
+    bottom: 10,
+    left: 10,
     color: 'black',
+    zIndex: 1, // Ensure it's above other elements
   },
   infoText: {
     height: 28,
@@ -124,22 +136,25 @@ function Simple() {
         <View style={styles.cardContainer}>
           {characters.map((character) => (
             <TinderCard
-              swipeThreshold={0.5}
-              preventSwipe={["up", "down"]}
-              key={character.uid}
-              onSwipe={(dir) => swiped(dir, character.name)}
-              onCardLeftScreen={() => outOfFrame(character.name)}
-            >
-              <View style={styles.card}>
-                <ImageBackground
-                  style={styles.cardImage}
-                  source={{ uri: character.url }} // Assuming `character.img` is a URL
-                >
-                  <Text style={styles.ct} selectable={false}>{character.name}</Text>
-                  <Text style={styles.cardTitle} selectable={false}>{character.location}</Text>
-                </ImageBackground>
+            swipeThreshold={0.5}
+            preventSwipe={["up", "down"]}
+            key={character.uid}
+            onSwipe={(dir) => swiped(dir, character.name)}
+            onCardLeftScreen={() => outOfFrame(character.name)}
+          >
+            <View style={styles.card}>
+              <ImageBackground
+                style={styles.cardImage}
+                source={{ uri: character.url }}
+              >
+                {/* ImageBackground now only covers part of the card */}
+              </ImageBackground>
+              <View style={styles.cardTextContainer}>
+                <Text style={styles.cardTitle} selectable={false}>{character.name}</Text>
+                <Text style={styles.cardLocation} selectable={false}>{character.location[0]}</Text>
               </View>
-            </TinderCard>
+            </View>
+          </TinderCard>
           ))}
         </View>
         {lastDirection ? (

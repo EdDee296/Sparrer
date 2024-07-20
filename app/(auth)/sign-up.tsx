@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { AntDesign } from '@expo/vector-icons';
@@ -9,8 +9,22 @@ import { getDatabase, ref as databaseRef, set } from "firebase/database";
 import * as Location from 'expo-location';
 import UpdateLocation from "@/components/UpdateLocation";
 import { auth } from '@/FireBaseConfig';
+  import { StyleSheet } from 'react-native';
+  import { Dropdown } from 'react-native-element-dropdown';
 
-const SignUp = () => {
+
+  const dataSport = [
+    { label: 'Boxing', value: 'Boxing' },
+    { label: 'Kickboxing', value: 'Kickboxing' },
+    { label: 'MMA', value: 'MMA' },
+  ];
+
+  const dataGender = [
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Women' },
+  ];
+
+  const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState(''); // Added state for username
@@ -18,6 +32,33 @@ const SignUp = () => {
   const [location, setLocation] = useState(null); 
   const [img, setImage] = useState('');
   const navigation = useNavigation();
+
+  const [valueSports, setValueSports] = useState(null);
+  const [valueGender, setValueGender] = useState(null);
+  const [isFocusSports, setIsFocusSports] = useState(false);
+  const [isFocusGender, setIsFocusGender] = useState(false);
+
+  const renderSportsLabel = () => {
+    if (valueSports || isFocusSports) {
+      return (
+        <Text style={[styles.label, isFocusSports && { color: 'white' }]}>
+          Select a sport
+        </Text>
+      );
+    }
+    return null;
+  };
+
+  const renderGenderLabel = () => {
+    if (valueGender || isFocusGender) {
+      return (
+        <Text style={[styles.label, isFocusGender && { color: 'white' }]}>
+          Select your biology sex
+        </Text>
+      );
+    }
+    return null;
+  };
 
   const getLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -116,7 +157,6 @@ const SignUp = () => {
             </TouchableOpacity>
           </View>
         </View>
-        
 
         <View className="w-full max-w-480 flex-1 flex-wrap items-end gap-4 py-5">
           <View className="flex-1 flex-col w-full">
@@ -145,8 +185,77 @@ const SignUp = () => {
               placeholderTextColor="#ffffff"
               secureTextEntry
             />
+            <View className='grid grid-cols-1 gap-4 content-center justify-center'>
+              <View style={styles.container}>
+                  {renderSportsLabel()}
+                  <Dropdown
+                    style={[styles.dropdown, isFocusSports && { borderColor: 'white' }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={dataSport}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocusSports ? 'Select your sport' : '...'}
+                    searchPlaceholder="Search..."
+                    value={valueSports}
+                    onFocus={() => setIsFocusSports(true)}
+                    onBlur={() => setIsFocusSports(false)}
+                    onChange={item => {
+                      setValueSports(item.value);
+                      setIsFocusSports(false);
+                      console.log(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={isFocusSports ? 'white' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
+              </View>
+              <View style={styles.container}>
+                  {renderGenderLabel()}
+                  <Dropdown
+                    style={[styles.dropdown, isFocusGender && { borderColor: 'white' }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={dataGender}
+                    search
+                    maxHeight={100}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocusGender ? 'Select your biology sex' : '...'}
+                    searchPlaceholder="Search..."
+                    value={valueGender}
+                    onFocus={() => setIsFocusGender(true)}
+                    onBlur={() => setIsFocusGender(false)}
+                    onChange={item => {
+                      setValueGender(item.value);
+                      setIsFocusGender(false);
+                      console.log(item.value);
+                    }}
+                    renderLeftIcon={() => (
+                      <AntDesign
+                        style={styles.icon}
+                        color={isFocusGender ? 'white' : 'black'}
+                        name="Safety"
+                        size={20}
+                      />
+                    )}
+                  />
+              </View>
+            </View>
+            
             <TouchableOpacity onPress={getLocation} className="mt-4 bg-blue-500 p-3 rounded-lg">
-              <Text className="bg-[#1818ff] text-[#ffffff] text-center">Get Location</Text>
+              <Text className=" text-[#ffffff] text-center">Get Location</Text>
             </TouchableOpacity>
             <View>
               <Text className="text-[#ffffff] text-center" >Location: {text}</Text>
@@ -166,3 +275,50 @@ const SignUp = () => {
 };
 
 export default SignUp;
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'black',
+    padding: 16,
+  },
+  dropdown: {
+    height: 50,
+    width: 500,
+    borderColor: 'white',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    color: 'white',
+  },
+  icon: {
+    marginRight: 5,
+    color: 'white',
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'black',
+    color: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: 'white',
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: 'white',
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+    color: 'white',
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16, 
+  },
+});
