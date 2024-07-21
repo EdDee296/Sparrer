@@ -89,10 +89,23 @@ function Simple() {
   const [currentGender, setGender] = useState('');
   const [currentUid, setUid] = useState('');
   // const [currentSport, setSport] = useState('');
+  const [swipedUserIds, setSwipedUserIds] = useState([]);
   const [lastDirection, setLastDirection] = useState();
   const [characters, setCharacters] = useState([]); // Use this state to hold your fetched data
   const auth = getAuth();
   const user = auth.currentUser;
+
+
+  useEffect(() => {
+    if (user) {
+      const swipesRef = ref(database, `swipes/${user.uid}`);
+      onValue(swipesRef, async (snapshot) => {
+        const swipesData = await snapshot.val() || {};
+        const swipedUserIds = Object.keys(swipesData); // Get all user IDs that have been swiped on
+        setSwipedUserIds(swipedUserIds); // Assume you have a state variable for this
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -121,11 +134,14 @@ function Simple() {
         const snapshot = await get(dataRef);
         let profiles = [];
         snapshot.forEach((profile) => {
-          const { name, url, uid, location, gender, exp, sport, weight, age } = profile.val();
-          console.log(profile.val().location, " vs ", currentLocation);
-          if (query(profile.val().location, currentLocation) && query(profile.val().gender, currentGender)) {
-            console.log("true for", name); // Debugging
-            profiles.push({ name, url, uid, location, gender, exp, sport, weight, age });
+          console.log(swipedUserIds)
+          if (!swipedUserIds.includes(profile.key)) { // Check if the profile has not been swiped on
+            const { name, url, uid, location, gender, exp, sport, weight, age } = profile.val();
+            console.log(profile.val().location, " vs ", currentLocation);
+            if (query(profile.val().location, currentLocation) && query(profile.val().gender, currentGender)) {
+              console.log("true for", name); // Debugging
+              profiles.push({ name, url, uid, location, gender, exp, sport, weight, age });
+            }
           }
         });
         console.log(profiles); // Debugging
@@ -149,13 +165,22 @@ function Simple() {
     setLastDirection(direction);
     relate(uid, currentUid, 'liked', true);
     relate(currentUid, uid, 'likedBack', true);
+    // Store the swipe in the database
+    const swipeRef = ref(database, `swipes/${currentUid}/`);
+    update(swipeRef, {
+      [uid]: direction,
+    }); // 'right' for like, 'left' for pass
   }
     else {
       console.log("pass: " + uid);
       setLastDirection(direction);
       relate(uid, currentUid, 'liked', false);
       relate(currentUid, uid, 'likedBack', false);
-    }
+      const swipeRef = ref(database, `swipes/${currentUid}/`);
+      update(swipeRef, {
+        [uid]: direction,
+      });
+      }
   };
 
   const outOfFrame = (name) => {
