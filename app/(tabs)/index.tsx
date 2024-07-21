@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ImageBackground, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
-import { getDatabase, onValue, ref, get } from "firebase/database";
+import { getDatabase, onValue, ref, get, set, update } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import { getApp } from "firebase/app";
 
@@ -87,6 +87,7 @@ const query  = (data, currentData) => {
 function Simple() {
   const [currentLocation, setLocation] = useState('');
   const [currentGender, setGender] = useState('');
+  const [currentUid, setUid] = useState('');
   // const [currentSport, setSport] = useState('');
   const [lastDirection, setLastDirection] = useState();
   const [characters, setCharacters] = useState([]); // Use this state to hold your fetched data
@@ -96,17 +97,22 @@ function Simple() {
   useEffect(() => {
     if (user) {
       const userRef = ref(database, 'users/' + user.uid); // Adjusted to point to the user's root node
-      onValue(userRef, (snapshot) => {
-        const data = snapshot.val();
-        // Assuming you have a method to set the user data
-        setLocation(data.location); // This will set the entire user data object
-        setGender(data.gender);
-        // setSport(data.sport);
+      onValue(userRef, async (snapshot) => {
+        const data = await snapshot.val();
+        try{
+          // Assuming you have a method to set the user data
+          setLocation(data.location); // This will set the entire user data object
+          setGender(data.gender);
+          setUid(data.uid);
+          // setSport(data.sport);
+        } catch (error) {
+          console.log("no loc here ", error);
+        }
+          
       });
     }
-  }, [user]);
+  }, [user, location]);
 
-  const year = new Date().getFullYear();
 
   useEffect(() => {
     if (currentLocation !== "") {
@@ -115,11 +121,11 @@ function Simple() {
         const snapshot = await get(dataRef);
         let profiles = [];
         snapshot.forEach((profile) => {
-          const { name, url, uid, location, gender, exp, sport, weight } = profile.val();
+          const { name, url, uid, location, gender, exp, sport, weight, age } = profile.val();
           console.log(profile.val().location, " vs ", currentLocation);
           if (query(profile.val().location, currentLocation) && query(profile.val().gender, currentGender)) {
             console.log("true for", name); // Debugging
-            profiles.push({ name, url, uid, location, gender, exp, sport, weight });
+            profiles.push({ name, url, uid, location, gender, exp, sport, weight, age });
           }
         });
         console.log(profiles); // Debugging
@@ -131,10 +137,25 @@ function Simple() {
     }
   }, [currentLocation]);
 
+  const relate = (uid, currentUid, type, status) => {
+    update(ref(database, 'challenges/' + currentUid + `/${type}`), {
+      [uid]: status,
+    });
+  }
   
-  const swiped = (direction, nameToDelete) => {
-    console.log("removing: " + nameToDelete + " " + direction);
+  const swiped = (direction, uid) => {
+    if (direction === "right") {
+    console.log("like: " + uid);
     setLastDirection(direction);
+    relate(uid, currentUid, 'liked', true);
+    relate(currentUid, uid, 'likedBack', true);
+  }
+    else {
+      console.log("pass: " + uid);
+      setLastDirection(direction);
+      relate(uid, currentUid, 'liked', false);
+      relate(currentUid, uid, 'likedBack', false);
+    }
   };
 
   const outOfFrame = (name) => {
@@ -144,7 +165,7 @@ function Simple() {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text style={styles.header}>React Native Tinder Card {typeof year}</Text>
+        <Text style={styles.header}>React Native Tinder Card</Text>
          {/* <UpdateLocation uid={uid} />   */}
         <View style={styles.cardContainer}>
           {characters.map((character) => (
@@ -152,7 +173,7 @@ function Simple() {
             swipeThreshold={0.5}
             preventSwipe={["up", "down"]}
             key={character.uid}
-            onSwipe={(dir) => swiped(dir, character.name)}
+            onSwipe={(dir) => swiped(dir, character.uid)}
             onCardLeftScreen={() => outOfFrame(character.name)}
           >
             <View style={styles.card}>
@@ -163,7 +184,7 @@ function Simple() {
                 {/* ImageBackground now only covers part of the card */}
               </ImageBackground>
               <View style={styles.cardTextContainer}>
-                <Text style={styles.cardTitle} selectable={false}>{character.name}, 20</Text>
+                <Text style={styles.cardTitle} selectable={false}>{character.name}, {character.age}</Text>
                 <Text style={styles.cardLocation} selectable={false}>{character.location[0]}</Text>
                 <Text style={styles.cardLocation} selectable={false}>{character.sport}, {character.weight}</Text>
               </View>

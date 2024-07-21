@@ -51,6 +51,7 @@ import { Dropdown } from 'react-native-element-dropdown';
   ];
 
   const SignUp = () => {  
+  const [age, setAge] = useState("");
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState(''); // Added state for username
@@ -138,15 +139,12 @@ import { Dropdown } from 'react-native-element-dropdown';
           sport: valueSports,
           gender: valueGender,
           exp: valueExp,
-          
+          age: age,
+        }).then(()=>{
+          console.log("Done uploading all data to Firebase Realtime Database");
+          //@ts-ignore
+          navigation.navigate('(tabs)', { screen: 'index' });
         });
-  
-        console.log("Done uploading all data to Firebase Realtime Database");
-  
-        // Navigate to the next screen or show success message
-        // This line is now correctly placed after all awaitable operations have completed
-        //@ts-ignore
-        navigation.navigate('(tabs)', { screen: 'index' });
       }
     } catch (error) {
       console.error('Error signing up and uploading image:', error);
@@ -183,16 +181,16 @@ import { Dropdown } from 'react-native-element-dropdown';
               placeholderTextColor="[#ffffff]"
             />
 
-            <Text className="text-[#ffffff] text-lg font-medium pb-2">Email</Text>
+            <Text className="text-[#ffffff] text-lg font-medium pb-2 py-2">Email</Text>
             <TextInput
-              className='w-full h-14 bg-[#000000] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
+              className='w-full h-14 bg-[#000000] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 py-2'
               value={email}
               onChangeText={setEmail}
               placeholder="Email"
               placeholderTextColor="[#ffffff]"
             />
 
-            <Text className="text-[#ffffff] text-lg font-medium pb-2">Password</Text>
+            <Text className="text-[#ffffff] text-lg font-medium pb-2 py-2">Password</Text>
             <TextInput
               className='w-full h-14  border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={password}
@@ -202,7 +200,16 @@ import { Dropdown } from 'react-native-element-dropdown';
               secureTextEntry
             />
 
-            <View className='grid grid-cols-1 gap-4 content-center justify-center'>
+            <Text className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
+            <TextInput
+              className='w-full h-14 bg-[#000000] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
+              value={age}
+              onChangeText={setAge}
+              placeholder="Age"
+              placeholderTextColor="[#ffffff]"
+            />
+
+            <View className='grid grid-cols-1 gap-4 content-center justify-center py-3'>
               <View style={styles.container}>
               <Text className="text-[#ffffff] text-lg font-medium pb-2">Sport</Text>
                   <Dropdown
