@@ -1,102 +1,217 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StyleSheet, Image, Platform, View, Text, ScrollView, FlatList } from 'react-native';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const demoProfiles = [
+  {
+    id: '259389830744794',
+    first_name: 'Candice',
+    birthday: '10/18/1986',
+    work: [{position:{name:'Supermodel'}}],
+    image_url: 'https://www.instagram.com/p/CeWZqQsMOBx'
+  },
+  {
+    id: '720115413',
+    first_name: 'Alessandra',
+    birthday: '1/10/1989',
+    work: [{position:{name:'Dancer'}}],
+    image_url: 'https://www.instagram.com/p/CPdY-ujN5T7'
+  },
+  {
+    id: '912478262117011',
+    first_name: 'Rosie',
+    birthday: '9/4/1989',
+    work: [{position:{name:'Artist'}}],
+    image_url: 'https://www.instagram.com/p/CZZKSO1v4M2'
+  },
+  {
+    id: '1476279359358140',
+    first_name: 'Alissa',
+    birthday: '2/11/1990',
+    work: [{position:{name:'Comedian'}}],
+    image_url: 'https://www.instagram.com/p/CF3XYdVpjRa'
+  },
+  {
+    id: '173567062703796',
+    first_name: 'Kendall',
+    birthday: '8/17/1992',
+    work: [{position:{name:'Truck Driver'}}],
+    image_url: 'https://www.instagram.com/p/CRD9c1YJG7Z'
+  },
+  {
+    id: '169571172540',
+    first_name: 'Miranda',
+    birthday: '12/12/1983',
+    work: [{position:{name:'Doctor'}}],
+    image_url: 'https://www.instagram.com/p/CKO9xDhLYXx'
+  },
+  {
+    id: '1492309647af685574',
+    first_name: 'Behati',
+    birthday: '3/23/1991',
+    work: [{position:{name:'Developer'}}],
+    image_url: 'https://www.instagram.com/p/CUJ9GZJpT8k'
+  },
+  {
+    id: '6622543539ff34918',
+    first_name: 'Anna',
+    birthday: '3/23/1989',
+    work: [{position:{name:'Personal Trainer'}}],
+    image_url: 'https://www.instagram.com/p/CKtnm_5jWJR'
+  },
+  {
+    id: '4241542777aa77372',
+    first_name: 'Gabriella',
+    birthday: '3/23/1988',
+    work: [{position:{name:'Surfer'}}],
+    image_url: 'https://www.instagram.com/p/CMqdePwnnUK'
+  },
+  {
+    id: '66272010379ff6952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '6627201037z96952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '662720103796f952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '66272010379a6952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '6627w20103796952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '66272010379e6952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '66272010afasd3796952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '66272010f37fsda96952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '6627201037dfaf96952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '662720ffd103796952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '66adf2720103796952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '66272010a3796952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  },
+  {
+    id: '66272010fa3796952',
+    first_name: 'Mara',
+    birthday: '3/23/1987',
+    work: [{position:{name:'Lifeguard'}}],
+    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
+  }
+]
+
 
 export default function TabTwoScreen() {
+
+  const renderRow = (data) => {
+    const first_name = data.item.first_name;
+    const url = data.item.image_url;
+    return (
+      <View style={styles.container}>
+          {/* Use the tw function to apply TailwindCSS styles */}
+          <Image
+            source={{ uri: 'https://graph.facebook.com/259389830744794/picture?height=500' }}
+            style={styles.image}
+          />
+          <Text style={styles.text}>
+            {first_name}
+          </Text>
+        </View>
+    )
+  }
+
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText> library
-          to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <FlatList
+          data={demoProfiles}
+          renderItem={renderRow}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            padding: 10,
+          }}
+        >
+
+        </FlatList>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flexDirection: 'row', // Aligns children in a row
+    alignItems: 'center', // Centers children vertically in the container
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 25, // Adjusted for a more appropriate circle shape given the size
+  },
+  text: {
+    color: 'white', // Assuming you want white text
+    fontSize: 24, // Adjusted for better visual balance with the image size
+    marginLeft: 10, // Adds some space between the image and the text
   },
 });

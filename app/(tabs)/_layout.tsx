@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { AntDesign } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -34,9 +34,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Challenges',
+          title: 'Challengers',
           tabBarIcon: ({color}) => (
-            <SimpleLineIcons name="trophy" size={24} color={color} />
+            <Ionicons name="chatbubble-outline" size={24} color={color} />
           ),
           headerShown: false,
           headerStyle: {
