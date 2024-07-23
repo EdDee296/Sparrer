@@ -2,7 +2,7 @@ import { getApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { get, getDatabase, onValue, ref } from 'firebase/database';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Image, Platform, View, Text, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, Image, Platform, View, Text, ScrollView, FlatList, Alert } from 'react-native';
 import _ from 'lodash';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -61,7 +61,9 @@ export default function TabTwoScreen() {
         console.log(allMatches);
         const promises = allMatches.map((uid) => {
           const foundProfile = _.find(matches, profile => profile.uid === uid);
-          return foundProfile ? Promise.resolve(foundProfile) : getUser(uid); // Return existing or fetch new
+          if (foundProfile) {
+            return Promise.resolve(foundProfile)} 
+          else {return getUser(uid);} // Return existing or fetch new
         });
         Promise.all(promises).then((users) => {
           console.log('matched users: ', users);
@@ -73,6 +75,9 @@ export default function TabTwoScreen() {
               const { uid, name, url } = match;
               demoProfiles.push({ id: uid, first_name: name, image_url: url });
             });
+            alert(
+              "New Match Found!"
+            );
           }
         });
       }, (error) => {
