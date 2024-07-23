@@ -134,17 +134,17 @@ function Simple() {
         const snapshot = await get(dataRef);
         let profiles = [];
         snapshot.forEach((profile) => {
-          console.log(swipedUserIds)
+          // console.log(swipedUserIds)
           if (!swipedUserIds.includes(profile.key)) { // Check if the profile has not been swiped on
             const { name, url, uid, location, gender, exp, sport, weight, age } = profile.val();
-            console.log(profile.val().location, " vs ", currentLocation);
+            // console.log(profile.val().location, " vs ", currentLocation);
             if (query(profile.val().location, currentLocation) && query(profile.val().gender, currentGender)) {
-              console.log("true for", name); // Debugging
+              // console.log("true for", name); // Debugging
               profiles.push({ name, url, uid, location, gender, exp, sport, weight, age });
             }
           }
         });
-        console.log(profiles); // Debugging
+        // console.log(profiles); // Debugging
         setCharacters(profiles);
       };
       fetchData();
@@ -161,7 +161,7 @@ function Simple() {
   
   const swiped = (direction, uid) => {
     if (direction === "right") {
-    console.log("like: " + uid);
+    // console.log("like: " + uid);
     setLastDirection(direction);
     relate(uid, currentUid, 'liked', true);
     relate(currentUid, uid, 'likedBack', true);
@@ -172,7 +172,7 @@ function Simple() {
     }); // 'right' for like, 'left' for pass
   }
     else {
-      console.log("pass: " + uid);
+      // console.log("pass: " + uid);
       setLastDirection(direction);
       relate(uid, currentUid, 'liked', false);
       relate(currentUid, uid, 'likedBack', false);

@@ -1,166 +1,88 @@
+import { getApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { get, getDatabase, onValue, ref } from 'firebase/database';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Image, Platform, View, Text, ScrollView, FlatList } from 'react-native';
-
+import _ from 'lodash';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const demoProfiles = [
   {
     id: '259389830744794',
     first_name: 'Candice',
-    birthday: '10/18/1986',
-    work: [{position:{name:'Supermodel'}}],
     image_url: 'https://www.instagram.com/p/CeWZqQsMOBx'
   },
   {
     id: '720115413',
     first_name: 'Alessandra',
-    birthday: '1/10/1989',
-    work: [{position:{name:'Dancer'}}],
     image_url: 'https://www.instagram.com/p/CPdY-ujN5T7'
   },
   {
     id: '912478262117011',
     first_name: 'Rosie',
-    birthday: '9/4/1989',
-    work: [{position:{name:'Artist'}}],
     image_url: 'https://www.instagram.com/p/CZZKSO1v4M2'
   },
-  {
-    id: '1476279359358140',
-    first_name: 'Alissa',
-    birthday: '2/11/1990',
-    work: [{position:{name:'Comedian'}}],
-    image_url: 'https://www.instagram.com/p/CF3XYdVpjRa'
-  },
-  {
-    id: '173567062703796',
-    first_name: 'Kendall',
-    birthday: '8/17/1992',
-    work: [{position:{name:'Truck Driver'}}],
-    image_url: 'https://www.instagram.com/p/CRD9c1YJG7Z'
-  },
-  {
-    id: '169571172540',
-    first_name: 'Miranda',
-    birthday: '12/12/1983',
-    work: [{position:{name:'Doctor'}}],
-    image_url: 'https://www.instagram.com/p/CKO9xDhLYXx'
-  },
-  {
-    id: '1492309647af685574',
-    first_name: 'Behati',
-    birthday: '3/23/1991',
-    work: [{position:{name:'Developer'}}],
-    image_url: 'https://www.instagram.com/p/CUJ9GZJpT8k'
-  },
-  {
-    id: '6622543539ff34918',
-    first_name: 'Anna',
-    birthday: '3/23/1989',
-    work: [{position:{name:'Personal Trainer'}}],
-    image_url: 'https://www.instagram.com/p/CKtnm_5jWJR'
-  },
-  {
-    id: '4241542777aa77372',
-    first_name: 'Gabriella',
-    birthday: '3/23/1988',
-    work: [{position:{name:'Surfer'}}],
-    image_url: 'https://www.instagram.com/p/CMqdePwnnUK'
-  },
-  {
-    id: '66272010379ff6952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '6627201037z96952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '662720103796f952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '66272010379a6952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '6627w20103796952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '66272010379e6952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '66272010afasd3796952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '66272010f37fsda96952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '6627201037dfaf96952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '662720ffd103796952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '66adf2720103796952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '66272010a3796952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  },
-  {
-    id: '66272010fa3796952',
-    first_name: 'Mara',
-    birthday: '3/23/1987',
-    work: [{position:{name:'Lifeguard'}}],
-    image_url: 'https://www.instagram.com/p/CFdYhEoB51F'
-  }
 ]
+
+const getUser = async (uid) => {
+  const database = getDatabase(getApp());
+  const snapshot = await get(ref(database, `users/${uid}`));
+  return snapshot.val();
+}
+
+
+const getOverlap = (liked, likedBack) => {
+  const likedTrue = _.pickBy(liked, (value) => value );
+  const likedBackTrue = _.pickBy(likedBack, (value) => value );
+  return _.intersection(_.keys(likedTrue), _.keys(likedBackTrue));
+}
 
 
 export default function TabTwoScreen() {
+  const [matches, setMatches] = useState([]);
+  const database = getDatabase(getApp());
+  const [uid, setUid] = useState('');
+  const auth = getAuth();
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUid(user.uid);
+      }
+    });
+    return () => unsubscribe(); // Cleanup subscription on component unmount
+  }, [auth]);
+
+  useEffect(() => {
+    if (uid) { // Ensure uid is not empty
+      const matchesRef = ref(database, `challenges/${uid}`);
+      const unsubscribe = onValue(matchesRef, (snapshot) => {
+        const { liked, likedBack } = snapshot.val() || { liked: {}, likedBack: {} }; // Handle null snapshot
+        const allMatches = getOverlap(liked, likedBack);
+        console.log(allMatches);
+        const promises = allMatches.map((uid) => {
+          const foundProfile = _.find(matches, profile => profile.uid === uid);
+          return foundProfile ? Promise.resolve(foundProfile) : getUser(uid); // Return existing or fetch new
+        });
+        Promise.all(promises).then((users) => {
+          console.log('matched users: ', users);
+          const newMatches = users.filter(user => !matches.some(match => match.uid === user.uid)); // Filter out duplicates
+          if (newMatches.length > 0) {
+            setMatches(prevMatches => [...prevMatches, ...newMatches]); // Only update if there are new matches
+            console.log('new matches: ', newMatches);
+            newMatches.forEach((match) => {
+              const { uid, name, url } = match;
+              demoProfiles.push({ id: uid, first_name: name, image_url: url });
+            });
+          }
+        });
+      }, (error) => {
+        console.error(error);
+      });
+  
+      return () => unsubscribe(); // Cleanup on component unmount or uid change
+    }
+  }, [uid, database, matches]); // Add matches to dependency array if necessary, but be cautious of infinite loops
+
 
   const renderRow = (data) => {
     const first_name = data.item.first_name;
@@ -182,7 +104,6 @@ export default function TabTwoScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView showsVerticalScrollIndicator={false}>
         <FlatList
           data={demoProfiles}
           renderItem={renderRow}
@@ -194,7 +115,6 @@ export default function TabTwoScreen() {
         >
 
         </FlatList>
-      </ScrollView>
     </SafeAreaView>
   );
 }
