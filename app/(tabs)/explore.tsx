@@ -1,28 +1,12 @@
 import { getApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { get, getDatabase, onValue, ref } from 'firebase/database';
-import { useEffect, useState } from 'react';
-import { StyleSheet, Image, Platform, View, Text, ScrollView, FlatList, Alert } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Image, Platform, View, Text, ScrollView, FlatList, Alert, TouchableOpacity } from 'react-native';
 import _ from 'lodash';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const demoProfiles = [
-  {
-    id: '259389830744794',
-    first_name: 'Candice',
-    image_url: 'https://www.instagram.com/p/CeWZqQsMOBx'
-  },
-  {
-    id: '720115413',
-    first_name: 'Alessandra',
-    image_url: 'https://www.instagram.com/p/CPdY-ujN5T7'
-  },
-  {
-    id: '912478262117011',
-    first_name: 'Rosie',
-    image_url: 'https://www.instagram.com/p/CZZKSO1v4M2'
-  },
-]
+const demoProfiles = []
 
 const getUser = async (uid) => {
   const database = getDatabase(getApp());
@@ -43,6 +27,7 @@ export default function TabTwoScreen() {
   const database = getDatabase(getApp());
   const [uid, setUid] = useState('');
   const auth = getAuth();
+  const isFirstLoad = useRef(true);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -53,56 +38,64 @@ export default function TabTwoScreen() {
   }, [auth]);
 
   useEffect(() => {
-    if (uid) { // Ensure uid is not empty
+    if (uid) {
       const matchesRef = ref(database, `challenges/${uid}`);
       const unsubscribe = onValue(matchesRef, (snapshot) => {
-        const { liked, likedBack } = snapshot.val() || { liked: {}, likedBack: {} }; // Handle null snapshot
+        const { liked, likedBack } = snapshot.val() || { liked: {}, likedBack: {} };
         const allMatches = getOverlap(liked, likedBack);
-        console.log(allMatches);
         const promises = allMatches.map((uid) => {
           const foundProfile = _.find(matches, profile => profile.uid === uid);
           if (foundProfile) {
-            return Promise.resolve(foundProfile)} 
-          else {return getUser(uid);} // Return existing or fetch new
+            return Promise.resolve(foundProfile);
+          } else {
+            return getUser(uid);
+          }
         });
         Promise.all(promises).then((users) => {
-          console.log('matched users: ', users);
-          const newMatches = users.filter(user => !matches.some(match => match.uid === user.uid)); // Filter out duplicates
+          const newMatches = users.filter(user => !matches.some(match => match.uid === user.uid));
           if (newMatches.length > 0) {
-            setMatches(prevMatches => [...prevMatches, ...newMatches]); // Only update if there are new matches
-            console.log('new matches: ', newMatches);
+            setMatches(prevMatches => [...prevMatches, ...newMatches]);
+            if (!isFirstLoad.current) { // Only show alert if it's not the first load
+              alert("New Match Found!");
+            }
             newMatches.forEach((match) => {
               const { uid, name, url } = match;
               demoProfiles.push({ id: uid, first_name: name, image_url: url });
             });
-            alert(
-              "New Match Found!"
-            );
           }
         });
       }, (error) => {
         console.error(error);
       });
-  
-      return () => unsubscribe(); // Cleanup on component unmount or uid change
+
+      return () => unsubscribe();
     }
-  }, [uid, database, matches]); // Add matches to dependency array if necessary, but be cautious of infinite loops
+  }, [uid, database, matches]);
+
+  useEffect(() => {
+    if (isFirstLoad.current) {
+      isFirstLoad.current = false; // After the first effect runs, mark it as not the first load
+    }
+  }, []); // This effect only runs once on mount
 
 
   const renderRow = (data) => {
     const first_name = data.item.first_name;
     const url = data.item.image_url;
     return (
-      <View style={styles.container}>
+      <TouchableOpacity>
+        <View style={styles.container}>
           {/* Use the tw function to apply TailwindCSS styles */}
           <Image
-            source={{ uri: 'https://graph.facebook.com/259389830744794/picture?height=500' }}
+            source={{ uri: url }}
             style={styles.image}
           />
           <Text style={styles.text}>
             {first_name}
           </Text>
         </View>
+      </TouchableOpacity>
+      
     )
   }
 
@@ -128,6 +121,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row', // Aligns children in a row
     alignItems: 'center', // Centers children vertically in the container
+    borderColor: 'gray', // Sets the border color to gray
+    borderWidth: 1, // Sets the border width
+    borderRadius: 10, // Optional: Adds rounded corners to the container
+    padding: 10, // Optional: Adds some padding inside the container for better spacing
   },
   image: {
     width: 50,
