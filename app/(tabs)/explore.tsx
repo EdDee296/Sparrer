@@ -5,8 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Image, Platform, View, Text, ScrollView, FlatList, Alert, TouchableOpacity } from 'react-native';
 import _ from 'lodash';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const demoProfiles = []
+import { useNavigation } from '@react-navigation/native';
 
 const getUser = async (uid) => {
   const database = getDatabase(getApp());
@@ -14,20 +13,21 @@ const getUser = async (uid) => {
   return snapshot.val();
 }
 
-
 const getOverlap = (liked, likedBack) => {
   const likedTrue = _.pickBy(liked, (value) => value );
   const likedBackTrue = _.pickBy(likedBack, (value) => value );
   return _.intersection(_.keys(likedTrue), _.keys(likedBackTrue));
 }
 
-
 export default function TabTwoScreen() {
   const [matches, setMatches] = useState([]);
+  const [demoProfiles, setDemoProfiles] = useState([]);
   const database = getDatabase(getApp());
   const [uid, setUid] = useState('');
   const auth = getAuth();
   const isFirstLoad = useRef(true);
+  const navigation = useNavigation();
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -58,10 +58,11 @@ export default function TabTwoScreen() {
             if (!isFirstLoad.current) { // Only show alert if it's not the first load
               alert("New Match Found!");
             }
-            newMatches.forEach((match) => {
+            const updatedDemoProfiles = newMatches.map((match) => {
               const { uid, name, url } = match;
-              demoProfiles.push({ id: uid, first_name: name, image_url: url });
+              return { id: uid, first_name: name, image_url: url };
             });
+            setDemoProfiles(prevDemoProfiles => [...prevDemoProfiles, ...updatedDemoProfiles]);
           }
         });
       }, (error) => {
@@ -78,12 +79,20 @@ export default function TabTwoScreen() {
     }
   }, []); // This effect only runs once on mount
 
+  useEffect(() => {
+    // Reset demoProfiles when the component mounts or when the user navigates back
+    setDemoProfiles([]);
+  }, []);
 
   const renderRow = (data) => {
     const first_name = data.item.first_name;
     const url = data.item.image_url;
     return (
-      <TouchableOpacity>
+      <TouchableOpacity
+      onPress={() => {
+        console.log("Navigate to chat screen for user with ID: ", data.item.first_name);
+      }}
+      >
         <View style={styles.container}>
           {/* Use the tw function to apply TailwindCSS styles */}
           <Image
@@ -95,10 +104,8 @@ export default function TabTwoScreen() {
           </Text>
         </View>
       </TouchableOpacity>
-      
     )
   }
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -111,7 +118,6 @@ export default function TabTwoScreen() {
             padding: 10,
           }}
         >
-
         </FlatList>
     </SafeAreaView>
   );
