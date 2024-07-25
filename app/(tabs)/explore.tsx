@@ -91,7 +91,7 @@ export default function TabTwoScreen() {
       <TouchableOpacity
       onPress={() => {
         console.log("Navigate to chat screen for user with ID: ", data.item.first_name);
-        navigation.navigate('(screens)', { screen: 'chat', params: {name: data.item.first_name, uid: data.item.id } });
+        navigation.navigate('(screens)', { screen: 'chat', params: {name: data.item.first_name, uid: data.item.id, url: data.item.image_url } });
       }}
       >
         <View style={styles.container}>
