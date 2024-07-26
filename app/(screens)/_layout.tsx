@@ -6,7 +6,7 @@ import 'react-native-reanimated';
 const _layout = () => {
   return (
       <Stack>
-        <Stack.Screen name="chat" options={{ headerShown: false }}  />
+        <Stack.Screen name="chat" options={{ headerShown: true }}  />
       </Stack>
   )
 }

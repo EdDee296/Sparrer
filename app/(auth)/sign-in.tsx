@@ -33,7 +33,11 @@ const SignIn = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-black items-center justify-start">
-      {spinnings ? <ActivityIndicator animating={spinnings} /> : 
+      {spinnings ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="red" />
+        </View>
+      ) : 
       <ScrollView className="w-full h-full">
         <Text className="text-[#ffffff] text-2xl font-bold text-center pt-5 pb-3">Sign in to challenge friends and family</Text>
         <View className="w-full px-4 py-3">

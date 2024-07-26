@@ -69,6 +69,7 @@ const styles = {
     zIndex: 1, // Ensure it's above other elements
   },
   infoText: {
+    color: 'white',
     height: 28,
     justifyContent: 'center',
     display: 'flex',
