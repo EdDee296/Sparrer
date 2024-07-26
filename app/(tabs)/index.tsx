@@ -3,7 +3,7 @@ import { ImageBackground, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, set, update } from "firebase/database";
-import { getAuth } from "firebase/auth";
+import { getAuth, signOut } from "firebase/auth";
 import { getApp } from "firebase/app";
 
 const database = getDatabase(getApp());
@@ -96,7 +96,6 @@ function Simple() {
   const auth = getAuth();
   const user = auth.currentUser;
 
-
   useEffect(() => {
     if (user) {
       const swipesRef = ref(database, `swipes/${user.uid}`);
@@ -115,6 +114,7 @@ function Simple() {
         const data = await snapshot.val();
         try{
           // Assuming you have a method to set the user data
+          console.log('what')
           setLocation(data.location); // This will set the entire user data object
           setGender(data.gender);
           setUid(data.uid);
@@ -125,7 +125,7 @@ function Simple() {
           
       });
     }
-  }, [user, location]);
+  }, [user]);
 
 
   useEffect(() => {

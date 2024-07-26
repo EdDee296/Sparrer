@@ -5,6 +5,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getDatabase, onValue, push, ref, set } from 'firebase/database';
+import { Image } from 'react-native';
 
 const chat = () => {
   const database = getDatabase();
@@ -61,14 +62,36 @@ const chat = () => {
     }); // Simulate a 2-second loading time
   }, [uid]);
 
-  const onSend = useCallback((messages = []) => {
+
+
+// Preload avatar function
+const preloadAvatar = (url) => {
+  return new Promise((resolve, reject) => {
+    Image.prefetch(url)
+      .then(() => resolve(true))
+      .catch(() => reject(false));
+  });
+};
+
+const onSend = useCallback(async (messages = []) => {
+  try {
+    // Preload avatar before sending the message
+    await preloadAvatar(url);
+
     const postListRef = ref(database, `/messages/${chatId}/`);
     const newPostRef = push(postListRef);
     set(newPostRef, {
       ...messages[0],
       createdAt: new Date().getTime(), // Store timestamp
+      user: {
+        _id: userUid,
+        avatar: url,
+      }
     });
-  }, [chatId, database]);
+  } catch (error) {
+    console.error('Failed to preload avatar:', error);
+  }
+}, [chatId, database, url, userUid]);
 
   const renderBubble = (props) => {
     return (
@@ -85,12 +108,9 @@ const chat = () => {
         textStyle={{
           right: {
             color: 'white',
-            flex: 1,
           },
           left: {
             color: '#000',
-            flex: 1,
-            textAlign: 'left',
           },
         }}
       />
