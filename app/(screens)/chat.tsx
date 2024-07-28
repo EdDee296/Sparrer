@@ -63,21 +63,7 @@ const chat = () => {
   }, [uid]);
 
 
-
-// Preload avatar function
-const preloadAvatar = (url) => {
-  return new Promise((resolve, reject) => {
-    Image.prefetch(url)
-      .then(() => resolve(true))
-      .catch(() => reject(false));
-  });
-};
-
 const onSend = useCallback(async (messages = []) => {
-  try {
-    // Preload avatar before sending the message
-    await preloadAvatar(url);
-
     const postListRef = ref(database, `/messages/${chatId}/`);
     const newPostRef = push(postListRef);
     set(newPostRef, {
@@ -88,10 +74,7 @@ const onSend = useCallback(async (messages = []) => {
         avatar: url,
       }
     });
-  } catch (error) {
-    console.error('Failed to preload avatar:', error);
-  }
-}, [chatId, database, url, userUid]);
+  }, [chatId, database, url, userUid]);
 
   const renderBubble = (props) => {
     return (
