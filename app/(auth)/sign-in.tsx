@@ -32,7 +32,7 @@ const SignIn = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-black items-center justify-start">
+    <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
       {spinnings ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="red" />
