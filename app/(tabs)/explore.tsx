@@ -52,7 +52,7 @@ export default function TabTwoScreen() {
           }
         });
         Promise.all(promises).then((users) => {
-          const newMatches = users.filter(user => !matches.some(match => match.uid === user.uid));
+          const newMatches = users.filter(user => !matches.some(match => match.uid === user.uid ));
           if (newMatches.length > 0) {
             setMatches(prevMatches => [...prevMatches, ...newMatches]);
             if (!isFirstLoad.current) { // Only show alert if it's not the first load

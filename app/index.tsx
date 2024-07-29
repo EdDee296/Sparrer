@@ -1,45 +1,45 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ImageBackground, ScrollView } from 'react-native';
-import { Link, SplashScreen, router, Redirect } from 'expo-router';
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+import { useNavigation } from '@react-navigation/native';
+import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { AuthProvider } from './(auth)/authContext';
 
-const App = () => {
+SplashScreen.preventAutoHideAsync()
 
-  SplashScreen.preventAutoHideAsync()
-
+const SparrApp = () => {
+  const navigation = useNavigation();
   return (
-    <AuthProvider>
-      <SafeAreaView className="flex-1 bg-black items-center justify-start">
+    <SafeAreaView className="flex-1 bg-[#221111] justify-center items-center">
       <ScrollView>
-        <View className="bg-black p-4 pb-2 w-full items-center justify-center">
-          <Text className="text-[#ffffff] text-lg font-bold">Challenge</Text>
+        <Text className="flex text-white text-4xl font-bold leading-tight tracking-[-0.015em] flex-1 text-center pl-12 pr-12 pb-11 align-middle justify-center">
+          Sparrer
+        </Text>
+        <View className="w-full h-2/3 px-4 py-3">
+          <Image
+            source={{ uri: 'https://cdn.usegalileo.ai/sdxl10/9adffc69-06f8-4d52-b212-519f5c1d0dbd.png' }}
+            className="w-full h-full bg-cover bg-center justify-end rounded-xl overflow-hidden bg-[#221111]"
+          />
         </View>
-        <View className="w-full p-2 pt-3">
-          <ImageBackground
-            source={{ uri: 'https://cdn.usegalileo.ai/stability/c2a26f83-ab13-44af-a09b-ac17c13cc4c1.png' }}
-            className="w-full h-56 justify-end"
-            imageStyle={{ borderRadius: 12 }}
-          >
-            <View className="flex-1 bg-opacity-40"></View>
-          </ImageBackground>
-        </View>
-        <Text className="text-[#ffffff] text-2xl font-bold text-center pt-5 pb-2 px-4">Take on challenges, with friends.</Text>
-        <Text className="text-[#ffffff] text-base text-center px-4 pb-2">Set goals and compete with friends. Challenges are a fun way to stay motivated.</Text>
-        <View className="px-4 pb-4 bg-black">
-          <TouchableOpacity
-           className="bg-cyan-400 rounded-lg h-12 justify-center items-center w-full"
-           onPress={() => {router.push('/sign-up')}}>
-            <Text className="text-black text-base font-bold">Get Started</Text>
+        <Text className="text-white text-[28px] font-bold leading-tight px-4 text-center pb-3 pt-5">
+          Find your next sparring partner
+        </Text>
+        <Text className="text-white text-base font-normal leading-normal pt-1 px-4 text-center">
+          Join the largest community of boxers in the world. Find a sparring partner, track your progress, and compete in challenges.
+        </Text>
+        <View className="flex justify-center items-stretch w-full px-4 py-2">
+          <TouchableOpacity className="flex h-10 items-center justify-center rounded-xl px-4 bg-[#ff2929] leading-normal tracking-[0.015em] w-full mt-2"
+          onPress={() => {navigation.navigate('(auth)', {screen : 'sign-up'})}}>
+            <Text className="truncate text-white font-bold">Get Started</Text>
           </TouchableOpacity>
         </View>
-        <Link className="text-[#999898] text-sm underline pb-4 text-center" href="/sign-in">Already have an account? Log in.</Link>
-        <View className="h-5 bg-black"></View>
+        <Link href={'/sign-in'} className='flex justify-center'>
+        <Text className="truncate text-[#7a7a7a] font-white text-center pt-3 underline">Already have an account? Sign in</Text>
+        </Link>
+        <View className="h-5 bg-[#221111]" />
       </ScrollView>
     </SafeAreaView>
-    </AuthProvider>
-    
   );
 };
 
-export default App;
+export default SparrApp;

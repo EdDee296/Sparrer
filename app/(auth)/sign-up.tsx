@@ -69,7 +69,6 @@ import { Dropdown } from 'react-native-element-dropdown';
   const [isFocusExp, setIsFocusExp] = useState(false);
   const [isFocusWeight, setIsFocusWeight] = useState(false);
   
-  
 
   const getLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -153,17 +152,18 @@ import { Dropdown } from 'react-native-element-dropdown';
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-black items-center justify-start">
+    <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
       <ScrollView className="w-full h-full">
-        <View className="w-full bg-black p-4 pb-2 items-center justify-between">
-          <Text className="text-[#ffffff] text-lg font-bold text-center px-12">Sign up</Text>
+        <View className="w-full bg-[#221111] p-4 pb-2 items-center justify-between">
+          <Text className="text-[#ffffff] text-3xl font-bold text-center px-12">Join the boxing community</Text>
         </View>
 
-        <View className='flex justify-center items-center'>
+        <View className='flex justify-center items-center pt-10'>
+        <Text className="text-[#ffffff] text-base font-medium pb-2">Profile picture</Text>
           <View className=" h-12 w-12 align-middle  bg-[#efefef] rounded-full overflow-hidden shadow flex items-center justify-center">
             <TouchableOpacity onPress={addImage} className="flex-1 items-center justify-center">
               <View className="flex-1 items-center justify-center">
-                {img && <Image source={{ uri: img }} style={{ width: 50, height: 50 }} />}
+                 {img && <Image source={{ uri: img }} style={{ width: 50, height: 50 }} />}
                 <AntDesign name="camera" size={20} color="black" />
               </View>
             </TouchableOpacity>
@@ -174,7 +174,7 @@ import { Dropdown } from 'react-native-element-dropdown';
           <View className="flex-1 flex-col w-full">
             <Text className="text-[#ffffff] text-lg font-medium pb-2">Username</Text>
             <TextInput
-              className='w-full h-14 bg-[#000000] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
+              className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={username}
               onChangeText={setUsername}
               placeholder="Username"
@@ -183,7 +183,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 
             <Text className="text-[#ffffff] text-lg font-medium pb-2 py-2">Email</Text>
             <TextInput
-              className='w-full h-14 bg-[#000000] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 py-2'
+              className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 py-2'
               value={email}
               onChangeText={setEmail}
               placeholder="Email"
@@ -196,13 +196,13 @@ import { Dropdown } from 'react-native-element-dropdown';
               value={password}
               onChangeText={setPassword}
               placeholder="Password"
-              placeholderTextColor="#ffffff"
+              placeholderTextColor="[#ffffff]"
               secureTextEntry
             />
 
             <Text className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
             <TextInput
-              className='w-full h-14 bg-[#000000] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
+              className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={age}
               onChangeText={setAge}
               placeholder="Age"
@@ -348,16 +348,16 @@ import { Dropdown } from 'react-native-element-dropdown';
               <Text className="text-[#ffffff] text-lg font-medium pb-2 ">Location</Text>
               <View className="flex-row justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
                 <Text className="text-white text-center">{text}</Text>
-                <TouchableOpacity onPress={getLocation} className="bg-blue-500 p-3 rounded-lg">
-                  <Text className="text-white text-center">Get Location</Text>
+                <TouchableOpacity onPress={getLocation} className="bg-[#ff2424] p-3 rounded-lg">
+                  <Text className="text-white text-center">Share Location</Text>
                 </TouchableOpacity>
               </View>
             </View>
             
             <View className="flex justify-center items-center ">
-              <TouchableOpacity onPress={handleSignUp} className="w-1/2 bg-[#4d87e6] p-4 mx-4 my-6 rounded-xl">
+              <TouchableOpacity onPress={handleSignUp} className="w-1/2 bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">
               <View className="flex justify-center items-center">
-                <Text className='text-center text-[#ffffff]'>Sign up</Text>
+                <Text className='text-center text-[#ffffff] font-bold'>Sign up</Text>
               </View>
               </TouchableOpacity>
             </View>
@@ -372,7 +372,7 @@ export default SignUp;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'black',
+    backgroundColor: '[#221111]',
   },
   dropdown: {
     height: 50,
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   },
   label: {
     position: 'absolute',
-    backgroundColor: 'black',
+    backgroundColor: '[#221111]',
     color: 'white',
     left: 22,
     top: 8,

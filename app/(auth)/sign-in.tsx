@@ -39,8 +39,9 @@ const SignIn = () => {
         </View>
       ) : 
       <ScrollView className="w-full h-full">
-        <Text className="text-[#ffffff] text-2xl font-bold text-center pt-5 pb-3">Sign in to challenge friends and family</Text>
+        <Text className="text-[#ffffff] text-2xl font-bold text-center pt-5 pb-3">Sign in and box!</Text>
         <View className="w-full px-4 py-3">
+        <Text className="text-[#ffffff] text-lg font-medium pb-2">Email</Text>
           <TextInput
             placeholder="Email"
             placeholderTextColor="[#ffffff]"
@@ -50,6 +51,7 @@ const SignIn = () => {
           />
         </View>
         <View className="w-full px-4 py-3">
+        <Text className="text-[#ffffff] text-lg font-medium pb-2">Password</Text>
           <TextInput
             placeholder="Password"
             placeholderTextColor="[#ffffff]"
@@ -60,11 +62,12 @@ const SignIn = () => {
           />
         </View>
         <View className="flex justify-center items-center ">
-          <TouchableOpacity onPress={handleSignIn} className="w-1/2 bg-[#4d87e6] rounded-xl p-4 mx-4 my-4">
-            <Text className="text-[#ffffff] text-center">Sign In</Text>
+          <TouchableOpacity onPress={handleSignIn} className="w-1/2 bg-[#ff2929] rounded-xl p-4 mx-4 my-4">
+            <Text className="text-[#ffffff] text-center font-bold">Sign In</Text>
           </TouchableOpacity>
         </View>
         <View className="flex justify-center items-center ">
+          <Link href={'/sign-up'} className="text-[#838383] text-sm px-4 pb-3">Haven't had an account? Sign up now!</Link>
           <Link href={'/'} className="text-[#838383] text-sm px-4 pb-3">Forgot your password?</Link>
         </View>
       </ScrollView>}
