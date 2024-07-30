@@ -10,6 +10,7 @@ const database = getDatabase(getApp());
 
 const styles = {
   container: {
+    font: 'bold',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -122,7 +123,6 @@ function Simple() {
         } catch (error) {
           console.log("no loc here ", error);
         }
-          
       });
     }
   }, [user]);
@@ -191,7 +191,7 @@ function Simple() {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text style={styles.header}>React Native Tinder Card</Text>
+        <Text style={styles.header}>Sparrer</Text>
          {/* <UpdateLocation uid={uid} />   */}
         <View style={styles.cardContainer}>
           {characters.map((character) => (
