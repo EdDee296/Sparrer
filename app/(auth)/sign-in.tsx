@@ -8,6 +8,7 @@ const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [spinnings, setSpinnings] = useState(false);
+  const [user, setUser] = useState(null);
   const auth = getAuth();
   const navigation = useNavigation();
 
@@ -21,7 +22,7 @@ const SignIn = () => {
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [auth, navigation,spinnings]);
+  }, [user]);
 
   const handleSignIn = async () => {
     setSpinnings(true);
@@ -30,6 +31,7 @@ const SignIn = () => {
         setSpinnings(false);
         const user = userCredential.user;
         console.log(user);
+        setUser(user);
       })
       .catch((error) => {
         setSpinnings(false);

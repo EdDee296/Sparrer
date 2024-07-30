@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ImageBackground, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
-import { getDatabase, onValue, ref, get, set, update } from "firebase/database";
-import { getAuth, signOut } from "firebase/auth";
+import { getDatabase, onValue, ref, get, update } from "firebase/database";
+import { getAuth } from "firebase/auth";
 import { getApp } from "firebase/app";
 
 const database = getDatabase(getApp());
@@ -75,16 +75,16 @@ const styles = {
     justifyContent: 'center',
     display: 'flex',
     zIndex: -100,
-  }
+  },
 };
 
-const query  = (data, currentData) => {
-  if (JSON.stringify(data) === JSON.stringify(currentData)){
+const query = (data, currentData) => {
+  if (JSON.stringify(data) === JSON.stringify(currentData)) {
     return true;
   } else {
     return false;
   }
-} 
+};
 
 function Simple() {
   const [currentLocation, setLocation] = useState('');
@@ -105,15 +105,17 @@ function Simple() {
         const swipedUserIds = Object.keys(swipesData); // Get all user IDs that have been swiped on
         setSwipedUserIds(swipedUserIds); // Assume you have a state variable for this
       });
+    } else {
+      setSwipedUserIds([]);
     }
-  }, [user]);
+  }, [currentUid]);
 
   useEffect(() => {
     if (user) {
       const userRef = ref(database, 'users/' + user.uid); // Adjusted to point to the user's root node
       onValue(userRef, async (snapshot) => {
         const data = await snapshot.val();
-        try{
+        try {
           setLocation(data.location); // This will set the entire user data object
           setGender(data.gender);
           setUid(data.uid);
@@ -122,9 +124,12 @@ function Simple() {
           console.log("no loc here ", error);
         }
       });
+    } else {
+      setLocation('');
+      setGender('');
+      setUid('');
     }
-  }, [user]);
-
+  }, [currentUid]);
 
   useEffect(() => {
     if (currentLocation !== "") {
@@ -150,76 +155,70 @@ function Simple() {
     } else {
       console.log("No location yet, still updating");
     }
-  }, [user, currentLocation]);
+  }, [currentUid, currentLocation]);
 
   const relate = (uid, currentUid, type, status) => {
-    update(ref(database, 'challenges/' + currentUid + `/${type}`), {
+    update(ref(database, `challenges/${currentUid}/${type}`), {
       [uid]: status,
     });
-  }
-  
+  };
+
   const swiped = (direction, uid) => {
     if (direction === "right") {
-    // console.log("like: " + uid);
-    setLastDirection(direction);
-    relate(uid, currentUid, 'liked', true);
-    relate(currentUid, uid, 'likedBack', true);
-    // Store the swipe in the database
-    const swipeRef = ref(database, `swipes/${currentUid}/`);
-    update(swipeRef, {
-      [uid]: direction,
-    }); // 'right' for like, 'left' for pass
-  }
-    else {
+      // console.log("like: " + uid);
+      setLastDirection(direction);
+      relate(uid, currentUid, 'liked', true);
+      relate(currentUid, uid, 'likedBack', true);
+      // Store the swipe in the database
+      const swipeRef = ref(database, `swipes/${currentUid}/`);
+      update(swipeRef, { [uid]: direction }); // 'right' for like, 'left' for pass
+    } else {
       // console.log("pass: " + uid);
       setLastDirection(direction);
       relate(uid, currentUid, 'liked', false);
       relate(currentUid, uid, 'likedBack', false);
       const swipeRef = ref(database, `swipes/${currentUid}/`);
-      update(swipeRef, {
-        [uid]: direction,
-      });
-      }
+      update(swipeRef, { [uid]: direction });
+    }
   };
 
   const outOfFrame = (name) => {
     console.log(name + " left the screen!");
   };
-  
+
   return (
     <SafeAreaView>
       <View style={styles.container}>
         <Text style={styles.header}>Sparrer</Text>
-         {/* <UpdateLocation uid={uid} />   */}
+        {/* <UpdateLocation uid={uid} /> */}
         <View style={styles.cardContainer}>
-          {characters?.length ? (characters.map((character) => (
-            <TinderCard
-            swipeThreshold={0.5}
-            preventSwipe={["up", "down"]}
-            key={character.uid}
-            onSwipe={(dir) => swiped(dir, character.uid)}
-            onCardLeftScreen={() => outOfFrame(character.name)}
-          >
-            <View style={styles.card}>
-              <ImageBackground
-                style={styles.cardImage}
-                source={{ uri: character.url }}
+          {characters?.length ? (
+            characters.map((character) => (
+              <TinderCard
+                swipeThreshold={0.5}
+                preventSwipe={["up", "down"]}
+                key={character.uid}
+                onSwipe={(dir) => swiped(dir, character.uid)}
+                onCardLeftScreen={() => outOfFrame(character.name)}
               >
-                {/* ImageBackground now only covers part of the card */}
-              </ImageBackground>
-              <View style={styles.cardTextContainer}>
-                <Text style={styles.cardTitle} selectable={false}>{character.name}, {character.age}</Text>
-                <Text style={styles.cardLocation} selectable={false}>{character.location[0]}</Text>
-                <Text style={styles.cardLocation} selectable={false}>{character.sport}, {character.weight}</Text>
-              </View>
+                <View style={styles.card}>
+                  <ImageBackground style={styles.cardImage} source={{ uri: character.url }}>
+                    {/* ImageBackground now only covers part of the card */}
+                  </ImageBackground>
+                  <View style={styles.cardTextContainer}>
+                    <Text style={styles.cardTitle} selectable={false}>{character.name}, {character.age}</Text>
+                    <Text style={styles.cardLocation} selectable={false}>{character.location[0]}</Text>
+                    <Text style={styles.cardLocation} selectable={false}>{character.sport}, {character.weight}</Text>
+                  </View>
+                </View>
+              </TinderCard>
+            ))
+          ) : (
+            <View className="flex justify-center items-center h-screen ">
+              <Text className="text-[#ffffff] text-2xl ">That's it for now</Text>
+              <Text className="text-[#ffffff] text-2xl ">Let's get back to work!</Text>
             </View>
-          </TinderCard>
-          ))) : 
-          ( <View className="flex justify-center items-center h-screen ">
-            <Text className="text-[#ffffff] text-2xl ">That's it for now</Text>
-            <Text className="text-[#ffffff] text-2xl ">Let's get back to work!</Text>
-          </View>
-        )}
+          )}
         </View>
         {lastDirection ? (
           <Text style={styles.infoText}>You swiped {lastDirection}</Text>
