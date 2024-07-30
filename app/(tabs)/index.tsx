@@ -192,7 +192,7 @@ function Simple() {
         <Text style={styles.header}>Sparrer</Text>
          {/* <UpdateLocation uid={uid} />   */}
         <View style={styles.cardContainer}>
-          {characters ? (characters.map((character) => (
+          {characters?.length ? (characters.map((character) => (
             <TinderCard
             swipeThreshold={0.5}
             preventSwipe={["up", "down"]}
@@ -215,9 +215,10 @@ function Simple() {
             </View>
           </TinderCard>
           ))) : 
-          ( <View className="flex bg-red-500">
-              <Text className="text-[white] text-4xl">fsdafasfa</Text>
-            </View>
+          ( <View className="flex justify-center items-center h-screen ">
+            <Text className="text-[#ffffff] text-2xl ">That's it for now</Text>
+            <Text className="text-[#ffffff] text-2xl ">Let's get back to work!</Text>
+          </View>
         )}
         </View>
         {lastDirection ? (

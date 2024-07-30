@@ -21,7 +21,7 @@ const SignIn = () => {
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [auth, navigation, spinnings]);
+  }, [auth, navigation,spinnings]);
 
   const handleSignIn = async () => {
     setSpinnings(true);
