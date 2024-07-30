@@ -10,13 +10,13 @@ const database = getDatabase(getApp());
 
 const styles = {
   container: {
-    font: 'bold',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
   },
   header: {
+    fontWeight: 'bold',
     color: 'white',
     fontSize: 30,
     marginBottom: 30,
@@ -114,8 +114,6 @@ function Simple() {
       onValue(userRef, async (snapshot) => {
         const data = await snapshot.val();
         try{
-          // Assuming you have a method to set the user data
-          console.log('what')
           setLocation(data.location); // This will set the entire user data object
           setGender(data.gender);
           setUid(data.uid);
@@ -139,7 +137,7 @@ function Simple() {
           if (!swipedUserIds.includes(profile.key)) { // Check if the profile has not been swiped on
             const { name, url, uid, location, gender, exp, sport, weight, age } = profile.val();
             // console.log(profile.val().location, " vs ", currentLocation);
-            if (query(profile.val().location, currentLocation) && query(profile.val().gender, currentGender)) {
+            if (query(profile.val().location, currentLocation) && query(profile.val().gender, currentGender) && !query(profile.val().uid, currentUid)) {
               // console.log("true for", name); // Debugging
               profiles.push({ name, url, uid, location, gender, exp, sport, weight, age });
             }
@@ -152,7 +150,7 @@ function Simple() {
     } else {
       console.log("No location yet, still updating");
     }
-  }, [currentLocation]);
+  }, [user, currentLocation]);
 
   const relate = (uid, currentUid, type, status) => {
     update(ref(database, 'challenges/' + currentUid + `/${type}`), {
@@ -194,7 +192,7 @@ function Simple() {
         <Text style={styles.header}>Sparrer</Text>
          {/* <UpdateLocation uid={uid} />   */}
         <View style={styles.cardContainer}>
-          {characters.map((character) => (
+          {characters ? (characters.map((character) => (
             <TinderCard
             swipeThreshold={0.5}
             preventSwipe={["up", "down"]}
@@ -216,7 +214,11 @@ function Simple() {
               </View>
             </View>
           </TinderCard>
-          ))}
+          ))) : 
+          ( <View className="flex bg-red-500">
+              <Text className="text-[white] text-4xl">fsdafasfa</Text>
+            </View>
+        )}
         </View>
         {lastDirection ? (
           <Text style={styles.infoText}>You swiped {lastDirection}</Text>

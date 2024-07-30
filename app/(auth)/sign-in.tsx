@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
 import { Link } from 'expo-router';
 
@@ -10,21 +10,29 @@ const SignIn = () => {
   const [spinnings, setSpinnings] = useState(false);
   const auth = getAuth();
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, navigate to the main screen
+        navigation.navigate('(tabs)', { screen: 'index' });
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [auth, navigation, spinnings]);
+
   const handleSignIn = async () => {
     setSpinnings(true);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in 
         setSpinnings(false);
         const user = userCredential.user;
-        // ...
         console.log(user);
-        // alert('User signed in successfully!');
-        // @ts-ignore
-        navigation.navigate('(tabs)', { screen: 'index' });
-        
       })
       .catch((error) => {
+        setSpinnings(false);
         const errorCode = error.code;
         const errorMessage = error.message;
         console.log(errorCode, errorMessage);
@@ -32,45 +40,46 @@ const SignIn = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#221111', alignItems: 'center', justifyContent: 'start' }}>
       {spinnings ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="red" />
         </View>
-      ) : 
-      <ScrollView className="w-full h-full">
-        <Text className="text-[#ffffff] text-2xl font-bold text-center pt-5 pb-3">Sign in and box!</Text>
-        <View className="w-full px-4 py-3">
-        <Text className="text-[#ffffff] text-lg font-medium pb-2">Email</Text>
-          <TextInput
-            placeholder="Email"
-            placeholderTextColor="[#ffffff]"
-            className="w-full h-14 bg-[#000000] border border-[#7c7c7c] rounded-xl text-[#ffffff] p-4"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
-        <View className="w-full px-4 py-3">
-        <Text className="text-[#ffffff] text-lg font-medium pb-2">Password</Text>
-          <TextInput
-            placeholder="Password"
-            placeholderTextColor="[#ffffff]"
-            secureTextEntry
-            className="w-full h-14 bg-[#000000] border border-[#7c7c7c] rounded-xl text-[#ffffff] p-4"
-            value={password}
-            onChangeText={setPassword}
-          />
-        </View>
-        <View className="flex justify-center items-center ">
-          <TouchableOpacity onPress={handleSignIn} className="w-1/2 bg-[#ff2929] rounded-xl p-4 mx-4 my-4">
-            <Text className="text-[#ffffff] text-center font-bold">Sign In</Text>
-          </TouchableOpacity>
-        </View>
-        <View className="flex justify-center items-center ">
-          <Link href={'/sign-up'} className="text-[#838383] text-sm px-4 pb-3">Haven't had an account? Sign up now!</Link>
-          <Link href={'/'} className="text-[#838383] text-sm px-4 pb-3">Forgot your password?</Link>
-        </View>
-      </ScrollView>}
+      ) : (
+        <ScrollView style={{ width: '100%', height: '100%' }}>
+          <Text style={{ color: '#ffffff', fontSize: 24, fontWeight: 'bold', textAlign: 'center', paddingTop: 20, paddingBottom: 12 }}>Sign in and box!</Text>
+          <View style={{ width: '100%', paddingHorizontal: 16, paddingVertical: 12 }}>
+            <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: 'medium', paddingBottom: 8 }}>Email</Text>
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#ffffff"
+              style={{ width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
+              value={email}
+              onChangeText={setEmail}
+            />
+          </View>
+          <View style={{ width: '100%', paddingHorizontal: 16, paddingVertical: 12 }}>
+            <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: 'medium', paddingBottom: 8 }}>Password</Text>
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="#ffffff"
+              secureTextEntry
+              style={{ width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
+              value={password}
+              onChangeText={setPassword}
+            />
+          </View>
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <TouchableOpacity onPress={handleSignIn} style={{ width: '50%', backgroundColor: '#ff2929', borderRadius: 16, padding: 16, marginHorizontal: 16, marginVertical: 16 }}>
+              <Text style={{ color: '#ffffff', textAlign: 'center', fontWeight: 'bold' }}>Sign In</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Link href={'/sign-up'} style={{ color: '#838383', fontSize: 14, paddingHorizontal: 16, paddingBottom: 12 }}>Haven't had an account? Sign up now!</Link>
+            <Link href={'/'} style={{ color: '#838383', fontSize: 14, paddingHorizontal: 16, paddingBottom: 12 }}>Forgot your password?</Link>
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };

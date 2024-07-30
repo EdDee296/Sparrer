@@ -1,7 +1,7 @@
 // Import necessary modules
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button } from 'react-native';
-import { getAuth } from 'firebase/auth';
+import { getAuth, signOut  } from 'firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import UploadImage from '@/components/Upload';
 
@@ -35,14 +35,14 @@ const UserProfileTab = () => {
     return () => unsubscribe();
   }, [auth, currentUser]);
 
-  const handleSignOut = async () => {
-    try {
-      await auth.signOut();
-      //@ts-ignore
-      navigation.navigate('(auth)', { screen: 'sign-in' });
-    } catch (error) {
-      console.error(error);
-    }
+  const handleSignOut = () => {
+      signOut(auth).then(() => {
+        // Sign-out successful.
+        navigation.navigate('(auth)', { screen: 'sign-in' });
+      }).catch((error) => {
+        // An error happened.
+        console.error(error)
+      });
   };
 
   // function handleChangePhoto(e) {
