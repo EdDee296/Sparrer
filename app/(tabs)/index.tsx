@@ -188,7 +188,7 @@ function Simple() {
 
   return (
     <SafeAreaView>
-      <View style={styles.container}>
+      {user ? (<View style={styles.container}>
         <Text style={styles.header}>Sparrer</Text>
         {/* <UpdateLocation uid={uid} /> */}
         <View style={styles.cardContainer}>
@@ -225,7 +225,14 @@ function Simple() {
         ) : (
           <Text style={styles.infoText} />
         )}
-      </View>
+      </View>) : (
+        <View style={styles.container}>
+          <Text style={styles.header}>Sparrer</Text>
+          <View className="flex justify-center items-center h-screen ">
+              <Text className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
+            </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

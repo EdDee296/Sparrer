@@ -27,6 +27,7 @@ export default function TabTwoScreen() {
   const auth = getAuth();
   const isFirstLoad = useRef(true);
   const navigation = useNavigation();
+  const user = auth.currentUser;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -110,7 +111,7 @@ export default function TabTwoScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-        <FlatList
+        {user ? (<FlatList
           data={demoProfiles}
           renderItem={renderRow}
           keyExtractor={(item) => item.id}
@@ -119,7 +120,14 @@ export default function TabTwoScreen() {
             padding: 10,
           }}
         >
-        </FlatList>
+        </FlatList>) : (
+          <View className='flex align-middle justify-center'>
+            <Text style={styles.header}>Sparrer</Text>
+            <View className="flex justify-center items-center h-screen ">
+              <Text className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
+            </View>
+          </View>
+        )}
     </SafeAreaView>
   );
 }
