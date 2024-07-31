@@ -3,7 +3,6 @@ import { View, Text, Button } from 'react-native';
 import { getAuth, signOut } from 'firebase/auth';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import UploadImage from '@/components/Upload';
-import * as Updates from 'expo-updates';
 
 const UserProfileTab = () => {
   const [user, setUser] = useState<any>(null);

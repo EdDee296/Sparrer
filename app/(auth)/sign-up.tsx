@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ScrollView, Image } from 'react-native';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { AntDesign } from '@expo/vector-icons';
@@ -11,46 +11,63 @@ import UpdateLocation from "@/components/UpdateLocation";
 import { auth } from '@/FireBaseConfig';
 import { StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
 
+SplashScreen.preventAutoHideAsync();
 
-  const dataSport = [
-    { label: 'Boxing', value: 'Boxing' },
-    { label: 'Kickboxing', value: 'Kickboxing' },
-    { label: 'MMA', value: 'MMA' },
-  ];
+const dataSport = [
+  { label: 'Boxing', value: 'Boxing' },
+  { label: 'Kickboxing', value: 'Kickboxing' },
+  { label: 'MMA', value: 'MMA' },
+];
 
-  const dataGender = [
-    { label: 'Male', value: 'Male' },
-    { label: 'Female', value: 'Women' },
-  ];
+const dataGender = [
+  { label: 'Male', value: 'Male' },
+  { label: 'Female', value: 'Women' },
+];
 
-  const dataExp = [
-    { label: 'Beginner', value: 'Beginner' },
-    { label: 'Intermediate', value: 'Intermediate' },
-    { label: 'Advanced', value: 'Advanced' },
-  ];
+const dataExp = [
+  { label: 'Beginner', value: 'Beginner' },
+  { label: 'Intermediate', value: 'Intermediate' },
+  { label: 'Advanced', value: 'Advanced' },
+];
 
-  const dataWeight = [
-    {label: "minimumweight, 105 pounds (48 kg)", value: "minimumweight"},
-    {label: "light flyweight, 108 pounds (49 kg)", value: "light flyweight"},
-    {label: "flyweight, 112 pounds (51 kg)", value: "flyweight"},
-    {label: "super flyweight, 115 pounds (52 kg)", value: "super flyweight"},
-    {label: "bantamweight, 118 pounds (53.5 kg)", value: "bantamweight"},
-    {label: "super bantamweight, 122 pounds (55 kg)", value: "super bantamweight"},
-    {label: "featherweight, 126 pounds (57 kg)", value: "featherweight"},
-    {label: "super featherweight, 130 pounds (59 kg)", value: "super featherweight"},
-    {label: "lightweight, 135 pounds (61 kg)", value: "lightweight"},
-    {label: "super lightweight, 140 pounds (63.5 kg)", value: "super lightweight"},
-    {label: "welterweight, 147 pounds (67 kg)", value: "weltherweight"},
-    {label: "super welterweight, 154 pounds (70 kg)", value: "super welterweight"},
-    {label: "middleweight, 160 pounds (72.5 kg)", value: "middleweight"},
-    {label: "super middleweight, 168 pounds (76 kg)", value: "super middleweight"},
-    {label: "light heavyweight, 175 pounds (79 kg)", value: "light heavyweight"},
-    {label: "cruiserweight, 200 pounds (91 kg)", value: "cruiserweight"},
-    {label: "heavyweight, unlimited", value: "heavyweight"},
-  ];
+const dataWeight = [
+  {label: "minimumweight, 105 pounds (48 kg)", value: "minimumweight"},
+  {label: "light flyweight, 108 pounds (49 kg)", value: "light flyweight"},
+  {label: "flyweight, 112 pounds (51 kg)", value: "flyweight"},
+  {label: "super flyweight, 115 pounds (52 kg)", value: "super flyweight"},
+  {label: "bantamweight, 118 pounds (53.5 kg)", value: "bantamweight"},
+  {label: "super bantamweight, 122 pounds (55 kg)", value: "super bantamweight"},
+  {label: "featherweight, 126 pounds (57 kg)", value: "featherweight"},
+  {label: "super featherweight, 130 pounds (59 kg)", value: "super featherweight"},
+  {label: "lightweight, 135 pounds (61 kg)", value: "lightweight"},
+  {label: "super lightweight, 140 pounds (63.5 kg)", value: "super lightweight"},
+  {label: "welterweight, 147 pounds (67 kg)", value: "weltherweight"},
+  {label: "super welterweight, 154 pounds (70 kg)", value: "super welterweight"},
+  {label: "middleweight, 160 pounds (72.5 kg)", value: "middleweight"},
+  {label: "super middleweight, 168 pounds (76 kg)", value: "super middleweight"},
+  {label: "light heavyweight, 175 pounds (79 kg)", value: "light heavyweight"},
+  {label: "cruiserweight, 200 pounds (91 kg)", value: "cruiserweight"},
+  {label: "heavyweight, unlimited", value: "heavyweight"},
+];
 
-  const SignUp = () => {  
+const SignUp = () => {  
+  const [loaded, error] = useFonts({
+    'BebasNeue': require('@/assets/fonts/BebasNeue-Regular.ttf'),
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   const [age, setAge] = useState("");
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -139,6 +156,7 @@ import { Dropdown } from 'react-native-element-dropdown';
           gender: valueGender,
           exp: valueExp,
           age: age,
+          weight: valueWeight,
         }).then(()=>{
           console.log("Done uploading all data to Firebase Realtime Database");
           //@ts-ignore
@@ -155,11 +173,11 @@ import { Dropdown } from 'react-native-element-dropdown';
     <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
       <ScrollView className="w-full h-full">
         <View className="w-full bg-[#221111] p-4 pb-2 items-center justify-between">
-          <Text className="text-[#ffffff] text-3xl font-bold text-center px-12">Join the boxing community</Text>
+          <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-3xl font-bold text-center px-12">Join the boxing community</Text>
         </View>
 
         <View className='flex justify-center items-center pt-10'>
-        <Text className="text-[#ffffff] text-base font-medium pb-2">Profile picture</Text>
+        <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-base font-medium pb-2">Profile picture</Text>
           <View className=" h-12 w-12 align-middle  bg-[#efefef] rounded-full overflow-hidden shadow flex items-center justify-center">
             <TouchableOpacity onPress={addImage} className="flex-1 items-center justify-center">
               <View className="flex-1 items-center justify-center">
@@ -172,8 +190,9 @@ import { Dropdown } from 'react-native-element-dropdown';
 
         <View className="w-full max-w-480 flex-1 flex-wrap items-end gap-4 py-5">
           <View className="flex-1 flex-col w-full">
-            <Text className="text-[#ffffff] text-lg font-medium pb-2">Username</Text>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Username</Text>
             <TextInput
+              style={{ fontFamily: 'BebasNeue' }}
               className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={username}
               onChangeText={setUsername}
@@ -181,8 +200,9 @@ import { Dropdown } from 'react-native-element-dropdown';
               placeholderTextColor="[#ffffff]"
             />
 
-            <Text className="text-[#ffffff] text-lg font-medium pb-2 py-2">Email</Text>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Email</Text>
             <TextInput
+              style={{ fontFamily: 'BebasNeue' }}
               className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 py-2'
               value={email}
               onChangeText={setEmail}
@@ -190,8 +210,9 @@ import { Dropdown } from 'react-native-element-dropdown';
               placeholderTextColor="[#ffffff]"
             />
 
-            <Text className="text-[#ffffff] text-lg font-medium pb-2 py-2">Password</Text>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Password</Text>
             <TextInput
+              style={{ fontFamily: 'BebasNeue' }}
               className='w-full h-14  border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={password}
               onChangeText={setPassword}
@@ -200,8 +221,9 @@ import { Dropdown } from 'react-native-element-dropdown';
               secureTextEntry
             />
 
-            <Text className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
             <TextInput
+              style={{ fontFamily: 'BebasNeue' }}
               className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={age}
               onChangeText={setAge}
@@ -211,8 +233,9 @@ import { Dropdown } from 'react-native-element-dropdown';
 
             <View className='grid grid-cols-1 gap-4 content-center justify-center py-3'>
               <View style={styles.container}>
-              <Text className="text-[#ffffff] text-lg font-medium pb-2">Sport</Text>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Sport</Text>
                   <Dropdown
+                    fontFamily='BebasNeue'
                     style={[styles.dropdown, isFocusSports && { borderColor: 'white' }]}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
@@ -244,8 +267,9 @@ import { Dropdown } from 'react-native-element-dropdown';
                   />
               </View>
               <View style={styles.container}>
-              <Text className="text-[#ffffff] text-lg font-medium pb-2">Biology sex</Text>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Biology sex</Text>
                   <Dropdown
+                    fontFamily='BebasNeue'
                     style={[styles.dropdown, isFocusGender && { borderColor: 'white' }]}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
@@ -277,8 +301,9 @@ import { Dropdown } from 'react-native-element-dropdown';
                   />
               </View>
               <View style={styles.container}>
-              <Text className="text-[#ffffff] text-lg font-medium pb-2">Level of experience</Text>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Level of experience</Text>
                   <Dropdown
+                    fontFamily='BebasNeue'
                     style={[styles.dropdown, isFocusExp && { borderColor: 'white' }]}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
@@ -310,8 +335,9 @@ import { Dropdown } from 'react-native-element-dropdown';
                   />
               </View>
               <View style={styles.container}>
-              <Text className="text-[#ffffff] text-lg font-medium pb-2">Weight class</Text>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Weight class</Text>
                   <Dropdown
+                    fontFamily='BebasNeue'
                     style={[styles.dropdown, isFocusWeight && { borderColor: 'white' }]}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
@@ -345,11 +371,11 @@ import { Dropdown } from 'react-native-element-dropdown';
             </View>
 
             <View className='py-3'>
-              <Text className="text-[#ffffff] text-lg font-medium pb-2 ">Location</Text>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">Location</Text>
               <View className="flex-row justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
-                <Text className="text-white text-center">{text}</Text>
+                <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">{text}</Text>
                 <TouchableOpacity onPress={getLocation} className="bg-[#ff2424] p-3 rounded-lg">
-                  <Text className="text-white text-center">Share Location</Text>
+                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">Share Location</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -357,7 +383,7 @@ import { Dropdown } from 'react-native-element-dropdown';
             <View className="flex justify-center items-center ">
               <TouchableOpacity onPress={handleSignUp} className="w-1/2 bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">
               <View className="flex justify-center items-center">
-                <Text className='text-center text-[#ffffff] font-bold'>Sign up</Text>
+                <Text style={{ fontFamily: 'BebasNeue' }} className='text-center text-[#ffffff] font-bold text-xl'>Sign up</Text>
               </View>
               </TouchableOpacity>
             </View>

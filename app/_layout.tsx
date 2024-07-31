@@ -12,26 +12,16 @@ NativeWindStyleSheet.setOutput({
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-  
-  if (loaded) {
-         SplashScreen.hideAsync();
-}
-  if (!loaded) {
-    return null;
-  }
   return (
     <ThemeProvider value={{
       dark: false,
       colors: {
-        primary: 'black',
-        background: 'black',
-        card: 'black',
-        text: 'black',
-        border: 'black',
-        notification: 'black'
+        primary: '#221111',
+        background: '#221111',
+        card: '#221111',
+        text: '#221111',
+        border: '#221111',
+        notification: '#221111'
       }
     }}>
       <Stack

@@ -1,11 +1,10 @@
-import { View, Text, ActivityIndicator, Button, TouchableOpacity } from 'react-native';
+import { View, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Bubble, Composer, ComposerProps, GiftedChat, IMessage, SendProps } from 'react-native-gifted-chat';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getDatabase, onValue, push, ref, set } from 'firebase/database';
-import { Image } from 'react-native';
 
 const chat = () => {
   const database = getDatabase();

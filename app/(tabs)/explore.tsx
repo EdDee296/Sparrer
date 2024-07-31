@@ -96,7 +96,6 @@ export default function TabTwoScreen() {
       }}
       >
         <View style={styles.container}>
-          {/* Use the tw function to apply TailwindCSS styles */}
           <Image
             source={{ uri: url }}
             style={styles.image}
@@ -111,7 +110,7 @@ export default function TabTwoScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-        {user ? (<FlatList
+        {user ?(<FlatList
           data={demoProfiles}
           renderItem={renderRow}
           keyExtractor={(item) => item.id}
@@ -121,11 +120,8 @@ export default function TabTwoScreen() {
           }}
         >
         </FlatList>) : (
-          <View className='flex align-middle justify-center'>
-            <Text style={styles.header}>Sparrer</Text>
-            <View className="flex justify-center items-center h-screen ">
-              <Text className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
-            </View>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{ color: 'white', fontSize: 24 }}>Loading...</Text>
           </View>
         )}
     </SafeAreaView>

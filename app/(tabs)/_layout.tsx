@@ -6,7 +6,6 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import ExploreStack from './explore';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();

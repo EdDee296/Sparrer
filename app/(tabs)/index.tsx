@@ -5,78 +5,12 @@ import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, update } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import { getApp } from "firebase/app";
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
+
+SplashScreen.preventAutoHideAsync();
 
 const database = getDatabase(getApp());
-
-const styles = {
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  header: {
-    fontWeight: 'bold',
-    color: 'white',
-    fontSize: 30,
-    marginBottom: 30,
-  },
-  cardContainer: {
-    width: '90%',
-    maxWidth: 260,
-    height: 400,
-    innerHeight: 'auto',
-    padding: 0,
-  },
-  card: {
-    position: 'absolute',
-    backgroundColor: '#fff',
-    width: '100%',
-    maxWidth: 260,
-    height: 400,
-    shadowColor: 'black',
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    borderRadius: 20,
-    resizeMode: 'cover',
-    paddingBottom: 100, // Reserve space for text below the image
-  },
-  cardImage: {
-    width: '100%',
-    height: '100%', // Adjust this value as needed
-    overflow: 'hidden',
-    borderRadius: 20,
-  },
-  cardTextContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 10,
-  },
-  cardTitle: {
-    color: 'black',
-    fontSize: 20, // Adjust font size as needed
-  },
-  cardLocation: {
-    color: 'black',
-    fontSize: 16, // Adjust font size as needed
-  },
-  ct: {
-    position: 'absolute',
-    bottom: 10,
-    left: 10,
-    color: 'black',
-    zIndex: 1, // Ensure it's above other elements
-  },
-  infoText: {
-    color: 'white',
-    height: 28,
-    justifyContent: 'center',
-    display: 'flex',
-    zIndex: -100,
-  },
-};
 
 const query = (data, currentData) => {
   if (JSON.stringify(data) === JSON.stringify(currentData)) {
@@ -87,6 +21,20 @@ const query = (data, currentData) => {
 };
 
 function Simple() {
+  const [loaded, error] = useFonts({
+    'BebasNeue': require('@/assets/fonts/BebasNeue-Regular.ttf'),
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   const [currentLocation, setLocation] = useState('');
   const [currentGender, setGender] = useState('');
   const [currentUid, setUid] = useState('');
@@ -184,52 +132,50 @@ function Simple() {
 
   const outOfFrame = (name) => {
     console.log(name + " left the screen!");
+    setCharacters((prevCharacters) => prevCharacters.filter((character) => character.name !== name));
   };
 
   return (
     <SafeAreaView>
-      {user ? (<View style={styles.container}>
-        <Text style={styles.header}>Sparrer</Text>
-        {/* <UpdateLocation uid={uid} /> */}
-        <View style={styles.cardContainer}>
-          {characters?.length ? (
-            characters.map((character) => (
-              <TinderCard
-                swipeThreshold={0.5}
-                preventSwipe={["up", "down"]}
-                key={character.uid}
-                onSwipe={(dir) => swiped(dir, character.uid)}
-                onCardLeftScreen={() => outOfFrame(character.name)}
-              >
-                <View style={styles.card}>
-                  <ImageBackground style={styles.cardImage} source={{ uri: character.url }}>
-                    {/* ImageBackground now only covers part of the card */}
-                  </ImageBackground>
-                  <View style={styles.cardTextContainer}>
-                    <Text style={styles.cardTitle} selectable={false}>{character.name}, {character.age}</Text>
-                    <Text style={styles.cardLocation} selectable={false}>{character.location[0]}</Text>
-                    <Text style={styles.cardLocation} selectable={false}>{character.sport}, {character.weight}</Text>
+      {user ? (
+        <View className="flex items-center justify-center w-full">
+          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">Sparrer</Text>
+          {/* <UpdateLocation uid={uid} /> */}
+          <View className="w-[90%] max-w-[260px] h-auto p-0">
+            {characters?.length ? (
+              characters.map((character) => (
+                <TinderCard
+                  swipeThreshold={0.5}
+                  preventSwipe={["up", "down"]}
+                  key={character.uid}
+                  onSwipe={(dir) => swiped(dir, character.uid)}
+                  onCardLeftScreen={() => outOfFrame(character.name)}
+                >
+                  <View className="absolute bg-white w-full max-w-[260px] h-[400px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
+                    <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
+                      {/* ImageBackground now only covers part of the card */}
+                    </ImageBackground>
+                    <View className="absolute bottom-0 left-0 right-0 p-2.5">
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.location[0]}</Text>
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
+                    </View>
                   </View>
-                </View>
-              </TinderCard>
-            ))
-          ) : (
-            <View className="flex justify-center items-center h-screen ">
-              <Text className="text-[#ffffff] text-2xl ">That's it for now</Text>
-              <Text className="text-[#ffffff] text-2xl ">Let's get back to work!</Text>
-            </View>
-          )}
+                </TinderCard>
+              ))
+            ) : (
+              <View className="flex justify-center items-center h-screen ">
+                <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">That's it for now 🙃</Text>
+                <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-xl ">Let's get back to work! 💪 🔥</Text>
+              </View>
+            )}
+          </View>
         </View>
-        {lastDirection ? (
-          <Text style={styles.infoText}>You swiped {lastDirection}</Text>
-        ) : (
-          <Text style={styles.infoText} />
-        )}
-      </View>) : (
-        <View style={styles.container}>
-          <Text style={styles.header}>Sparrer</Text>
+      ) : (
+        <View className="flex items-center justify-center w-full">
+          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-2xl mb-8">Sparrer</Text>
           <View className="flex justify-center items-center h-screen ">
-              <Text className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
             </View>
         </View>
       )}

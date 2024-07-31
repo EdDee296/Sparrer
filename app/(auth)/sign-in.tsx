@@ -3,8 +3,26 @@ import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ScrollView, Acti
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useNavigation } from '@react-navigation/native';
 import { Link } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
+
+SplashScreen.preventAutoHideAsync();
 
 const SignIn = () => {
+  const [loaded, error] = useFonts({
+    'BebasNeue': require('@/assets/fonts/BebasNeue-Regular.ttf'),
+  });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [spinnings, setSpinnings] = useState(false);
@@ -49,36 +67,37 @@ const SignIn = () => {
         </View>
       ) : (
         <ScrollView style={{ width: '100%', height: '100%' }}>
-          <Text style={{ color: '#ffffff', fontSize: 24, fontWeight: 'bold', textAlign: 'center', paddingTop: 20, paddingBottom: 12 }}>Sign in and box!</Text>
+          <Text style={{ fontFamily: 'BebasNeue', color: '#ffffff', fontSize: 35, fontWeight: 'bold', textAlign: 'center', paddingTop: 20, paddingBottom: 12 }}>Sign in and box!</Text>
           <View style={{ width: '100%', paddingHorizontal: 16, paddingVertical: 12 }}>
-            <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: 'medium', paddingBottom: 8 }}>Email</Text>
+            <Text style={{ fontFamily: 'BebasNeue', color: '#ffffff', fontSize: 18, fontWeight: 'medium', paddingBottom: 8 }}>Email</Text>
             <TextInput
               placeholder="Email"
               placeholderTextColor="#ffffff"
-              style={{ width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
+              style={{ fontFamily: 'BebasNeue', width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
               value={email}
               onChangeText={setEmail}
             />
           </View>
           <View style={{ width: '100%', paddingHorizontal: 16, paddingVertical: 12 }}>
-            <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: 'medium', paddingBottom: 8 }}>Password</Text>
+            <Text style={{ fontFamily: 'BebasNeue', color: '#ffffff', fontSize: 18, fontWeight: 'medium', paddingBottom: 8 }}>Password</Text>
             <TextInput
+            
               placeholder="Password"
               placeholderTextColor="#ffffff"
               secureTextEntry
-              style={{ width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
+              style={{ fontFamily: 'BebasNeue', width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
               value={password}
               onChangeText={setPassword}
             />
           </View>
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
             <TouchableOpacity onPress={handleSignIn} style={{ width: '50%', backgroundColor: '#ff2929', borderRadius: 16, padding: 16, marginHorizontal: 16, marginVertical: 16 }}>
-              <Text style={{ color: '#ffffff', textAlign: 'center', fontWeight: 'bold' }}>Sign In</Text>
+              <Text style={{ fontFamily: 'BebasNeue', color: '#ffffff', textAlign: 'center', fontWeight: 'bold', fontSize: 20 }}>Sign In</Text>
             </TouchableOpacity>
           </View>
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <Link href={'/sign-up'} style={{ color: '#838383', fontSize: 14, paddingHorizontal: 16, paddingBottom: 12 }}>Haven't had an account? Sign up now!</Link>
-            <Link href={'/'} style={{ color: '#838383', fontSize: 14, paddingHorizontal: 16, paddingBottom: 12 }}>Forgot your password?</Link>
+            <Link href={'/sign-up'} style={{ fontFamily: 'BebasNeue', color: '#838383', fontSize: 14, paddingHorizontal: 16, paddingBottom: 12 }}>Haven't had an account? Sign up now!</Link>
+            <Link href={'/'} style={{ fontFamily: 'BebasNeue', color: '#838383', fontSize: 14, paddingHorizontal: 16, paddingBottom: 12 }}>Forgot your password?</Link>
           </View>
         </ScrollView>
       )}
