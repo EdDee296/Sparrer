@@ -48,7 +48,7 @@ const UserProfileTab = () => {
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-[#000000]">
+    <View className="flex-1 items-center justify-center bg-[#221111]">
       {user ? (
         <>
           <UploadImage />

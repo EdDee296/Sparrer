@@ -25,16 +25,6 @@ function Simple() {
     'BebasNeue': require('@/assets/fonts/BebasNeue-Regular.ttf'),
   });
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  if (!loaded && !error) {
-    return null;
-  }
-
   const [currentLocation, setLocation] = useState('');
   const [currentGender, setGender] = useState('');
   const [currentUid, setUid] = useState('');
@@ -135,6 +125,16 @@ function Simple() {
     setCharacters((prevCharacters) => prevCharacters.filter((character) => character.name !== name));
   };
 
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+  
   return (
     <SafeAreaView>
       {user ? (
@@ -166,14 +166,14 @@ function Simple() {
             ) : (
               <View className="flex justify-center items-center h-screen ">
                 <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">That's it for now 🙃</Text>
-                <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-xl ">Let's get back to work! 💪 🔥</Text>
+                <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-xl ">Let's get back to work! 💪🔥</Text>
               </View>
             )}
           </View>
         </View>
       ) : (
         <View className="flex items-center justify-center w-full">
-          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-2xl mb-8">Sparrer</Text>
+          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">Sparrer</Text>
           <View className="flex justify-center items-center h-screen ">
               <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
             </View>

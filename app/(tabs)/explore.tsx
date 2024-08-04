@@ -2,10 +2,14 @@ import { getApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { get, getDatabase, onValue, ref } from 'firebase/database';
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Image, Platform, View, Text, ScrollView, FlatList, Alert, TouchableOpacity } from 'react-native';
+import { Image, View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
 import _ from 'lodash';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts } from 'expo-font';
+
+SplashScreen.preventAutoHideAsync();
 
 const getUser = async (uid) => {
   const database = getDatabase(getApp());
@@ -20,10 +24,14 @@ const getOverlap = (liked, likedBack) => {
 }
 
 export default function TabTwoScreen() {
+  const [loaded, error] = useFonts({
+    'BebasNeue': require('@/assets/fonts/BebasNeue-Regular.ttf'),
+  });
+  
   const [matches, setMatches] = useState([]);
   const [demoProfiles, setDemoProfiles] = useState([]);
-  const database = getDatabase(getApp());
   const [uid, setUid] = useState('');
+  const database = getDatabase(getApp());
   const auth = getAuth();
   const isFirstLoad = useRef(true);
   const navigation = useNavigation();
@@ -85,6 +93,16 @@ export default function TabTwoScreen() {
     setDemoProfiles([]);
   }, []);
 
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   const renderRow = (data) => {
     const first_name = data.item.first_name;
     const url = data.item.image_url;
@@ -95,22 +113,30 @@ export default function TabTwoScreen() {
         navigation.navigate('(screens)', { screen: 'chat', params: {name: data.item.first_name, uid: data.item.id, url: data.item.image_url, userUid: uid } });
       }}
       >
-        <View style={styles.container}>
+        <View className="flex flex-row items-center p-3">
           <Image
             source={{ uri: url }}
-            style={styles.image}
+            className="w-16 h-16 rounded-full"
           />
-          <Text style={styles.text}>
-            {first_name}
-          </Text>
+          <View>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-lg ml-3 mb-1">
+              {first_name}
+            </Text>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#7a7a7a] text-xs ml-3">
+              text message
+            </Text>
+          </View>
         </View>
       </TouchableOpacity>
     )
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-        {user ?(<FlatList
+    <SafeAreaView className='flex flex-1'>
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-3xl mt-6">Your matches opponents</Text>
+        </View>
+        {user ? (demoProfiles?.length ?(<FlatList
           data={demoProfiles}
           renderItem={renderRow}
           keyExtractor={(item) => item.id}
@@ -119,32 +145,16 @@ export default function TabTwoScreen() {
             padding: 10,
           }}
         >
-        </FlatList>) : (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ color: 'white', fontSize: 24 }}>Loading...</Text>
+        </FlatList>
+        ) : (
+          <View className="flex flex-1 justify-center items-center">
+            <ActivityIndicator size="large" color="red" />
+          </View>
+        )) : (
+          <View className="flex flex-1 justify-center items-center">
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
           </View>
         )}
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row', // Aligns children in a row
-    alignItems: 'center', // Centers children vertically in the container
-    borderColor: 'gray', // Sets the border color to gray
-    borderWidth: 1, // Sets the border width
-    borderRadius: 10, // Optional: Adds rounded corners to the container
-    padding: 10, // Optional: Adds some padding inside the container for better spacing
-  },
-  image: {
-    width: 50,
-    height: 50,
-    borderRadius: 25, // Adjusted for a more appropriate circle shape given the size
-  },
-  text: {
-    color: 'white', // Assuming you want white text
-    fontSize: 24, // Adjusted for better visual balance with the image size
-    marginLeft: 10, // Adds some space between the image and the text
-  },
-});

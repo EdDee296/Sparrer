@@ -58,16 +58,6 @@ const SignUp = () => {
     'BebasNeue': require('@/assets/fonts/BebasNeue-Regular.ttf'),
   });
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  if (!loaded && !error) {
-    return null;
-  }
-
   const [age, setAge] = useState("");
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -106,7 +96,6 @@ const SignUp = () => {
       setLocation(loc);
     }
   };
-
 
   const addImage = async () => {
     let _image = await ImagePicker.launchImageLibraryAsync({
@@ -169,6 +158,16 @@ const SignUp = () => {
     }
   };
 
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
       <ScrollView className="w-full h-full">
@@ -192,7 +191,6 @@ const SignUp = () => {
           <View className="flex-1 flex-col w-full">
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Username</Text>
             <TextInput
-              style={{ fontFamily: 'BebasNeue' }}
               className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={username}
               onChangeText={setUsername}
@@ -202,7 +200,6 @@ const SignUp = () => {
 
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Email</Text>
             <TextInput
-              style={{ fontFamily: 'BebasNeue' }}
               className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 py-2'
               value={email}
               onChangeText={setEmail}
@@ -212,7 +209,6 @@ const SignUp = () => {
 
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Password</Text>
             <TextInput
-              style={{ fontFamily: 'BebasNeue' }}
               className='w-full h-14  border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={password}
               onChangeText={setPassword}
@@ -223,7 +219,6 @@ const SignUp = () => {
 
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
             <TextInput
-              style={{ fontFamily: 'BebasNeue' }}
               className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={age}
               onChangeText={setAge}

@@ -13,16 +13,6 @@ const SignIn = () => {
     'BebasNeue': require('@/assets/fonts/BebasNeue-Regular.ttf'),
   });
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  if (!loaded && !error) {
-    return null;
-  }
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [spinnings, setSpinnings] = useState(false);
@@ -58,6 +48,16 @@ const SignIn = () => {
         console.log(errorCode, errorMessage);
       });
   };
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#221111', alignItems: 'center', justifyContent: 'start' }}>
@@ -96,7 +96,7 @@ const SignIn = () => {
             </TouchableOpacity>
           </View>
           <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <Link href={'/sign-up'} style={{ fontFamily: 'BebasNeue', color: '#838383', fontSize: 14, paddingHorizontal: 16, paddingBottom: 12 }}>Haven't had an account? Sign up now!</Link>
+            <Link href={'/sign-up'} style={{ fontFamily: 'BebasNeue', color: '#838383', fontSize: 14, paddingHorizontal: 16, paddingBottom: 12, textDecorationLine: 'underline' }}>Haven't had an account? Sign up now!</Link>
             <Link href={'/'} style={{ fontFamily: 'BebasNeue', color: '#838383', fontSize: 14, paddingHorizontal: 16, paddingBottom: 12 }}>Forgot your password?</Link>
           </View>
         </ScrollView>
