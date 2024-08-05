@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ImageBackground, Text, View } from "react-native";
+import { ImageBackground, Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, update } from "firebase/database";
@@ -32,6 +32,7 @@ function Simple() {
   const [swipedUserIds, setSwipedUserIds] = useState([]);
   const [lastDirection, setLastDirection] = useState();
   const [characters, setCharacters] = useState([]); // Use this state to hold your fetched data
+  const [modalVisible, setModalVisible] = useState(false);
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -110,6 +111,14 @@ function Simple() {
       // Store the swipe in the database
       const swipeRef = ref(database, `swipes/${currentUid}/`);
       update(swipeRef, { [uid]: direction }); // 'right' for like, 'left' for pass
+      //Check if that user already liked bac to display match screen
+      const likedBackRef = ref(database, `challenges/${currentUid}/likedBack`);
+      onValue(likedBackRef, (snapshot) => {
+        const likedBackData = snapshot.val() || {};
+        if (likedBackData[uid] === true) {
+          setModalVisible(true);
+        }
+      });
     } else {
       // console.log("pass: " + uid);
       setLastDirection(direction);
@@ -140,7 +149,27 @@ function Simple() {
       {user ? (
         <View className="flex items-center justify-center w-full">
           <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">Sparrer</Text>
-          {/* <UpdateLocation uid={uid} /> */}
+          <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <View className="flex-1 justify-center items-center mt-6">
+          <View className="m-5 bg-slate-600 rounded-2xl p-9 items-center shadow-lg shadow-black/25">
+            <Text className="mb-4 text-center">New opp found!!!!</Text>
+            <TouchableOpacity
+              className="rounded-2xl p-2 shadow-md bg-white"
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text className="text-black text-center">Hide Modal</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+
           <View className="w-[90%] max-w-[260px] h-auto p-0">
             {characters?.length ? (
               characters.map((character) => (

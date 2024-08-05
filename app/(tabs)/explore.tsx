@@ -64,9 +64,6 @@ export default function TabTwoScreen() {
           const newMatches = users.filter(user => !matches.some(match => match.uid === user.uid ));
           if (newMatches.length > 0) {
             setMatches(prevMatches => [...prevMatches, ...newMatches]);
-            if (!isFirstLoad.current) { // Only show alert if it's not the first load
-              alert("New Match Found!");
-            }
             const updatedDemoProfiles = newMatches.map((match) => {
               const { uid, name, url } = match;
               return { id: uid, first_name: name, image_url: url };
@@ -134,7 +131,7 @@ export default function TabTwoScreen() {
   return (
     <SafeAreaView className='flex flex-1'>
         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-3xl mt-6">Your matches opponents</Text>
+          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-3xl mt-6">Your matched opponents</Text>
         </View>
         {user ? (demoProfiles?.length ?(<FlatList
           data={demoProfiles}
