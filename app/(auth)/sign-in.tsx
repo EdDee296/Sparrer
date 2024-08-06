@@ -73,7 +73,7 @@ const SignIn = () => {
             <TextInput
               placeholder="Email"
               placeholderTextColor="#ffffff"
-              style={{ fontFamily: 'BebasNeue', width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
+              style={{ width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
               value={email}
               onChangeText={setEmail}
             />
@@ -85,7 +85,7 @@ const SignIn = () => {
               placeholder="Password"
               placeholderTextColor="#ffffff"
               secureTextEntry
-              style={{ fontFamily: 'BebasNeue', width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
+              style={{ width: '100%', height: 56, backgroundColor: '#000000', borderColor: '#7c7c7c', borderWidth: 1, borderRadius: 16, color: '#ffffff', padding: 16 }}
               value={password}
               onChangeText={setPassword}
             />
