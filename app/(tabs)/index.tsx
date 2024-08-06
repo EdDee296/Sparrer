@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ImageBackground, Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { ImageBackground, Modal, Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, update } from "firebase/database";
@@ -7,6 +7,7 @@ import { getAuth } from "firebase/auth";
 import { getApp } from "firebase/app";
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
+import { useNavigation } from "@react-navigation/native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,6 +21,8 @@ const query = (data, currentData) => {
   }
 };
 
+const glove = require('@/assets/images/gloves.png');
+
 function Simple() {
   const [loaded, error] = useFonts({
     'BebasNeue': require('@/assets/fonts/BebasNeue-Regular.ttf'),
@@ -28,13 +31,21 @@ function Simple() {
   const [currentLocation, setLocation] = useState('');
   const [currentGender, setGender] = useState('');
   const [currentUid, setUid] = useState('');
+  const [currentImg, setImg] = useState('');
   // const [currentSport, setSport] = useState('');
+
   const [swipedUserIds, setSwipedUserIds] = useState([]);
   const [lastDirection, setLastDirection] = useState();
   const [characters, setCharacters] = useState([]); // Use this state to hold your fetched data
+
   const [modalVisible, setModalVisible] = useState(false);
+  const [matchedImg, setMatchedImg] = useState('');
+  const [matchedName, setMatchedName] = useState('');
+  const [matchedUid, setMatchedUid] = useState('');
+
   const auth = getAuth();
   const user = auth.currentUser;
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (user) {
@@ -51,13 +62,14 @@ function Simple() {
 
   useEffect(() => {
     if (user) {
-      const userRef = ref(database, 'users/' + user.uid); // Adjusted to point to the user's root node
+      const userRef = ref(database, 'users/' + user.uid); // Get the user data
       onValue(userRef, async (snapshot) => {
         const data = await snapshot.val();
         try {
           setLocation(data.location); // This will set the entire user data object
           setGender(data.gender);
           setUid(data.uid);
+          setImg(data.url);
           // setSport(data.sport);
         } catch (error) {
           console.log("no loc here ", error);
@@ -116,6 +128,17 @@ function Simple() {
       onValue(likedBackRef, (snapshot) => {
         const likedBackData = snapshot.val() || {};
         if (likedBackData[uid] === true) {
+          const userRef = ref(database, 'users/' + uid); // Get the user data
+          onValue(userRef, async (snapshot) => {
+            const data = await snapshot.val();
+            try {
+              setMatchedImg(data.url);
+              setMatchedName(data.name);
+              setMatchedUid(data.uid);
+            } catch (error) {
+              console.log("error fetching profile image", error);
+            }
+          })
           setModalVisible(true);
         }
       });
@@ -149,26 +172,49 @@ function Simple() {
       {user ? (
         <View className="flex items-center justify-center w-full">
           <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">Sparrer</Text>
-          <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View className="flex-1 justify-center items-center mt-6">
-          <View className="m-5 bg-slate-600 rounded-2xl p-9 items-center shadow-lg shadow-black/25">
-            <Text className="mb-4 text-center">New opp found!!!!</Text>
-            <TouchableOpacity
-              className="rounded-2xl p-2 shadow-md bg-white"
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text className="text-black text-center">Hide Modal</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
 
+          <Modal
+          className="h-full"
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}>
+            <View className="flex-1 justify-center items-center mt-6 h-full">
+              <View className="m-5 h-full w-full bg-[#861c7f] rounded-2xl p-9 items-center shadow-lg shadow-black/25">
+                <Text style= {{fontFamily: 'BebasNeue'}} className="mb-4 text-center text-white text-3xl">😈 New opp found!!! 😈</Text>
+                <View className="flex flex-row items-center p-3">
+                  <Image
+                    source={{ uri: matchedImg }}
+                    className="w-48 h-48 rounded-full"
+                  />
+                  <Image
+                    source={glove}
+                    className="w-48 h-48 mx-5"/>
+                  <Image
+                    source={{ uri: currentImg }}
+                    className="w-48 h-48 rounded-full"
+                  />
+                </View>
+                <TouchableOpacity
+                  className="rounded-2xl p-4 shadow-md bg-[#ff0000] my-6 w-1/4"
+                  onPress={() => {
+                    console.log("Navigate to chat screen for user with ID: ", matchedName);
+                    navigation.navigate('(screens)', { screen: 'chat', params: {name: matchedName, uid: matchedUid, url: matchedImg, userUid: currentUid } });
+                    setModalVisible(!modalVisible)
+                  }}>
+                  <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">🔥🔥Gloves on !!!🥊👊</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="rounded-2xl p-4 shadow-md bg-[#226cff] w-1/4"
+                  onPress={() => setModalVisible(!modalVisible)}>
+                  <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Keep looking... 🔍</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
 
           <View className="w-[90%] max-w-[260px] h-auto p-0">
             {characters?.length ? (
