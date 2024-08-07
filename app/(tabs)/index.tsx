@@ -186,44 +186,44 @@ function Simple() {
             setModalVisible(!modalVisible);
           }}>
             <View className="flex-1 justify-center items-center mt-6 h-full">
-            <ImageBackground
-                  source={ring}
-                  className="w-full h-full ">
-              <View className="m-5 h-full w-full rounded-2xl p-9 items-center shadow-lg shadow-black/25">
-                
-                <Text style= {{fontFamily: 'BebasNeue'}} className="mb-4 text-center text-white text-3xl">😈 New opp found!!! 😈</Text>
-                <View className="flex flex-row items-center p-3">
-                <Image
-                  source={{ uri: matchedImg }}
-                  style={{ width: width * 0.2, height: width * 0.2, borderRadius: (width * 0.2) / 2 }}
-                />
-                <Image
-                  source={glove}
-                  style={{ width: width * 0.2, height: width * 0.2, marginHorizontal: width * 0.05 }}
-                />
-                <Image
-                  source={{ uri: currentImg }}
-                  style={{ width: width * 0.2, height: width * 0.2, borderRadius: (width * 0.2) / 2 }}
-                />
+              <ImageBackground
+                source={ring}
+                className="w-full h-full ">
+                <View className="m-5 h-full w-full rounded-2xl p-9 items-center shadow-lg shadow-black/25">
+                  
+                  <Text style= {{fontFamily: 'BebasNeue'}} className="mb-4 text-center text-white text-3xl">😈 New opp found!!! 😈</Text>
+                  <View className="flex flex-row items-center p-3">
+                  <Image
+                    source={{ uri: matchedImg }}
+                    style={{ width: width * 0.2, height: width * 0.2, borderRadius: (width * 0.2) / 2 }}
+                  />
+                  <Image
+                    source={glove}
+                    style={{ width: width * 0.2, height: width * 0.2, marginHorizontal: width * 0.05 }}
+                  />
+                  <Image
+                    source={{ uri: currentImg }}
+                    style={{ width: width * 0.2, height: width * 0.2, borderRadius: (width * 0.2) / 2 }}
+                  />
+                  </View>
+                  <TouchableOpacity
+                    style={{width: width * 0.8}}
+                    className="rounded-2xl p-4 shadow-md bg-[#ff0000] my-6"
+                    onPress={() => {
+                      console.log("Navigate to chat screen for user with ID: ", matchedName);
+                      navigation.navigate('(screens)', { screen: 'chat', params: {name: matchedName, uid: matchedUid, url: matchedImg, userUid: currentUid } });
+                      setModalVisible(!modalVisible)
+                    }}>
+                    <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">🔥🔥Gloves on !!!🥊👊</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{width: width * 0.8}}
+                    className="rounded-2xl p-4 shadow-md bg-[#226cff]"
+                    onPress={() => setModalVisible(!modalVisible)}>
+                    <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Keep looking... 🔍</Text>
+                  </TouchableOpacity>
+                  
                 </View>
-                <TouchableOpacity
-                  style={{width: width * 0.8}}
-                  className="rounded-2xl p-4 shadow-md bg-[#ff0000] my-6"
-                  onPress={() => {
-                    console.log("Navigate to chat screen for user with ID: ", matchedName);
-                    navigation.navigate('(screens)', { screen: 'chat', params: {name: matchedName, uid: matchedUid, url: matchedImg, userUid: currentUid } });
-                    setModalVisible(!modalVisible)
-                  }}>
-                  <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">🔥🔥Gloves on !!!🥊👊</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{width: width * 0.8}}
-                  className="rounded-2xl p-4 shadow-md bg-[#226cff]"
-                  onPress={() => setModalVisible(!modalVisible)}>
-                  <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Keep looking... 🔍</Text>
-                </TouchableOpacity>
-                
-              </View>
               </ImageBackground>
             </View>
           </Modal>

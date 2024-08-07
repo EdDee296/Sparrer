@@ -58,8 +58,7 @@ export default function UploadImage() {
       
       <View style={imageUploaderStyles.uploadBtnContainer}>
         <TouchableOpacity onPress={addImage} style={imageUploaderStyles.uploadBtn} disabled={loading}>
-        {image && <Image source={{ uri: image }} style={{ width: 50, height: 50 }} />}
-          <AntDesign name="camera" size={20} color="black" />
+        {image && <Image source={{ uri: image }} style={{ width: 150, height: 150 }} />}
         </TouchableOpacity>
       </View>
     </View>
@@ -70,8 +69,8 @@ export default function UploadImage() {
 const imageUploaderStyles=StyleSheet.create({
     container:{
         elevation:2,
-        height:50,
-        width:50,
+        height:150,
+        width:150,
         backgroundColor:'#efefef',
         position:'relative',
         borderRadius:999,
