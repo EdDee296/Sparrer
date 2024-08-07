@@ -22,6 +22,7 @@ const query = (data, currentData) => {
   }
 };
 
+const ring = require('@/assets/images/ring.jpg');
 const glove = require('@/assets/images/gloves.png');
 const { width } = Dimensions.get('window');
 
@@ -185,7 +186,11 @@ function Simple() {
             setModalVisible(!modalVisible);
           }}>
             <View className="flex-1 justify-center items-center mt-6 h-full">
-              <View className="m-5 h-full w-full bg-[#861c7f] rounded-2xl p-9 items-center shadow-lg shadow-black/25">
+            <ImageBackground
+                  source={ring}
+                  className="w-full h-full ">
+              <View className="m-5 h-full w-full rounded-2xl p-9 items-center shadow-lg shadow-black/25">
+                
                 <Text style= {{fontFamily: 'BebasNeue'}} className="mb-4 text-center text-white text-3xl">😈 New opp found!!! 😈</Text>
                 <View className="flex flex-row items-center p-3">
                 <Image
@@ -217,7 +222,9 @@ function Simple() {
                   onPress={() => setModalVisible(!modalVisible)}>
                   <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Keep looking... 🔍</Text>
                 </TouchableOpacity>
+                
               </View>
+              </ImageBackground>
             </View>
           </Modal>
 
