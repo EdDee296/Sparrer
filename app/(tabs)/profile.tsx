@@ -60,7 +60,7 @@ const UserProfileTab = () => {
   
   const [visible, setVisible] = useState(false);
 
-  const [location, setLocation] = useState('null');
+  const [location, setLocation] = useState(null);
   const [text, setText] = useState('null');
   const [lVisible, setLvisible] = useState(false);
 
@@ -131,6 +131,7 @@ const UserProfileTab = () => {
       const loc = await UpdateLocation(latitude, longitude); // Assuming UpdateLocation is properly defined to handle these arguments
       setText("City: " + loc[0] + " State: " + loc[1] + " Country: " + loc[2]);
       loc.splice(1,1);
+      console.log(loc)
       setLocation(loc);
     }
   };
@@ -247,7 +248,7 @@ const UserProfileTab = () => {
 
           <View className="flex flex-row items-center justify-center">
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl mr-3">Location: {location}</Text>
-            <TouchableOpacity onPress={ () => setLvisible(true)}>
+            <TouchableOpacity onPress={() => setLvisible(true)}>
               <Feather name="edit" size={24} color="white" />
             </TouchableOpacity>
             <Modal
@@ -274,7 +275,9 @@ const UserProfileTab = () => {
                           const re = ref(database, 'users/' + uid); // Get the user data
                           update(re, {
                             location: location,
-                          }).then( () => setLvisible(false));
+                          }).then( () => {
+                            setLocation(location[0]);
+                            setLvisible(false)});
                           }}>
                         <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Save</Text>
                       </TouchableOpacity>
