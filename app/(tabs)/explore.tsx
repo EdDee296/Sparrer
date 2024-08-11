@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
+import LatestMsg from '@/components/LatestMsg';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -119,9 +120,7 @@ export default function TabTwoScreen() {
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-lg ml-3 mb-1">
               {first_name}
             </Text>
-            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#7a7a7a] text-xs ml-3">
-              text message
-            </Text>
+            <LatestMsg userUid={uid} uid={data.item.id} font='BebasNeue'/>
           </View>
         </View>
       </TouchableOpacity>

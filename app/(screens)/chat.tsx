@@ -1,5 +1,5 @@
 import { View, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { Bubble, Composer, ComposerProps, GiftedChat, IMessage, SendProps } from 'react-native-gifted-chat';
+import { Bubble, Composer, ComposerProps, GiftedChat, IMessage, InputToolbar, SendProps } from 'react-native-gifted-chat';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -122,8 +122,39 @@ const onSend = useCallback(async (messages = []) => {
     );
   };
 
+  const renderSend = (sendProps) => {
+    if (sendProps.text.trim().length > 0) {
+      return (
+        <TouchableOpacity>
+          <Ionicons name="send-sharp" size={24} color="black" />
+        </TouchableOpacity>
+      );
+    }
+    return null;
+  }
+
+  const MessengerBarContainer = (props) => {
+    return (
+      <InputToolbar
+        {...props}
+        containerStyle={{
+          textColor: 'blue',
+          height: 40,
+          backgroundColor: 'grey',
+          alignContent: "center",
+          justifyContent: "center",
+          paddingTop: 6,
+          paddingBottom: 12,
+          marginHorizontal: 6,
+          borderRadius: 32,
+          borderTopColor: "transparent",
+        }}
+      />
+    );
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-[#959191]">
+    <SafeAreaView className="flex-1 bg-[#472525]">
       {loading ? (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size="large" color="red" />
@@ -137,6 +168,7 @@ const onSend = useCallback(async (messages = []) => {
           }}
           renderBubble={renderBubble}
           renderComposer={ChatComposer}
+          renderInputToolbar={(props) => MessengerBarContainer(props)}
         />
       )}
     </SafeAreaView>
