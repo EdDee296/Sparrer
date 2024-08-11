@@ -20,8 +20,9 @@ const LatestMsg: React.FC<LatestMsgProps> = ({ userUid, uid, font }) => {
         const unsubscribe = onValue(messageRef, async (snapshot) => {
             const data = await snapshot.val();
             if (data) {
-                setLatestMsg(data[Object.keys(data)[Object.keys(data).length - 1]].text);
-                console.log(data[Object.keys(data)[Object.keys(data).length - 1]]);
+                let text = data[Object.keys(data)[Object.keys(data).length - 1]].text;
+                let sender = data[Object.keys(data)[Object.keys(data).length - 1]].user._id;
+                setLatestMsg(sender === userUid ? 'You: ' + text : text);
             }
             else {
                 setLatestMsg('No messages yet');

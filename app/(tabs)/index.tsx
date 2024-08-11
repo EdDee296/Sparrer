@@ -198,7 +198,7 @@ function Simple() {
                     style={{ width: width * 0.2, height: width * 0.2, borderRadius: (width * 0.2) / 2 }}
                   />
                   <Image
-                    source={glove}
+                    source={{ uri: glove }}
                     style={{ width: width * 0.2, height: width * 0.2, marginHorizontal: width * 0.05 }}
                   />
                   <Image
