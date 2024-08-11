@@ -62,18 +62,18 @@ const chat = () => {
   }, [uid]);
 
 
-const onSend = useCallback(async (messages = []) => {
-    const postListRef = ref(database, `/messages/${chatId}/`);
-    const newPostRef = push(postListRef);
-    set(newPostRef, {
-      ...messages[0],
-      createdAt: new Date().getTime(), // Store timestamp
-      user: {
-        _id: userUid,
-        avatar: url,
-      }
-    });
-  }, [chatId, database, url, userUid]);
+  const onSend = useCallback(async (messages = []) => {
+      const postListRef = ref(database, `/messages/${chatId}/`);
+      const newPostRef = push(postListRef);
+      set(newPostRef, {
+        ...messages[0],
+        createdAt: new Date().getTime(), // Store timestamp
+        user: {
+          _id: userUid,
+          avatar: url,
+        }
+      });
+    }, [chatId, database, url, userUid]);
 
   const renderBubble = (props) => {
     return (
@@ -125,8 +125,9 @@ const onSend = useCallback(async (messages = []) => {
   const renderSend = (sendProps) => {
     if (sendProps.text.trim().length > 0) {
       return (
-        <TouchableOpacity>
-          <Ionicons name="send-sharp" size={24} color="black" />
+        <TouchableOpacity style={{
+          paddingBottom: 6}}>
+          <Ionicons name="send-sharp" size={24} color="red" />
         </TouchableOpacity>
       );
     }
@@ -138,7 +139,7 @@ const onSend = useCallback(async (messages = []) => {
       <InputToolbar
         {...props}
         containerStyle={{
-          textColor: 'blue',
+          textColor: 'white',
           height: 40,
           backgroundColor: 'grey',
           alignContent: "center",
@@ -167,6 +168,7 @@ const onSend = useCallback(async (messages = []) => {
             _id: userUid,
           }}
           renderBubble={renderBubble}
+          renderSend={renderSend}
           renderComposer={ChatComposer}
           renderInputToolbar={(props) => MessengerBarContainer(props)}
         />
