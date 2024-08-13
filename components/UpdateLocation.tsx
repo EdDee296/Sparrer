@@ -6,7 +6,7 @@ const UpdateLocation = async (lat, lon) => {
     };
     
     // Adjust the URL to your backend endpoint, assuming it also uses lat and lon as query parameters
-    const response = await fetch(`http://localhost:8000/api/?lat=${lat}&lon=${lon}`, requestOptions);
+    const response = await fetch(`http://192.168.1.74:8000/api/?lat=${lat}&lon=${lon}`, requestOptions);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

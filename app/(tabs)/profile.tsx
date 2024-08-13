@@ -117,6 +117,7 @@ const UserProfileTab = () => {
   };
 
   const getLocation = async () => {
+    setText("Loading location...");
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       console.log('Permission to access location was denied');
@@ -129,7 +130,7 @@ const UserProfileTab = () => {
     if (location) {
       const { latitude, longitude } = location.coords;
       const loc = await UpdateLocation(latitude, longitude); // Assuming UpdateLocation is properly defined to handle these arguments
-      setText("City: " + loc[0] + " State: " + loc[1] + " Country: " + loc[2]);
+      setText(loc[0] + "," + loc[1] + "," + loc[2]);
       loc.splice(1,1);
       console.log(loc)
       setLocation(loc);
@@ -159,7 +160,7 @@ const UserProfileTab = () => {
               }}>
               <View className="flex-1 justify-center items-center  bg-opacity-50">
                 <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-center">Edit your name</Text>
+                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl text-center">Edit your name</Text>
                   <View className="flex justify-center items-center">
                     <View className="flex items-center justify-center">
                     <TextInput
@@ -203,7 +204,7 @@ const UserProfileTab = () => {
               }}>
               <View className="flex-1 justify-center items-center  bg-opacity-50">
                 <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-center">Edit your weight class</Text>
+                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your weight class</Text>
                   <View className="flex justify-center items-center my-6">
                     <View className="flex items-center justify-center">
                     <Dropdown
@@ -237,7 +238,14 @@ const UserProfileTab = () => {
                             weight: weight
                           }).then( () => setWvisible(false));
                           }}>
-                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Save</Text>
+                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                      className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                      onPress={() => {
+                        setWvisible(false);
+                      }}>
+                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -259,18 +267,18 @@ const UserProfileTab = () => {
                 alert('Modal has been closed.');
               }}>
               <View className="flex-1 justify-center items-center  bg-opacity-50">
-                <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-center mb-6">Update your location</Text>
+                <View className="bg-[#7e7575] w-2/3 h-1/2 rounded-lg">
+                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-center text-white mb-6">Update your location</Text>
                   <View className="flex justify-center items-center">
                     <View className="flex items-center justify-center">
-                      <View className="flex-row justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
-                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">{text}</Text>
-                        <TouchableOpacity onPress={getLocation} className="bg-[#ff2424] p-3 rounded-lg">
+                      <View className="flex justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
+                        <TouchableOpacity onPress={getLocation} className="bg-[#ff2424] p-3 rounded-lg my-4">
                           <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">Share Location</Text>
                         </TouchableOpacity>
+                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-white justify-center items-center text-center">{text}</Text>
                       </View>
                       <TouchableOpacity
-                        className="rounded-2xl p-4 shadow-md bg-[#ff2424]"
+                        className="rounded-2xl p-4 shadow-md bg-[#ff2424] my-6"
                         onPress={() => {
                           const re = ref(database, 'users/' + uid); // Get the user data
                           update(re, {
@@ -279,7 +287,14 @@ const UserProfileTab = () => {
                             setLocation(location[0]);
                             setLvisible(false)});
                           }}>
-                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Save</Text>
+                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl ">Save</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                      className="rounded-2xl p-4 shadow-md bg-[#ff2424]"
+                      onPress={() => {
+                        setLvisible(false);
+                      }}>
+                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -302,7 +317,7 @@ const UserProfileTab = () => {
               }}>
               <View className="flex-1 justify-center items-center  bg-opacity-50">
                 <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-center">Edit your sports</Text>
+                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your sports</Text>
                   <View className="flex justify-center items-center my-6">
                     <View className="flex items-center justify-center">
                     <Dropdown
@@ -336,7 +351,15 @@ const UserProfileTab = () => {
                             sport: sports
                           }).then( () => setSvisible(false));
                           }}>
-                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Save</Text>
+                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                      className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                      onPress={() => {
+                        setSvisible(false);
+                      }}>
+                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -369,7 +392,7 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     height: 50,
-    width: '100%',
+    width: 150,
     borderColor: 'white',
     borderWidth: 0.5,
     borderRadius: 8,

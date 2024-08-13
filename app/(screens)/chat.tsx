@@ -123,16 +123,24 @@ const chat = () => {
   };
 
   const renderSend = (sendProps) => {
+    const handleSend = () => {
+      if (sendProps.onSend && sendProps.text.trim().length > 0) {
+        sendProps.onSend([{ text: sendProps.text.trim(), user: { _id: userUid, avatar: url }, createdAt: new Date().getTime() }], true);
+      }
+    };
+  
     if (sendProps.text.trim().length > 0) {
       return (
-        <TouchableOpacity style={{
-          paddingBottom: 6}}>
+        <TouchableOpacity
+          style={{ paddingBottom: 6 }}
+          onPress={handleSend}
+        >
           <Ionicons name="send-sharp" size={24} color="red" />
         </TouchableOpacity>
       );
     }
     return null;
-  }
+  };
 
   const MessengerBarContainer = (props) => {
     return (

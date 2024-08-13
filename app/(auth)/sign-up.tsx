@@ -111,6 +111,12 @@ const SignUp = () => {
   };
 
   const handleSignUp = async () => {
+    // Check if all fields are filled
+    if (!username || !email || !password || !age || !valueSports || !valueGender || !valueExp || !valueWeight || !location || !img) {
+      alert('Please fill in all fields.');
+      return;
+    }
+  
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log('Account created:', userCredential.user);
@@ -146,7 +152,7 @@ const SignUp = () => {
           exp: valueExp,
           age: age,
           weight: valueWeight,
-        }).then(()=>{
+        }).then(() => {
           console.log("Done uploading all data to Firebase Realtime Database");
           //@ts-ignore
           navigation.navigate('(tabs)', { screen: 'index' });
