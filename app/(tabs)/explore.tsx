@@ -1,13 +1,13 @@
-import { getApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { get, getDatabase, onValue, ref } from 'firebase/database';
-import { useEffect, useRef, useState } from 'react';
-import { Image, View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
-import _ from 'lodash';
+import { useState, useEffect, useRef } from 'react';
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
+import { getApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { get, getDatabase, onValue, ref } from 'firebase/database';
+import _ from 'lodash';
 import LatestMsg from '@/components/LatestMsg';
 
 SplashScreen.preventAutoHideAsync();
@@ -32,6 +32,7 @@ export default function TabTwoScreen() {
   const [matches, setMatches] = useState([]);
   const [demoProfiles, setDemoProfiles] = useState([]);
   const [uid, setUid] = useState('');
+  const [loading, setLoading] = useState(true);
   const database = getDatabase(getApp());
   const auth = getAuth();
   const isFirstLoad = useRef(true);
@@ -71,9 +72,11 @@ export default function TabTwoScreen() {
             });
             setDemoProfiles(prevDemoProfiles => [...prevDemoProfiles, ...updatedDemoProfiles]);
           }
+          setLoading(false); // Data fetching is complete
         });
       }, (error) => {
         console.error(error);
+        setLoading(false); // Data fetching is complete even if there's an error
       });
 
       return () => unsubscribe();
@@ -129,28 +132,36 @@ export default function TabTwoScreen() {
 
   return (
     <SafeAreaView className='flex flex-1'>
-        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-3xl mt-6">Your matched opponents</Text>
-        </View>
-        {user ? (demoProfiles?.length ?(<FlatList
-          data={demoProfiles}
-          renderItem={renderRow}
-          keyExtractor={(item) => item.id}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            padding: 10,
-          }}
-        >
-        </FlatList>
-        ) : (
+      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-3xl mt-6">Your matched opponents</Text>
+      </View>
+      {user ? (
+        loading ? (
           <View className="flex flex-1 justify-center items-center">
             <ActivityIndicator size="large" color="red" />
           </View>
-        )) : (
-          <View className="flex flex-1 justify-center items-center">
-            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
-          </View>
-        )}
+        ) : (
+          demoProfiles?.length ? (
+            <FlatList
+              data={demoProfiles}
+              renderItem={renderRow}
+              keyExtractor={(item) => item.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                padding: 10,
+              }}
+            />
+          ) : (
+            <View className="flex flex-1 justify-center items-center">
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl">No match yet</Text>
+            </View>
+          )
+        )
+      ) : (
+        <View className="flex flex-1 justify-center items-center">
+          <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl">Please sign in to continue</Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

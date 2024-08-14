@@ -3,7 +3,7 @@ import { ImageBackground, Modal, Image, Text, TouchableOpacity, View } from "rea
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, update } from "firebase/database";
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getApp } from "firebase/app";
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -46,9 +46,17 @@ function Simple() {
   const [matchedName, setMatchedName] = useState('');
   const [matchedUid, setMatchedUid] = useState('');
 
+  const [user, setUser] = useState(null);
   const auth = getAuth();
-  const user = auth.currentUser;
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+
+    return () => unsubscribe();
+  }, [auth]);
 
   useEffect(() => {
     if (user) {
@@ -61,7 +69,7 @@ function Simple() {
     } else {
       setSwipedUserIds([]);
     }
-  }, [currentUid]);
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -83,7 +91,7 @@ function Simple() {
       setGender('');
       setUid('');
     }
-  }, [currentUid]);
+  }, [user]);
 
   useEffect(() => {
     if (currentLocation !== "") {

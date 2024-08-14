@@ -78,6 +78,7 @@ const SignUp = () => {
   
 
   const getLocation = async () => {
+    setText('Loading location...');
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       console.log('Permission to access location was denied');
@@ -85,13 +86,12 @@ const SignUp = () => {
     }
 
     const location = await Location.getCurrentPositionAsync({});
-    console.log(location);
+    // console.log(location);
 
     if (location) {
       const { latitude, longitude } = location.coords;
       const loc = await UpdateLocation(latitude, longitude); // Assuming UpdateLocation is properly defined to handle these arguments
-      console.log("City: " + loc[0] + " State: " + loc[1] + " Country: " + loc[2]);
-      setText("City: " + loc[0] + " State: " + loc[1] + " Country: " + loc[2]);
+      setText(loc[0] + ", " + loc[1] + ", " + loc[2]);
       loc.splice(1,1);
       setLocation(loc);
     }
