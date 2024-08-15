@@ -15,6 +15,7 @@ import { getDownloadURL, getStorage, ref as ref_storage, uploadBytes } from "fir
 import { getReactNativePersistence } from '@firebase/auth/dist/rn/index.js';
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
+
 const firebaseConfig = {
   apiKey: "AIzaSyAJ9Fs8SKz3AQkscId_VuoZ0XG2g59ISyU",
   authDomain: "chag-75cfe.firebaseapp.com",

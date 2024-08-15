@@ -182,7 +182,7 @@ function Simple() {
     <SafeAreaView>
       {user ? (
         <View className="flex items-center justify-center w-full">
-          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">Sparrer</Text>
+          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">🥊 Sparrer 🥊</Text>
 
           <Modal
           className="h-full"
@@ -197,7 +197,7 @@ function Simple() {
               <ImageBackground
                 source={ring}
                 className="w-full h-full ">
-                <View className="m-5 h-full w-full rounded-2xl p-9 items-center shadow-lg shadow-black/25">
+                <View className=" h-full w-full rounded-2xl p-9 items-center shadow-lg shadow-black/25">
                   
                   <Text style= {{fontFamily: 'BebasNeue'}} className="mb-4 text-center text-white text-3xl">😈 New opp found!!! 😈</Text>
                   <View className="flex flex-row items-center p-3">
@@ -236,7 +236,7 @@ function Simple() {
             </View>
           </Modal>
 
-          <View className="w-[90%] max-w-[260px] h-auto p-0">
+          <View className="w-[90%] mr-10 max-w-[260px] h-auto p-0">
             {characters?.length ? (
               characters.map((character) => (
                 <TinderCard
@@ -246,7 +246,7 @@ function Simple() {
                   onSwipe={(dir) => swiped(dir, character.uid)}
                   onCardLeftScreen={() => outOfFrame(character.name)}
                 >
-                  <View className="absolute bg-white w-full max-w-[260px] h-[400px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
+                  <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
                     <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
                       {/* ImageBackground now only covers part of the card */}
                     </ImageBackground>
@@ -259,16 +259,16 @@ function Simple() {
                 </TinderCard>
               ))
             ) : (
-              <View className="flex justify-center items-center h-screen ">
-                <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">That's it for now 🙃</Text>
+              <View className="flex justify-center items-center h-screen ml-8 pl-1 pb-20">
+                <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ml-15 ">That's it for now 🙃</Text>
                 <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-xl ">Let's get back to work! 💪🔥</Text>
               </View>
             )}
           </View>
         </View>
       ) : (
-        <View className="flex items-center justify-center w-full">
-          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">Sparrer</Text>
+        <View className="flex items-center justify-center w-full ">
+          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">🥊 Sparrer 🥊</Text>
           <View className="flex justify-center items-center h-screen ">
               <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
             </View>
