@@ -81,7 +81,7 @@ const SignUp = () => {
     setText('Loading location...');
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      console.log('Permission to access location was denied');
+      alert('Permission to access location was denied');
       return;
     }
 
@@ -153,14 +153,13 @@ const SignUp = () => {
           age: age,
           weight: valueWeight,
         }).then(() => {
-          console.log("Done uploading all data to Firebase Realtime Database");
+          // console.log("Done uploading all data to Firebase Realtime Database");
           //@ts-ignore
           navigation.navigate('(tabs)', { screen: 'index' });
         });
       }
     } catch (error) {
-      console.error('Error signing up and uploading image:', error);
-      // Handle errors here, such as showing an error message
+      alert(error);
     }
   };
 
@@ -183,10 +182,10 @@ const SignUp = () => {
 
         <View className='flex justify-center items-center pt-10'>
         <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-base font-medium pb-2">Profile picture</Text>
-          <View className=" h-12 w-12 align-middle  bg-[#efefef] rounded-full overflow-hidden shadow flex items-center justify-center">
+          <View className=" h-[100px] w-[100px] align-middle  bg-[#efefef] rounded-full overflow-hidden shadow flex items-center justify-center">
             <TouchableOpacity onPress={addImage} className="flex-1 items-center justify-center">
               <View className="flex-1 items-center justify-center">
-                 {img && <Image source={{ uri: img }} style={{ width: 50, height: 50 }} />}
+                 {img && <Image source={{ uri: img }} style={{ width: 100, height: 100 }} />}
                 <AntDesign name="camera" size={20} color="black" />
               </View>
             </TouchableOpacity>

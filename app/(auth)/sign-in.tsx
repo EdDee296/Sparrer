@@ -39,14 +39,13 @@ const SignIn = () => {
       .then((userCredential) => {
         setSpinnings(false);
         const user = userCredential.user;
-        console.log(user);
+        // console.log(user);
         setUser(user);
       })
       .catch((error) => {
         setSpinnings(false);
-        const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
+        alert(errorMessage);
       });
   };
 

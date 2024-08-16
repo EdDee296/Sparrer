@@ -108,6 +108,12 @@ const chat = () => {
     return (
       <Composer
         {...props}
+        textInputStyle={{
+          color: 'white',
+          fontSize: 16,
+          marginHorizontal: 6,
+        }}
+        placeholderTextColor='white'
         textInputProps={{
           ...props.textInputProps,
           blurOnSubmit: false,
@@ -147,7 +153,6 @@ const chat = () => {
       <InputToolbar
         {...props}
         containerStyle={{
-          textColor: 'white',
           height: 40,
           backgroundColor: 'grey',
           alignContent: "center",

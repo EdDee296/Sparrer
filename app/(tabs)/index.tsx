@@ -38,10 +38,12 @@ function Simple() {
   // const [currentSport, setSport] = useState('');
 
   const [swipedUserIds, setSwipedUserIds] = useState([]);
-  const [lastDirection, setLastDirection] = useState();
   const [characters, setCharacters] = useState([]); // Use this state to hold your fetched data
 
+
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalOpen, setModalOpen] = useState(true);
+
   const [matchedImg, setMatchedImg] = useState('');
   const [matchedName, setMatchedName] = useState('');
   const [matchedUid, setMatchedUid] = useState('');
@@ -114,8 +116,6 @@ function Simple() {
         setCharacters(profiles);
       };
       fetchData();
-    } else {
-      console.log("No location yet, still updating");
     }
   }, [currentUid, currentLocation]);
 
@@ -128,7 +128,6 @@ function Simple() {
   const swiped = (direction, uid) => {
     if (direction === "right") {
       // console.log("like: " + uid);
-      setLastDirection(direction);
       relate(uid, currentUid, 'liked', true);
       relate(currentUid, uid, 'likedBack', true);
       // Store the swipe in the database
@@ -147,7 +146,7 @@ function Simple() {
               setMatchedName(data.name);
               setMatchedUid(data.uid);
             } catch (error) {
-              console.log("error fetching profile image", error);
+              alert("error fetching profile image " + error);
             }
           })
           setModalVisible(true);
@@ -155,7 +154,6 @@ function Simple() {
       });
     } else {
       // console.log("pass: " + uid);
-      setLastDirection(direction);
       relate(uid, currentUid, 'liked', false);
       relate(currentUid, uid, 'likedBack', false);
       const swipeRef = ref(database, `swipes/${currentUid}/`);
@@ -164,7 +162,7 @@ function Simple() {
   };
 
   const outOfFrame = (name) => {
-    console.log(name + " left the screen!");
+    // console.log(name + " left the screen!");
     setCharacters((prevCharacters) => prevCharacters.filter((character) => character.name !== name));
   };
 
@@ -182,8 +180,7 @@ function Simple() {
     <SafeAreaView>
       {user ? (
         <View className="flex items-center justify-center w-full">
-          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">🥊 Sparrer 🥊</Text>
-
+          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6 mb-6">🥊 Sparrer 🥊</Text>
           <Modal
           className="h-full"
           animationType="slide"
@@ -235,7 +232,6 @@ function Simple() {
               </ImageBackground>
             </View>
           </Modal>
-
           <View className="w-[90%] mr-10 max-w-[260px] h-auto p-0">
             {characters?.length ? (
               characters.map((character) => (

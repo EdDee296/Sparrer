@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
       setUser(u);
       if (u) {
-        console.log('User is signed in');
+        // console.log('User is signed in');
         // Reset the navigation state
         navigation.dispatch(
           CommonActions.reset({

@@ -75,7 +75,7 @@ export default function TabTwoScreen() {
           setLoading(false); // Data fetching is complete
         });
       }, (error) => {
-        console.error(error);
+        alert('An error occurred while fetching your matches '+error);
         setLoading(false); // Data fetching is complete even if there's an error
       });
 

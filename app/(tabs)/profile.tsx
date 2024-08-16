@@ -120,7 +120,7 @@ const UserProfileTab = () => {
     setText("Loading location...");
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-      console.log('Permission to access location was denied');
+      alert('Permission to access location was denied');
       return;
     }
   
@@ -132,7 +132,7 @@ const UserProfileTab = () => {
       const loc = await UpdateLocation(latitude, longitude); // Assuming UpdateLocation is properly defined to handle these arguments
       setText(loc[0] + "," + loc[1] + "," + loc[2]);
       loc.splice(1,1);
-      console.log(loc)
+      // console.log(loc)
       setLocation(loc);
     }
   };
@@ -147,7 +147,7 @@ const UserProfileTab = () => {
         <>
           <UploadImage/>
           <View className="flex flex-row items-center justify-center">
-            <Text style={{fontFamily: 'BebasNeue'}} className="text-lg my-5 text-[#ffffff] mr-2">Welcome champ <Text className='text-2xl'>{user.displayName}👑</Text> </Text>
+            <Text style={{fontFamily: 'BebasNeue'}} className="text-lg my-5 text-[#ffffff] mr-2">Welcome champ <Text className='text-2xl'>{user.displayName}👑</Text></Text>
             <TouchableOpacity onPress={() => setVisible(true)}>
               <Feather name="edit" size={24} color="white" />
             </TouchableOpacity>
