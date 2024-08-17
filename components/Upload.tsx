@@ -3,8 +3,10 @@ import { Image, View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { getAuth, updateProfile } from 'firebase/auth';
-import { getDatabase, ref as databaseRef, set } from "firebase/database";
+import { getDatabase, ref as databaseRef, set, onValue, ref } from "firebase/database";
 import { upload } from '@/FireBaseConfig';
+
+const database = getDatabase();
 
 export default function UploadImage() {
   const [image, setImage] = useState('');
@@ -13,12 +15,13 @@ export default function UploadImage() {
   const user = auth.currentUser;
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
-      if (authUser?.photoURL) {
-          setImage(authUser.photoURL);
-        }
-      if (authUser) {
-      const uid = authUser.uid;
-      }
+      const userRef = ref(database, 'users/' + authUser.uid); // Get the user data
+        onValue(userRef, async (snapshot) => {
+          const data = await snapshot.val();
+          if (data) {
+            setImage(data.url);
+          }
+        });
     });
   
     // Cleanup subscription on unmount

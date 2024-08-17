@@ -57,7 +57,7 @@ const UserProfileTab = () => {
 
   const [user, setUser] = useState<any>(null);
   const [uid, setUid] = useState('');
-  
+  const [name, setName] = useState('');
   const [visible, setVisible] = useState(false);
 
   const [location, setLocation] = useState(null);
@@ -90,6 +90,7 @@ const UserProfileTab = () => {
             setWeight(data.weight);
             setLocation(data.location[0]);
             setSports(data.sport);
+            setName(data.name);
           }
         });
       }
@@ -147,7 +148,7 @@ const UserProfileTab = () => {
         <>
           <UploadImage/>
           <View className="flex flex-row items-center justify-center">
-            <Text style={{fontFamily: 'BebasNeue'}} className="text-lg my-5 text-[#ffffff] mr-2">Welcome champ <Text className='text-2xl'>{user.displayName}👑</Text></Text>
+            <Text style={{fontFamily: 'BebasNeue'}} className="text-lg my-5 text-[#ffffff] mr-2">Welcome champ <Text className='text-2xl'>{name}👑</Text></Text>
             <TouchableOpacity onPress={() => setVisible(true)}>
               <Feather name="edit" size={24} color="white" />
             </TouchableOpacity>
@@ -166,7 +167,7 @@ const UserProfileTab = () => {
                     <TextInput
                       className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 my-6'
                       value={user.displayName}
-                      onChangeText={(text) => setUser({ ...user, displayName: text })}
+                      onChangeText={(text) => {setUser({ ...user, displayName: text }); setName(text);}}
                       placeholder="Update your name"
                       placeholderTextColor="[#ffffff]"
                     />

@@ -14,6 +14,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 
+
 SplashScreen.preventAutoHideAsync();
 
 const dataSport = [
