@@ -1,4 +1,4 @@
-import { View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
 import { Bubble, Composer, ComposerProps, GiftedChat, IMessage, InputToolbar, SendProps } from 'react-native-gifted-chat';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -112,6 +112,7 @@ const chat = () => {
           color: 'white',
           fontSize: 16,
           marginHorizontal: 6,
+          marginTop: 8
         }}
         placeholderTextColor='white'
         textInputProps={{
@@ -158,8 +159,9 @@ const chat = () => {
           alignContent: "center",
           justifyContent: "center",
           paddingTop: 6,
-          paddingBottom: 12,
+          paddingBottom: 13,
           marginHorizontal: 6,
+          marginTop: 20,
           borderRadius: 32,
           borderTopColor: "transparent",
         }}
@@ -167,6 +169,23 @@ const chat = () => {
     );
   };
 
+  const renderAvatar = (props, avatarUrl) => {
+    if (avatarUrl) {
+      return (
+        <Image
+        {...props}
+          source={{ uri: avatarUrl }}
+          style={{
+            width: 40,  // Set the desired width
+            height: 40, // Set the desired height
+            borderRadius: 100, // Adjust border radius as needed
+            marginRight: 0,  // Add any additional styling here
+          }}
+        />
+      );
+    }
+    return null;
+  };
   return (
     <SafeAreaView className="flex-1 bg-[#472525]">
       {loading ? (
@@ -180,6 +199,9 @@ const chat = () => {
           user={{
             _id: userUid,
           }}
+          renderAvatar={(props) => renderAvatar(props, url)}
+          showUserAvatar={false}
+          showAvatarForEveryMessage={true}
           renderBubble={renderBubble}
           renderSend={renderSend}
           renderComposer={ChatComposer}
