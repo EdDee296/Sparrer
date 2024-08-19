@@ -1,10 +1,14 @@
-import { View, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import { View, ActivityIndicator, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Bubble, Composer, ComposerProps, GiftedChat, IMessage, InputToolbar, SendProps } from 'react-native-gifted-chat';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getDatabase, onValue, push, ref, set } from 'firebase/database';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
+
+
 
 const chat = () => {
   const database = getDatabase();
@@ -112,7 +116,7 @@ const chat = () => {
           color: 'white',
           fontSize: 16,
           marginHorizontal: 6,
-          marginTop: 8
+          marginTop:15
         }}
         placeholderTextColor='white'
         textInputProps={{
@@ -139,7 +143,7 @@ const chat = () => {
     if (sendProps.text.trim().length > 0) {
       return (
         <TouchableOpacity
-          style={{ paddingBottom: 6 }}
+          style={{ paddingBottom: 10 }}
           onPress={handleSend}
         >
           <Ionicons name="send-sharp" size={24} color="red" />
@@ -151,21 +155,41 @@ const chat = () => {
 
   const MessengerBarContainer = (props) => {
     return (
-      <InputToolbar
-        {...props}
-        containerStyle={{
-          height: 40,
-          backgroundColor: 'grey',
-          alignContent: "center",
-          justifyContent: "center",
-          paddingTop: 6,
-          paddingBottom: 13,
-          marginHorizontal: 6,
-          marginTop: 20,
-          borderRadius: 32,
-          borderTopColor: "transparent",
-        }}
-      />
+      <View style={{ flexDirection: 'row', alignItems: 'center', display: 'flex', width: '100%' }}>
+  <InputToolbar
+    {...props}
+    containerStyle={{
+      flex: 1,
+      width: '70%',
+      height: 40,
+      backgroundColor: 'grey',
+      alignContent: 'center',
+      justifyContent: 'center',
+      paddingTop: 6,
+      paddingBottom: 13,
+      marginHorizontal: 6,
+      marginTop: 20,
+      marginLeft: 105,
+      borderRadius: 32,
+      borderTopColor: 'transparent',
+    }}
+  />
+    <TouchableOpacity
+      style={{ marginLeft: 10,  marginTop: 17 }}
+    >
+      <AntDesign name="filetext1" size={24} color="white" />
+    </TouchableOpacity>
+    <TouchableOpacity
+      style={{ marginLeft: 10, marginTop: 22 }}
+    >
+    <Feather name="image" size={24} color="white" />
+    </TouchableOpacity>
+    <TouchableOpacity
+      style={{ marginLeft: 6, marginTop: 22 }}
+    >
+    <Ionicons name="attach-sharp" size={24} color="white" />
+    </TouchableOpacity>
+    </View>
     );
   };
 
