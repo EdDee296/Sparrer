@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Image, View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { getAuth, updateProfile } from 'firebase/auth';
 import { getDatabase, ref as databaseRef, set, onValue, ref } from "firebase/database";

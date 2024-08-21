@@ -1,4 +1,4 @@
-import { View, ActivityIndicator, TouchableOpacity, Image, StyleSheet, Platform } from 'react-native';
+import { View, ActivityIndicator, TouchableOpacity, Image, Text, Platform, StyleSheet } from 'react-native';
 import { Bubble, Composer, ComposerProps, GiftedChat, IMessage, InputToolbar, SendProps } from 'react-native-gifted-chat';
 import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { useRoute, useNavigation } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getDatabase, onValue, push, ref, set } from 'firebase/database';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
+import * as ImagePicker from 'expo-image-picker';
 
 const chat = () => {
   const database = getDatabase();
@@ -16,6 +17,45 @@ const chat = () => {
   const chatId = userUid > uid ? `${userUid}-${uid}` : `${uid}-${userUid}`;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [img, setImage] = useState('');
+
+  const addImage = async () => {
+    let _image = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+  
+    if (!_image.canceled) {
+      setImage(_image.assets[0].uri);
+    }
+  };
+
+  const styles = StyleSheet.create({
+    footer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: 10,
+      backgroundColor: '#303331',
+    },
+    image: {
+      height: 75,
+      width: 75,
+      borderRadius: 10,
+    },
+    closeButton: {
+      marginLeft: 10,
+      padding: 5,
+      backgroundColor: '#ff0000',
+      borderRadius: 5,
+    },
+    closeButtonText: {
+      color: '#fff',
+      fontWeight: 'bold',
+    },
+  });
 
   const getChat = () => {
     onValue(ref(database, '/messages/' + chatId), (snapshot) => {
@@ -66,15 +106,22 @@ const chat = () => {
   const onSend = useCallback(async (messages = []) => {
     const postListRef = ref(database, `/messages/${chatId}/`);
     const newPostRef = push(postListRef);
-    set(newPostRef, {
+    const message = {
       ...messages[0],
       createdAt: new Date().getTime(), // Store timestamp
       user: {
         _id: userUid,
         avatar: url,
       }
-    });
-  }, [chatId, database, url, userUid]);
+    };
+
+    if (img) {
+      message.image = img; // Add image URI to the message
+      setImage(''); // Clear the image after sending
+    }
+
+    set(newPostRef, message);
+  }, [chatId, database, url, userUid, img]);
 
   const renderBubble = (props) => {
     return (
@@ -106,6 +153,15 @@ const chat = () => {
       text: SendProps<IMessage>["text"]
     }
   ) => {
+    const handleSend = () => {
+      if (props.text && props.onSend) {
+        props.onSend({ text: props.text.trim() }, true);
+      } else if (img && props.onSend) {
+        props.onSend([{ image: img, user: { _id: userUid, avatar: url }, createdAt: new Date().getTime() }], true);
+        setImage(''); // Clear the image after sending
+      }
+    };
+
     return (
       <Composer
         {...props}
@@ -120,11 +176,7 @@ const chat = () => {
           ...props.textInputProps,
           blurOnSubmit: false,
           multiline: false,
-          onSubmitEditing: () => {
-            if (props.text && props.onSend) {
-              props.onSend({ text: props.text.trim() }, true);
-            }
-          },
+          onSubmitEditing: handleSend,
         }}
       />
     );
@@ -215,6 +267,7 @@ const chat = () => {
           <AntDesign name="filetext1" size={24} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={addImage}
           style={Platform.select({
             ios: { marginLeft: 10, marginTop: 17 },
             android: { marginLeft: 10, marginTop: 17 },
@@ -254,6 +307,23 @@ const chat = () => {
     return null;
   };
 
+  const renderChatFooter = useCallback(() => {
+    if (img) {
+      return (
+        <View style={styles.footer}>
+        <Image source={{ uri: img }} style={styles.image} />
+        <TouchableOpacity
+          onPress={() => setImage('')}
+          style={styles.closeButton}
+        >
+          <Text style={styles.closeButtonText}>X</Text>
+        </TouchableOpacity>
+      </View>
+      );
+    }
+    
+    return null;
+  }, [img]);
   return (
     <SafeAreaView className="flex-1 bg-[#472525]">
       {loading ? (
@@ -274,6 +344,7 @@ const chat = () => {
           renderSend={renderSend}
           renderComposer={ChatComposer}
           renderInputToolbar={(props) => MessengerBarContainer(props)}
+          renderChatFooter={renderChatFooter}
         />
       )}
     </SafeAreaView>
