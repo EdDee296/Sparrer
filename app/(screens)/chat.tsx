@@ -8,6 +8,7 @@ import { getDatabase, onValue, push, ref, set } from 'firebase/database';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
+import { Video } from 'expo-av';
 
 const chat = () => {
   const database = getDatabase();
@@ -18,19 +19,50 @@ const chat = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [img, setImage] = useState('');
+  const [video, setVideo] = useState('');
 
   const addImage = async () => {
-    let _image = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    let _media = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-  
-    if (!_image.canceled) {
-      setImage(_image.assets[0].uri);
+
+    if (!_media.canceled) {
+      const selectedMedia = _media.assets[0];
+      // console.log('Selected Media:', selectedMedia);
+
+      let mediaType = selectedMedia.type;
+
+      if (Platform.OS === 'web') {
+        // On web, use mimeType to determine the media type
+        if (selectedMedia.mimeType.startsWith('image/')) {
+          mediaType = 'image';
+        } else if (selectedMedia.mimeType.startsWith('video/')) {
+          mediaType = 'video';
+        }
+      } else {
+        // On iOS and Android, use the type property
+        mediaType = selectedMedia.type;
+      }
+
+      console.log(mediaType, img, 'what is this');
+      if (mediaType === 'image') {
+        setImage(selectedMedia.uri);
+        // console.log(img);
+        setVideo(''); // Clear video state if an image is selected
+      } else if (mediaType === 'video') {
+        setVideo(selectedMedia.uri);
+        // console.log(video);
+        setImage(''); // Clear image state if a video is selected
+      }
     }
   };
+
+  const addFile = async () => {
+
+  }
 
   const styles = StyleSheet.create({
     footer: {
@@ -54,6 +86,12 @@ const chat = () => {
     closeButtonText: {
       color: '#fff',
       fontWeight: 'bold',
+    },
+    videoText: {
+      color: '#fff', // White text color
+      fontSize: 16, // Font size
+      fontWeight: 'bold', // Bold text
+      marginRight: 10, // Margin to the right
     },
   });
 
@@ -96,12 +134,27 @@ const chat = () => {
   useEffect(() => {
     if (!uid) {
       console.error('UID is undefined');
+      return;
     }
-    // Simulate loading messages
-    setTimeout(() => {
-      getChat(); 
-    }); // Simulate a 2-second loading time
-  }, [uid]);
+  
+    const fetchMessages = async () => {
+      try {
+        await getChat();
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+  
+    fetchMessages();
+  }, [uid, chatId]); // Add chatId as a dependency
+
+  const toggleVideoPlayback = (messageId) => {
+    setMessages((prevMessages) =>
+      prevMessages.map((msg) =>
+        msg._id === messageId ? { ...msg, playing: !msg.playing } : msg
+      )
+    );
+  };
 
   const onSend = useCallback(async (messages = []) => {
     const postListRef = ref(database, `/messages/${chatId}/`);
@@ -112,16 +165,22 @@ const chat = () => {
       user: {
         _id: userUid,
         avatar: url,
-      }
+      },
+      playing: false, // Add playing property
     };
-
+  
     if (img) {
       message.image = img; // Add image URI to the message
       setImage(''); // Clear the image after sending
     }
-
+  
+    if (video) {
+      message.video = video; // Add video URI to the message
+      setVideo(''); // Clear the video after sending
+    }
+  
     set(newPostRef, message);
-  }, [chatId, database, url, userUid, img]);
+  }, [chatId, database, url, userUid, img, video]);
 
   const renderBubble = (props) => {
     return (
@@ -184,12 +243,30 @@ const chat = () => {
 
   const renderSend = (sendProps) => {
     const handleSend = () => {
-      if (sendProps.onSend && sendProps.text.trim().length > 0) {
-        sendProps.onSend([{ text: sendProps.text.trim(), user: { _id: userUid, avatar: url }, createdAt: new Date().getTime() }], true);
+      if (sendProps.onSend && (sendProps.text.trim().length > 0 || img || video)) {
+        const message = {
+          text: sendProps.text.trim(),
+          user: { _id: userUid, avatar: url },
+          createdAt: new Date().getTime(),
+        };
+  
+        if (img) {
+          message.image = img;
+        }
+  
+        if (video) {
+          message.video = video;
+        }
+  
+        sendProps.onSend([message], true);
+  
+        // Clear the image and video states after sending
+        setImage('');
+        setVideo('');
       }
     };
   
-    if (sendProps.text.trim().length > 0) {
+    if (sendProps.text.trim().length > 0 || img || video) {
       return (
         <TouchableOpacity
           style={Platform.select({
@@ -307,23 +384,83 @@ const chat = () => {
     return null;
   };
 
+  const renderMessageVideo = (props) => {
+    const { currentMessage } = props;
+    return (
+      <View style={{ padding: 5 }}>
+        <TouchableOpacity onPress={() => toggleVideoPlayback(currentMessage._id)}>
+          <Video
+            source={{ uri: currentMessage.video }}
+            rate={1.0}
+            volume={1.0}
+            isMuted={false}
+            resizeMode="cover"
+            shouldPlay={currentMessage.playing}
+            isLooping={true}
+            style={{ width: 200, height: 150, borderRadius: 10 }}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   const renderChatFooter = useCallback(() => {
     if (img) {
       return (
         <View style={styles.footer}>
-        <Image source={{ uri: img }} style={styles.image} />
-        <TouchableOpacity
-          onPress={() => setImage('')}
-          style={styles.closeButton}
-        >
-          <Text style={styles.closeButtonText}>X</Text>
-        </TouchableOpacity>
-      </View>
+          <Image source={{ uri: img }} style={styles.image} />
+          {/* <TouchableOpacity
+            onPress={() => {
+              onSend([{ text: '', user: { _id: userUid, avatar: url }, createdAt: new Date().getTime(), _id: img }]);
+            }}
+            style={styles.closeButton}
+          >
+            <Text style={styles.closeButtonText}>Send</Text>
+          </TouchableOpacity> */}
+          <TouchableOpacity
+            onPress={() => setImage('')}
+            style={styles.closeButton}
+          >
+            <Text style={styles.closeButtonText}>X</Text>
+          </TouchableOpacity>
+        </View>
       );
     }
-    
+  
+    if (video) {
+      return (
+        <View style={styles.footer}>
+          <Video
+          source={{ uri: video }}
+          rate={1.0}
+          volume={1.0}
+          isMuted={false}
+          resizeMode="cover"
+          shouldPlay={true}
+          isLooping={false}
+          style={{ width: 200, height: 150, borderRadius: 10 }}
+        />
+          <TouchableOpacity
+            onPress={() => {
+              onSend([{ text: '', user: { _id: userUid, avatar: url }, createdAt: new Date().getTime(), _id: video }]);
+            }}
+            style={styles.closeButton}
+          >
+            <Text style={styles.closeButtonText}>Send</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setVideo('')}
+            style={styles.closeButton}
+          >
+            <Text style={styles.closeButtonText}>X</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    }
+  
     return null;
-  }, [img]);
+  }, [img, video, onSend, userUid, url]);
+
   return (
     <SafeAreaView className="flex-1 bg-[#472525]">
       {loading ? (
@@ -345,6 +482,7 @@ const chat = () => {
           renderComposer={ChatComposer}
           renderInputToolbar={(props) => MessengerBarContainer(props)}
           renderChatFooter={renderChatFooter}
+          renderMessageVideo={renderMessageVideo}
         />
       )}
     </SafeAreaView>
