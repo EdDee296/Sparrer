@@ -5,7 +5,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getDatabase, onValue, push, ref, set } from 'firebase/database';
-import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
 import { Video } from 'expo-av';
@@ -35,20 +35,21 @@ const chat = () => {
       // console.log('Selected Media:', selectedMedia);
 
       let mediaType = selectedMedia.type;
-
-      if (Platform.OS === 'web') {
-        // On web, use mimeType to determine the media type
-        if (selectedMedia.mimeType.startsWith('image/')) {
-          mediaType = 'image';
-        } else if (selectedMedia.mimeType.startsWith('video/')) {
-          mediaType = 'video';
+      if (selectedMedia.mimeType) {
+        if (Platform.OS === 'web') {
+          // On web, use mimeType to determine the media type
+          if (selectedMedia.mimeType.startsWith('image/')) {
+            mediaType = 'image';
+          } else if (selectedMedia.mimeType.startsWith('video/')) {
+            mediaType = 'video';
+          }
+        } else {
+          // On iOS and Android, use the type property
+          mediaType = selectedMedia.type;
         }
       } else {
-        // On iOS and Android, use the type property
-        mediaType = selectedMedia.type;
-      }
-
-      console.log(mediaType, img, 'what is this');
+        alert("File is too big");
+      } 
       if (mediaType === 'image') {
         setImage(selectedMedia.uri);
         // console.log(img);
@@ -59,6 +60,21 @@ const chat = () => {
         setImage(''); // Clear image state if a video is selected
       }
     }
+  };
+
+  const onSendIcon = () => {
+    const message = {
+      text: '🤛', // Icon text
+      createdAt: new Date().getTime(),
+      user: {
+        _id: userUid,
+        avatar: url,
+      },
+      _id: uuid.v4(),
+    };
+    const postListRef = ref(database, `/messages/${chatId}/`);
+    const newPostRef = push(postListRef);
+    set(newPostRef, message);
   };
 
   const styles = StyleSheet.create({
@@ -261,13 +277,14 @@ const chat = () => {
         <TouchableOpacity
           style={Platform.select({
             ios: { marginBottom: 12 },
-            android: { marginBottom: 10 },
+            android: { marginBottom: 12 },
             web: { marginBottom: 5 }
           })}
           onPress={handleSend}
         >
           <Ionicons name="send-sharp" size={24} color="red" />
         </TouchableOpacity>
+        
       );
     }
     return null;
@@ -275,7 +292,8 @@ const chat = () => {
 
   const MessengerBarContainer = (props) => {
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', display: 'flex', width: '100%' }}>
+      <View style={{ flexDirection: 'row',
+        alignContent: 'space-between', display: 'flex', width: '100%' }}>
         <InputToolbar
           {...props}
           containerStyle={Platform.select({
@@ -290,7 +308,7 @@ const chat = () => {
               paddingBottom: 13,
               marginHorizontal: 6,
               marginTop: 20,
-              marginLeft: 105,
+              marginLeft: 82,
               borderRadius: 32,
               borderTopColor: 'transparent',
             },
@@ -301,56 +319,48 @@ const chat = () => {
               backgroundColor: 'grey',
               alignContent: 'center',
               justifyContent: 'center',
-              paddingTop: 6,
+              paddingTop: 8,
               paddingBottom: 13,
               marginHorizontal: 6,
               marginTop: 20,
-              marginLeft: 105,
+              marginLeft: 82,
               borderRadius: 32,
               borderTopColor: 'transparent',
             },
             web: {
               flex: 1,
-              width: '70%',
+              width: '90%',
               height: 35,
               backgroundColor: 'grey',
               alignContent: 'center',
               justifyContent: 'center',
               paddingBottom: 20,
               marginHorizontal: 6,
-              marginLeft: 105,
+              marginLeft: 50,
               borderRadius: 32,
               borderTopColor: 'transparent',
             },
           })}
         />
         <TouchableOpacity
-          style={Platform.select({
-            ios: { marginLeft: 10, marginTop: 17 },
-            android: { marginLeft: 10, marginTop: 17 },
-            web: { marginLeft: 10, marginTop: 1 }
-          })}
-        >
-          <AntDesign name="filetext1" size={24} color="white" />
-        </TouchableOpacity>
-        <TouchableOpacity
           onPress={addImage}
           style={Platform.select({
-            ios: { marginLeft: 10, marginTop: 17 },
-            android: { marginLeft: 10, marginTop: 17 },
+            ios: { marginLeft: 5, marginTop: 25 },
+            android: { marginLeft: 5, marginTop: 25 },
             web: { marginLeft: 10, marginTop: 5 }
           })}
         >
-          <Feather name="image" size={24} color="white" />
+          <Feather name="image" size={28} color="white" />
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={onSendIcon}
           style={Platform.select({
-            ios: { marginLeft: 10, marginTop: 17 },
-            android: { marginLeft: 10, marginTop: 17 },
-            web: { marginLeft: 5, marginTop: 7 }
+            ios: { marginLeft: 8, marginTop: 25 },
+            android: { marginLeft: 8, marginTop: 25 },
+            web: { marginLeft: 1420, marginTop: 5 }
           })}
         >
-          <Ionicons name="attach-sharp" size={24} color="white" />
+          <MaterialCommunityIcons name="boxing-glove" size={30} color="red" />
         </TouchableOpacity>
       </View>
     );
@@ -398,14 +408,6 @@ const chat = () => {
       return (
         <View style={styles.footer}>
           <Image source={{ uri: img }} style={styles.image} />
-          {/* <TouchableOpacity
-            onPress={() => {
-              onSend([{ text: '', user: { _id: userUid, avatar: url }, createdAt: new Date().getTime(), _id: img }]);
-            }}
-            style={styles.closeButton}
-          >
-            <Text style={styles.closeButtonText}>Send</Text>
-          </TouchableOpacity> */}
           <TouchableOpacity
             onPress={() => setImage('')}
             style={styles.closeButton}
