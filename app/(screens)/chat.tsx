@@ -9,6 +9,7 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
 import * as ImagePicker from 'expo-image-picker';
 import { Video } from 'expo-av';
+import uuid from 'react-native-uuid'
 
 const chat = () => {
   const database = getDatabase();
@@ -59,10 +60,6 @@ const chat = () => {
       }
     }
   };
-
-  const addFile = async () => {
-
-  }
 
   const styles = StyleSheet.create({
     footer: {
@@ -148,13 +145,6 @@ const chat = () => {
     fetchMessages();
   }, [uid, chatId]); // Add chatId as a dependency
 
-  const toggleVideoPlayback = (messageId) => {
-    setMessages((prevMessages) =>
-      prevMessages.map((msg) =>
-        msg._id === messageId ? { ...msg, playing: !msg.playing } : msg
-      )
-    );
-  };
 
   const onSend = useCallback(async (messages = []) => {
     const postListRef = ref(database, `/messages/${chatId}/`);
@@ -166,7 +156,7 @@ const chat = () => {
         _id: userUid,
         avatar: url,
       },
-      playing: false, // Add playing property
+      _id: uuid.v4(),
     };
   
     if (img) {
@@ -388,18 +378,17 @@ const chat = () => {
     const { currentMessage } = props;
     return (
       <View style={{ padding: 5 }}>
-        <TouchableOpacity onPress={() => toggleVideoPlayback(currentMessage._id)}>
           <Video
             source={{ uri: currentMessage.video }}
+            useNativeControls
             rate={1.0}
             volume={1.0}
             isMuted={false}
             resizeMode="cover"
-            shouldPlay={currentMessage.playing}
+            shouldPlay={false}
             isLooping={true}
             style={{ width: 200, height: 150, borderRadius: 10 }}
           />
-        </TouchableOpacity>
       </View>
     );
   };
