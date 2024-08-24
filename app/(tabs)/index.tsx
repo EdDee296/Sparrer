@@ -40,6 +40,7 @@ function Simple() {
   const [matchedImg, setMatchedImg] = useState('');
   const [matchedName, setMatchedName] = useState('');
   const [matchedUid, setMatchedUid] = useState('');
+  const [modalInfo, setModalInfo] = useState(false);
   const [user, setUser] = useState(null);
   const auth = getAuth();
   const navigation = useNavigation();
@@ -158,21 +159,6 @@ function Simple() {
     setCharacters((prevCharacters) => prevCharacters.filter((character) => character.name !== name));
   };
 
-  const spinValue = new Animated.Value(0);
-
-  Animated.timing(
-    spinValue,
-    {
-      toValue: 1,
-      duration: 3000,
-      easing: Easing.linear,
-      useNativeDriver: true
-    }
-  ).start();
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg']
-  })
 
   useEffect(() => {
     if (loaded || error) {
@@ -238,6 +224,24 @@ function Simple() {
               </ImageBackground>
             </View>
           </Modal>
+          <Modal
+            animationType="slide"
+            visible={modalInfo}
+            transparent={true}
+            className="h-full w-full"
+          >
+            <View className="flex-1 justify-center items-center mt-6">
+              <View className="w-[300px] h-[500px] bg-[#fe1e1e] align-middle justify-center items-center relative">
+                <TouchableOpacity
+                  style={{ position: 'absolute', top: 10, right: 10 }}
+                  onPress={() => setModalInfo(false)}
+                >
+                  <Text style={{ fontSize: 18, color: 'white' }}>X</Text>
+                </TouchableOpacity>
+                <Text>more info</Text>
+              </View>
+            </View>
+          </Modal>
           <View className="w-[90%] mr-10 max-w-[260px] h-auto p-0">
             {characters?.length ? (
               characters.map((character) => (
@@ -264,23 +268,27 @@ function Simple() {
                     onClose={() => setModalOpen2(false)}
                     contentStyle={{ width: '100%' }}
                   >
-                    <TinderCard
-                      swipeThreshold={1}
-                      preventSwipe={["up", "down"]}
-                      key={character.uid}
-                      onSwipe={(dir) => swiped(dir, character.uid)}
-                      onCardLeftScreen={() => outOfFrame(character.name)}
+                    <TouchableOpacity
+                    onPress={() => {setModalInfo(!modalInfo)}}
                     >
-                      <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
-                        <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
-                        </ImageBackground>
-                        <View className="absolute bottom-0 left-0 right-0 p-2.5">
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.location[0]}</Text>
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
+                      <TinderCard
+                        swipeThreshold={1}
+                        preventSwipe={["up", "down"]}
+                        key={character.uid}
+                        onSwipe={(dir) => swiped(dir, character.uid)}
+                        onCardLeftScreen={() => outOfFrame(character.name)}
+                      >
+                        <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
+                          <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
+                          </ImageBackground>
+                          <View className="absolute bottom-0 left-0 right-0 p-2.5">
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.location[0]}</Text>
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
+                          </View>
                         </View>
-                      </View>
-                    </TinderCard>
+                      </TinderCard>
+                    </TouchableOpacity>
                   </Tooltip>
                 </Tooltip>
               ))
