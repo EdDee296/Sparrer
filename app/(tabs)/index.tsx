@@ -10,6 +10,7 @@ import { useFonts } from 'expo-font';
 import { useNavigation } from "@react-navigation/native";
 import { Dimensions } from 'react-native';
 import Tooltip from 'react-native-walkthrough-tooltip';
+import uuid from 'react-native-uuid';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -42,6 +43,7 @@ function Simple() {
   const [matchedUid, setMatchedUid] = useState('');
   const [modalInfo, setModalInfo] = useState(false);
   const [user, setUser] = useState(null);
+  const [swipedCard, setSwipedCard] = useState(null);
   const auth = getAuth();
   const navigation = useNavigation();
 
@@ -124,6 +126,7 @@ function Simple() {
   };
 
   const swiped = (direction, uid) => {
+    setSwipedCard(uid);
     if (direction === "right") {
       relate(uid, currentUid, 'liked', true);
       relate(currentUid, uid, 'likedBack', true);
@@ -158,7 +161,6 @@ function Simple() {
   const outOfFrame = (name) => {
     setCharacters((prevCharacters) => prevCharacters.filter((character) => character.name !== name));
   };
-
 
   useEffect(() => {
     if (loaded || error) {
@@ -244,7 +246,7 @@ function Simple() {
           </Modal>
           <View className="w-[90%] mr-10 max-w-[260px] h-auto p-0">
             {characters?.length ? (
-              characters.map((character) => (
+              characters.filter(character => character.uid !== swipedCard).map((character) => (
                 <Tooltip
                   isVisible={modalOpen}
                   content={<Text>Swipe right to match ➡️</Text>}
@@ -259,6 +261,7 @@ function Simple() {
                   contentStyle={{ width: '100%' }}
                 >
                   <Tooltip
+                    key={uuid.v4().toString()}
                     isVisible={modalOpen2}
                     content={<Text>⬅️ Swipe left to pass</Text>}
                     placement="top"
@@ -268,27 +271,23 @@ function Simple() {
                     onClose={() => setModalOpen2(false)}
                     contentStyle={{ width: '100%' }}
                   >
-                    <TouchableOpacity
-                    onPress={() => {setModalInfo(!modalInfo)}}
+                    <TinderCard
+                      swipeThreshold={1}
+                      preventSwipe={["up", "down"]}
+                      key={character.uid}
+                      onSwipe={(dir) => swiped(dir, character.uid)}
+                      onCardLeftScreen={() => outOfFrame(character.name)}
                     >
-                      <TinderCard
-                        swipeThreshold={1}
-                        preventSwipe={["up", "down"]}
-                        key={character.uid}
-                        onSwipe={(dir) => swiped(dir, character.uid)}
-                        onCardLeftScreen={() => outOfFrame(character.name)}
-                      >
-                        <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
-                          <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
-                          </ImageBackground>
-                          <View className="absolute bottom-0 left-0 right-0 p-2.5">
-                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
-                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.location[0]}</Text>
-                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
-                          </View>
+                      <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
+                        <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
+                        </ImageBackground>
+                        <View className="absolute bottom-0 left-0 right-0 p-2.5">
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.location[0]}</Text>
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
                         </View>
-                      </TinderCard>
-                    </TouchableOpacity>
+                      </View>
+                    </TinderCard>
                   </Tooltip>
                 </Tooltip>
               ))
