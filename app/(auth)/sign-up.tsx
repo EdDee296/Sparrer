@@ -113,7 +113,8 @@ const SignUp = () => {
 
   const handleSignUp = async () => {
     // Check if all fields are filled
-    if (!username || !email || !password || !age || !valueSports || !valueGender || !valueExp || !valueWeight || !location || !img) {
+    if (!username || !email || !password //|| !age || !valueSports || !valueGender || !valueExp || !valueWeight || !location || !img
+      ) {
       alert('Please fill in all fields.');
       return;
     }
@@ -122,23 +123,23 @@ const SignUp = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log('Account created:', userCredential.user);
       if (userCredential.user) {
-        const storage = getStorage();
-        const imagePath = `images/${userCredential.user.uid}/${img.substring(img.lastIndexOf('/') + 1)}.jpeg`;
-        const imageRef = storageRef(storage, imagePath);
+        // const storage = getStorage();
+        // const imagePath = `images/${userCredential.user.uid}/${img.substring(img.lastIndexOf('/') + 1)}.jpeg`;
+        // const imageRef = storageRef(storage, imagePath);
   
-        // Convert the image URI to blob or file
-        const response = await fetch(img);
-        const blob = await response.blob();
+        // // Convert the image URI to blob or file
+        // const response = await fetch(img);
+        // const blob = await response.blob();
   
-        // Upload the image to Firebase Storage
-        const snapshot = await uploadBytes(imageRef, blob);
-        const downloadURL = await getDownloadURL(snapshot.ref);
+        // // Upload the image to Firebase Storage
+        // const snapshot = await uploadBytes(imageRef, blob);
+        // const downloadURL = await getDownloadURL(snapshot.ref);
   
-        // Update the user profile with the username and photoURL
-        await updateProfile(userCredential.user, {
-          displayName: username,
-          photoURL: downloadURL,
-        });
+        // // Update the user profile with the username and photoURL
+        // await updateProfile(userCredential.user, {
+        //   displayName: username,
+        //   photoURL: downloadURL,
+        // });
   
         // Optionally, save the user data including the image URL to Firebase Realtime Database or Firestore
         const db = getDatabase();
@@ -146,17 +147,17 @@ const SignUp = () => {
           name: username,
           email: email,
           uid: userCredential.user.uid,
-          url: downloadURL,
-          location: location,
-          sport: valueSports,
-          gender: valueGender,
-          exp: valueExp,
-          age: age,
-          weight: valueWeight,
+          // url: downloadURL,
+          // location: location,
+          // sport: valueSports,
+          // gender: valueGender,
+          // exp: valueExp,
+          // age: age,
+          // weight: valueWeight,
         }).then(() => {
           // console.log("Done uploading all data to Firebase Realtime Database");
           //@ts-ignore
-          navigation.navigate('(tabs)', { screen: 'index' });
+          navigation.navigate('(auth)', { screen: 'about' });
         });
       }
     } catch (error) {
@@ -181,7 +182,7 @@ const SignUp = () => {
           <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-3xl font-bold text-center px-12">Join the boxing community</Text>
         </View>
 
-        <View className='flex justify-center items-center pt-10'>
+        {/* <View className='flex justify-center items-center pt-10'>
         <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-base font-medium pb-2">Profile picture</Text>
           <View className=" h-[100px] w-[100px] align-middle  bg-[#efefef] rounded-full overflow-hidden shadow flex items-center justify-center">
             <TouchableOpacity onPress={addImage} className="flex-1 items-center justify-center">
@@ -191,7 +192,7 @@ const SignUp = () => {
               </View>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
 
         <View className="w-full max-w-480 flex-1 flex-wrap items-end gap-4 py-5">
           <View className="flex-1 flex-col w-full">
@@ -223,7 +224,7 @@ const SignUp = () => {
               secureTextEntry
             />
 
-            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
+            {/* <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
             <TextInput
               className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={age}
@@ -379,7 +380,7 @@ const SignUp = () => {
                   <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">Share Location</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            </View> */}
             
             <View className="flex justify-center items-center ">
               <TouchableOpacity onPress={handleSignUp} className="w-1/2 bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">
