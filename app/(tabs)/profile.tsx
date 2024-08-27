@@ -58,6 +58,7 @@ const UserProfileTab = () => {
   const [user, setUser] = useState<any>(null);
   const [uid, setUid] = useState('');
   const [name, setName] = useState('');
+  const [tooltip, setTooltip] = useState(false);
   const [visible, setVisible] = useState(false);
 
   const [location, setLocation] = useState(null);
@@ -87,8 +88,12 @@ const UserProfileTab = () => {
         onValue(userRef, async (snapshot) => {
           const data = await snapshot.val();
           if (data) {
+            setTooltip(data.tooltipShown);
             setWeight(data.weight);
-            setLocation(data.location[0]);
+            if (data.location){
+              setLocation(data.location[0]);
+            }
+            
             setSports(data.sport);
             setName(data.name);
           }
@@ -145,7 +150,7 @@ const UserProfileTab = () => {
   return (
     <View className="flex-1 items-center justify-center bg-[#221111]">
       {user ? (
-        <>
+        tooltip ? (<>
           <UploadImage/>
           <View className="flex flex-row items-center justify-center">
             <Text style={{fontFamily: 'BebasNeue'}} className="text-lg my-5 text-[#ffffff] mr-2">Welcome champ <Text className='text-2xl'>{name}👑</Text></Text>
@@ -377,7 +382,18 @@ const UserProfileTab = () => {
             </TouchableOpacity>
           </View>
         </>
-      ) : (
+      ): (
+        <View className="flex justify-center items-center">
+          <Text style={{ fontFamily: 'BebasNeue' }} className='text-white'>Add Bio, sports, date of birth, weight class </Text>
+          <View className="flex justify-center items-center ">
+            <TouchableOpacity onPress={handleSignOut} className=" bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">
+              <View className="flex justify-center items-center">
+                <Text style={{ fontFamily: 'BebasNeue' }} className='w-40 text-center text-[#ffffff]  text-xl'>Sign out</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )) : (
         <Button title="Please Sign in" onPress={() => navigation.navigate('(auth)', { screen: 'sign-in' })} />
       )}
     </View>

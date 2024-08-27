@@ -44,6 +44,7 @@ function Simple() {
   const [modalInfo, setModalInfo] = useState(false);
   const [user, setUser] = useState(null);
   const [swipedCard, setSwipedCard] = useState(null);
+  const [data, setData] = useState(false);
   const auth = getAuth();
   const navigation = useNavigation();
 
@@ -56,7 +57,6 @@ function Simple() {
           const data = await snapshot.val();
           if (data && !data.tooltipShown) {
             setModalOpen(true);
-            update(userRef, { tooltipShown: true });
           }
         });
       }
@@ -88,6 +88,7 @@ function Simple() {
           setGender(data.gender);
           setUid(data.uid);
           setImg(data.url);
+          setData(true);
         } catch (error) {
           console.log("no loc here ", error);
         }
@@ -268,7 +269,10 @@ function Simple() {
                     allowChildInteraction={false}
                     horizontalAdjustment={-350}
                     childrenWrapperStyle={{ transform: [{ rotate: '-30deg' }], height: 300 }}
-                    onClose={() => setModalOpen2(false)}
+                    onClose={() => {
+                      const userRef = ref(database, `users/${user.uid}`);
+                      setModalOpen2(false); 
+                      update(userRef, { tooltipShown: true });}}
                     contentStyle={{ width: '100%' }}
                   >
                     <TinderCard

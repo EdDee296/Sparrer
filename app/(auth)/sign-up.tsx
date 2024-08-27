@@ -136,10 +136,10 @@ const SignUp = () => {
         // const downloadURL = await getDownloadURL(snapshot.ref);
   
         // // Update the user profile with the username and photoURL
-        // await updateProfile(userCredential.user, {
-        //   displayName: username,
-        //   photoURL: downloadURL,
-        // });
+        await updateProfile(userCredential.user, {
+          displayName: username,
+          // photoURL: downloadURL,
+        });
   
         // Optionally, save the user data including the image URL to Firebase Realtime Database or Firestore
         const db = getDatabase();
@@ -147,6 +147,7 @@ const SignUp = () => {
           name: username,
           email: email,
           uid: userCredential.user.uid,
+          tooltipShown: false,
           // url: downloadURL,
           // location: location,
           // sport: valueSports,
