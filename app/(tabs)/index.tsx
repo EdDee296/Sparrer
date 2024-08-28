@@ -249,6 +249,7 @@ function Simple() {
             {characters?.length ? (
               characters.filter(character => character.uid !== swipedCard).map((character) => (
                 <Tooltip
+                  key={uuid.v4().toString()}
                   isVisible={modalOpen}
                   content={<Text>Swipe right to match ➡️</Text>}
                   placement="top"
@@ -287,7 +288,7 @@ function Simple() {
                         </ImageBackground>
                         <View className="absolute bottom-0 left-0 right-0 p-2.5">
                           <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.location[0]}</Text>
+                          {/* <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.location[0]}</Text> */}
                           <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
                         </View>
                       </View>

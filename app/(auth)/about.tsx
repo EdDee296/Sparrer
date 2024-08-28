@@ -8,11 +8,14 @@ import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "fire
 import { getDatabase, ref as databaseRef, set, ref, onValue, update } from "firebase/database";
 import * as Location from 'expo-location';
 import UpdateLocation from "@/components/UpdateLocation";
-import { auth } from '@/FireBaseConfig';
+import { Slider } from '@react-native-assets/slider'
 import { StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
+import * as geofire from 'geofire-common';
+import { ftdb } from '@/FireBaseConfig';
+import { doc, setDoc } from 'firebase/firestore';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -77,6 +80,8 @@ const about = () => {
   const [isFocusGender, setIsFocusGender] = useState(false);
   const [isFocusExp, setIsFocusExp] = useState(false);
   const [isFocusWeight, setIsFocusWeight] = useState(false);
+  const [value, setValue] = useState(10);
+  const [geoPoint, setGeoPoint] = useState([0,0]);
 
   const getLocation = async () => {
     setText('Loading location...');
@@ -95,6 +100,7 @@ const about = () => {
       setText(loc[0] + ", " + loc[1] + ", " + loc[2]);
       loc.splice(1,1);
       setLocation(loc);
+      setGeoPoint([latitude, longitude]);
     }
   };
 
@@ -149,6 +155,15 @@ const about = () => {
           exp: valueExp,
           age: age,
           weight: valueWeight,
+          radius: value,
+        }).then(async () => {
+          if (geoPoint) {
+          const hash = geofire.geohashForLocation(geoPoint);
+          await setDoc(doc(ftdb, "radius", user.uid), {
+            geohash: hash,
+            lat: geoPoint[0],
+            lng: geoPoint[1]
+          });}
         }).then(() => {
           // console.log("Done uploading all data to Firebase Realtime Database");
           //@ts-ignore
@@ -201,37 +216,40 @@ const about = () => {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 bg-[#221111] items-center justify-center">
-        <ActivityIndicator size="large" color="#ffffff" />
+        <ActivityIndicator size="large" color="red" />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
-      {user ? (
-        tooltip ? (
-          <View>
-            <Text className='text-white'>please do change in settings</Text>
+    <SafeAreaView className="flex-1 bg-[#221111]">
+    <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+  {user ? (
+    tooltip ? (
+      <View>
+        <Text className='text-white'>please do change in settings</Text>
+      </View>
+    ) : (
+      <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
+        
+          <View className="w-full bg-[#221111] p-4 pb-2 items-center justify-between">
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-3xl font-bold text-center px-12">Join the boxing community</Text>
           </View>
-        ) : (
-          <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
-      <ScrollView showsVerticalScrollIndicator={false} className="w-full h-full">
-          <View>
-            <Text className='text-white'>add Bio, sports, date of birth, weight class, gender, location, radius for user {uid}</Text>
+
           <View className='flex justify-center items-center pt-10'>
-
-          <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-base font-medium pb-2">Profile picture</Text>
-
-          <View className=" h-[100px] w-[100px] align-middle  bg-[#efefef] rounded-full overflow-hidden shadow flex items-center justify-center">
-            <TouchableOpacity onPress={addImage} className="flex-1 items-center justify-center">
-              <View className="flex-1 items-center justify-center">
-                 {img && <Image source={{ uri: img }} style={{ width: 100, height: 100 }} />}
-                <AntDesign name="camera" size={20} color="black" />
-              </View>
-            </TouchableOpacity>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-base font-medium pb-2">Profile picture</Text>
+            <View className="h-[100px] w-[100px] align-middle bg-[#efefef] rounded-full overflow-hidden shadow flex items-center justify-center">
+              <TouchableOpacity onPress={addImage} className="flex-1 items-center justify-center">
+                <View className="flex-1 items-center justify-center">
+                  {img && <Image source={{ uri: img }} style={{ width: 100, height: 100 }} />}
+                  <AntDesign name="camera" size={20} color="black" />
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
+          <View className="w-1/2">
             <TextInput
               className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
               value={age}
@@ -239,173 +257,190 @@ const about = () => {
               placeholder="Age"
               placeholderTextColor="[#ffffff]"
             />
-
-            <View className='grid grid-cols-1 gap-4 content-center justify-center py-3'>
-              <View style={styles.container}>
-              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Sport</Text>
-                  <Dropdown
-                    fontFamily='BebasNeue'
-                    style={[styles.dropdown, isFocusSports && { borderColor: 'white' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={dataSport}
-                    search
-                    maxHeight={1000}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocusSports ? 'Select your sport' : '...'}
-                    searchPlaceholder="Search..."
-                    value={valueSports}
-                    onFocus={() => setIsFocusSports(true)}
-                    onBlur={() => setIsFocusSports(false)}
-                    onChange={item => {
-                      setValueSports(item.value);
-                      setIsFocusSports(false);
-                      console.log(item.value);
-                    }}
-                    renderLeftIcon={() => (
-                      <AntDesign
-                        style={styles.icon}
-                        color={isFocusSports ? 'white' : 'black'}
-                        name="Safety"
-                        size={20}
-                      />
-                    )}
-                  />
-              </View>
-              <View style={styles.container}>
-              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Biology sex</Text>
-                  <Dropdown
-                    fontFamily='BebasNeue'
-                    style={[styles.dropdown, isFocusGender && { borderColor: 'white' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={dataGender}
-                    search
-                    maxHeight={1000}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocusGender ? 'Select your biology sex' : '...'}
-                    searchPlaceholder="Search..."
-                    value={valueGender}
-                    onFocus={() => setIsFocusGender(true)}
-                    onBlur={() => setIsFocusGender(false)}
-                    onChange={item => {
-                      setValueGender(item.value);
-                      setIsFocusGender(false);
-                      console.log(item.value);
-                    }}
-                    renderLeftIcon={() => (
-                      <AntDesign
-                        style={styles.icon}
-                        color={isFocusGender ? 'white' : 'black'}
-                        name="Safety"
-                        size={20}
-                      />
-                    )}
-                  />
-              </View>
-              <View style={styles.container}>
-              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Level of experience</Text>
-                  <Dropdown
-                    fontFamily='BebasNeue'
-                    style={[styles.dropdown, isFocusExp && { borderColor: 'white' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={dataExp}
-                    search
-                    maxHeight={1000}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocusExp ? 'Select your level of experience' : '...'}
-                    searchPlaceholder="Search..."
-                    value={valueExp}
-                    onFocus={() => setIsFocusExp(true)}
-                    onBlur={() => setIsFocusExp(false)}
-                    onChange={item => {
-                      setValueExp(item.value);
-                      setIsFocusExp(false);
-                      console.log(item.value);
-                    }}
-                    renderLeftIcon={() => (
-                      <AntDesign
-                        style={styles.icon}
-                        color={isFocusGender ? 'white' : 'black'}
-                        name="Safety"
-                        size={20}
-                      />
-                    )}
-                  />
-              </View>
-              <View style={styles.container}>
-              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Weight class</Text>
-                  <Dropdown
-                    fontFamily='BebasNeue'
-                    style={[styles.dropdown, isFocusWeight && { borderColor: 'white' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={dataWeight}
-                    search
-                    maxHeight={1000}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocusWeight ? 'Select your weight class' : '...'}
-                    searchPlaceholder="Search..."
-                    value={valueWeight}
-                    onFocus={() => setIsFocusWeight(true)}
-                    onBlur={() => setIsFocusWeight(false)}
-                    onChange={item => {
-                      setValueWeight(item.value);
-                      setIsFocusWeight(false);
-                      console.log(item.value);
-                    }}
-                    renderLeftIcon={() => (
-                      <AntDesign
-                        style={styles.icon}
-                        color={isFocusGender ? 'white' : 'black'}
-                        name="Safety"
-                        size={20}
-                      />
-                    )}
-                  />
-              </View>
-            </View>
-
-            <View className='py-3'>
-              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">Location</Text>
-              <View className="flex-row justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
-                <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">{text}</Text>
-                <TouchableOpacity onPress={getLocation} className="bg-[#ff2424] p-3 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">Share Location</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-        </View>
           </View>
-          <View className="flex justify-center items-center ">
-              <TouchableOpacity onPress={handleSignUp} className="w-1/2 bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">
+
+          <View className='grid grid-cols-1 gap-4 content-center justify-center py-3 w-1/2'>
+            <View style={styles.container}>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Sport</Text>
+              <Dropdown
+                fontFamily='BebasNeue'
+                style={[styles.dropdown, isFocusSports && { borderColor: 'white' }]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={dataSport}
+                search
+                maxHeight={1000}
+                labelField="label"
+                valueField="value"
+                placeholder={!isFocusSports ? 'Select your sport' : '...'}
+                searchPlaceholder="Search..."
+                value={valueSports}
+                onFocus={() => setIsFocusSports(true)}
+                onBlur={() => setIsFocusSports(false)}
+                onChange={item => {
+                  setValueSports(item.value);
+                  setIsFocusSports(false);
+                  console.log(item.value);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={styles.icon}
+                    color={isFocusSports ? 'white' : 'black'}
+                    name="Safety"
+                    size={20}
+                  />
+                )}
+              />
+            </View>
+            <View style={styles.container}>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Biology sex</Text>
+              <Dropdown
+                fontFamily='BebasNeue'
+                style={[styles.dropdown, isFocusGender && { borderColor: 'white' }]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={dataGender}
+                search
+                maxHeight={1000}
+                labelField="label"
+                valueField="value"
+                placeholder={!isFocusGender ? 'Select your biology sex' : '...'}
+                searchPlaceholder="Search..."
+                value={valueGender}
+                onFocus={() => setIsFocusGender(true)}
+                onBlur={() => setIsFocusGender(false)}
+                onChange={item => {
+                  setValueGender(item.value);
+                  setIsFocusGender(false);
+                  console.log(item.value);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={styles.icon}
+                    color={isFocusGender ? 'white' : 'black'}
+                    name="Safety"
+                    size={20}
+                  />
+                )}
+              />
+            </View>
+            <View style={styles.container}>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Level of experience</Text>
+              <Dropdown
+                fontFamily='BebasNeue'
+                style={[styles.dropdown, isFocusExp && { borderColor: 'white' }]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={dataExp}
+                search
+                maxHeight={1000}
+                labelField="label"
+                valueField="value"
+                placeholder={!isFocusExp ? 'Select your level of experience' : '...'}
+                searchPlaceholder="Search..."
+                value={valueExp}
+                onFocus={() => setIsFocusExp(true)}
+                onBlur={() => setIsFocusExp(false)}
+                onChange={item => {
+                  setValueExp(item.value);
+                  setIsFocusExp(false);
+                  console.log(item.value);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={styles.icon}
+                    color={isFocusGender ? 'white' : 'black'}
+                    name="Safety"
+                    size={20}
+                  />
+                )}
+              />
+            </View>
+            <View style={styles.container}>
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Weight class</Text>
+              <Dropdown
+                fontFamily='BebasNeue'
+                style={[styles.dropdown, isFocusWeight && { borderColor: 'white' }]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={dataWeight}
+                search
+                maxHeight={1000}
+                labelField="label"
+                valueField="value"
+                placeholder={!isFocusWeight ? 'Select your weight class' : '...'}
+                searchPlaceholder="Search..."
+                value={valueWeight}
+                onFocus={() => setIsFocusWeight(true)}
+                onBlur={() => setIsFocusWeight(false)}
+                onChange={item => {
+                  setValueWeight(item.value);
+                  setIsFocusWeight(false);
+                  console.log(item.value);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={styles.icon}
+                    color={isFocusGender ? 'white' : 'black'}
+                    name="Safety"
+                    size={20}
+                  />
+                )}
+              />
+            </View>
+          </View>
+
+          <View className='py-3 w-1/2'>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">Location</Text>
+            <View className="flex-row justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">{text}</Text>
+              <TouchableOpacity onPress={getLocation} className="bg-[#ff2424] p-3 rounded-lg">
+                <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">Share Location</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View className='py-3 w-1/2'>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">Radius for searching</Text>
+            <View className="flex justify-center items-center">
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">{value} KM</Text>
+              <Slider
+                style={styles.slider}
+                minimumValue={10}
+                maximumValue={100}
+                value={value}
+                step={10}
+                onValueChange={setValue}
+                minimumTrackTintColor="blue"
+                maximumTrackTintColor="red"
+              />
+            </View>
+          </View>
+
+          <View className="flex-1 justify-center items-center ">
+            <TouchableOpacity onPress={handleSignUp} className="w-full bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">
               <View className="flex justify-center items-center">
                 <Text style={{ fontFamily: 'BebasNeue' }} className='text-center text-[#ffffff] font-bold text-xl'>Sign up</Text>
               </View>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-          </SafeAreaView>
-        )
-      ) : (
-        <View>
-          <Text className='text-white'>please sign in</Text>
-        </View>
-      )}
-    </SafeAreaView>
+            </TouchableOpacity>
+          </View>
+      </SafeAreaView>
+    )
+  ) : (
+    <View>
+      <Text className='text-white'>please sign in</Text>
+    </View>
+  )}
+  </ScrollView>
+</SafeAreaView>
   );
 };
 
@@ -413,6 +448,16 @@ export default about;
 
 
 const styles = StyleSheet.create({
+  slider: {
+    width: 600,
+    height: 40,
+    flexGrow: 0,
+    borderWidth: 1,
+    borderColor: "black",
+    borderStyle: "solid",
+    alignContent: "center",
+    flex: 1,
+  },
   container: {
     backgroundColor: '[#221111]',
   },
