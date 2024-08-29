@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ImageBackground, Modal, Image, Text, TouchableOpacity, View, Animated, Easing } from "react-native";
+import { ImageBackground, Modal, Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, update } from "firebase/database";
@@ -11,6 +11,9 @@ import { useNavigation } from "@react-navigation/native";
 import { Dimensions } from 'react-native';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import uuid from 'react-native-uuid';
+import * as geofire from 'geofire-common';
+import { ftdb } from "@/FireBaseConfig";
+import { collection, query as Rquery, orderBy, startAt, endAt, getDocs, doc, getDoc } from 'firebase/firestore';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,11 +23,44 @@ const query = (data, currentData) => {
   return JSON.stringify(data) === JSON.stringify(currentData);
 };
 
+const geoquery = async (center, radiusInM) => {
+  const bounds = geofire.geohashQueryBounds(center, radiusInM);
+  const promises = [];
+  for (const b of bounds) {
+    const q = Rquery(
+      collection(ftdb, 'radius'), 
+      orderBy('geohash'), 
+      startAt(b[0]), 
+      endAt(b[1]));
+
+    promises.push(getDocs(q));
+  }
+
+  const snapshots = await Promise.all(promises);
+
+  const matchingDocs = [];
+  for (const snap of snapshots) {
+    for (const doc of snap.docs) {
+      const lat = doc.get('lat');
+      const lng = doc.get('lng');
+
+      const distanceInKm = geofire.distanceBetween([lat, lng], center);
+      const distanceInM = distanceInKm * 1000;
+      if (distanceInM <= radiusInM) {
+        matchingDocs.push(doc.data());
+      }
+    }
+  }
+  return matchingDocs;
+}
+
+
+
 const ring = require('@/assets/images/ring.jpg');
 const glove = require('@/assets/images/gloves.png');
 const { width } = Dimensions.get('window');
 
-function Simple() {
+function Simple()  {
   const [loaded, error] = useFonts({
     'BebasNeue': require('@/assets/fonts/BebasNeue-Regular.ttf'),
   });
@@ -44,9 +80,24 @@ function Simple() {
   const [modalInfo, setModalInfo] = useState(false);
   const [user, setUser] = useState(null);
   const [swipedCard, setSwipedCard] = useState(null);
-  const [data, setData] = useState(false);
+  const [radius, setRadius] = useState(0);
+  const [geoPoint, setGeoPoint] = useState([]);
   const auth = getAuth();
   const navigation = useNavigation();
+
+  const fetchData = async (user, radiusInM) => {
+    if (user) {
+      const docRef = doc(ftdb, "radius", user.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setGeoPoint([data.lat, data.lng]);
+        const match = await geoquery([data.lat, data.lng], radiusInM);
+        return match;
+      }
+    }
+    return [];
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -88,9 +139,9 @@ function Simple() {
           setGender(data.gender);
           setUid(data.uid);
           setImg(data.url);
-          setData(true);
+          setRadius(data.radius * 1000);
         } catch (error) {
-          console.log("no loc here ", error);
+          console.log("there is an error when updating data", error);
         }
       });
     } else {
@@ -99,6 +150,17 @@ function Simple() {
       setUid('');
     }
   }, [user]);
+
+  useEffect(() => {
+    if (user && radius > 0) {
+      fetchData(user, radius).then((data) => {
+        if (geoPoint) {
+        console.log("geoP: ", geoPoint);
+        console.log("All user in the range of ", radius, " m");
+        console.log("data: ", data);}
+      });
+    }
+  }, [user, radius]);
 
   useEffect(() => {
     if (currentLocation !== "") {
@@ -288,7 +350,6 @@ function Simple() {
                         </ImageBackground>
                         <View className="absolute bottom-0 left-0 right-0 p-2.5">
                           <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
-                          {/* <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.location[0]}</Text> */}
                           <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
                         </View>
                       </View>
