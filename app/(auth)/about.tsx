@@ -5,7 +5,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/core';
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getDatabase, ref as databaseRef, set, ref, onValue, update } from "firebase/database";
+import { getDatabase, set, ref, onValue, update } from "firebase/database";
 import * as Location from 'expo-location';
 import UpdateLocation from "@/components/UpdateLocation";
 import { Slider } from '@react-native-assets/slider'

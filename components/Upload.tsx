@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Image, View, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { getAuth, updateProfile } from 'firebase/auth';
-import { getDatabase, ref as databaseRef, set, onValue, ref } from "firebase/database";
+import { getDatabase, ref as databaseRef, set, onValue, ref, update } from "firebase/database";
 import { upload } from '@/FireBaseConfig';
 
 const database = getDatabase();
@@ -45,7 +45,7 @@ export default function UploadImage() {
       if (url) {
         updateProfile(user, { photoURL: url });
         const db = getDatabase();
-        set(databaseRef(db, 'users/' + user.uid), {
+        update(databaseRef(db, 'users/' + user.uid), {
           name: user.displayName,
           email: user.email,
           uid: user.uid,

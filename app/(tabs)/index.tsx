@@ -175,7 +175,7 @@ function Simple() {
 
   return (
     <SafeAreaView>
-      {user ? (
+      {user&&currentLocation ? (
         <View className="flex items-center justify-center w-full">
           <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6 mb-6">🥊 Sparrer 🥊</Text>
           <Modal
