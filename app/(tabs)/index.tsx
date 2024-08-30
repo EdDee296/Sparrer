@@ -47,7 +47,7 @@ const geoquery = async (center, radiusInM) => {
       const distanceInKm = geofire.distanceBetween([lat, lng], center);
       const distanceInM = distanceInKm * 1000;
       if (distanceInM <= radiusInM) {
-        matchingDocs.push(doc.data());
+        matchingDocs.push(doc.get('uid'));
       }
     }
   }
@@ -81,7 +81,7 @@ function Simple()  {
   const [user, setUser] = useState(null);
   const [swipedCard, setSwipedCard] = useState(null);
   const [radius, setRadius] = useState(0);
-  const [geoPoint, setGeoPoint] = useState([]);
+  const [data, setData] = useState([]);
   const auth = getAuth();
   const navigation = useNavigation();
 
@@ -91,7 +91,6 @@ function Simple()  {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setGeoPoint([data.lat, data.lng]);
         const match = await geoquery([data.lat, data.lng], radiusInM);
         return match;
       }
@@ -154,10 +153,9 @@ function Simple()  {
   useEffect(() => {
     if (user && radius > 0) {
       fetchData(user, radius).then((data) => {
-        if (geoPoint) {
-        console.log("geoP: ", geoPoint);
-        console.log("All user in the range of ", radius, " m");
-        console.log("data: ", data);}
+        console.log("All user in the range of ", radius/1000, " km");
+        console.log("data: ", data);
+        setData(data);
       });
     }
   }, [user, radius]);
@@ -171,7 +169,7 @@ function Simple()  {
         snapshot.forEach((profile) => {
           if (!swipedUserIds.includes(profile.key)) {
             const { name, url, uid, location, gender, exp, sport, weight, age } = profile.val();
-            if (query(profile.val().location, currentLocation) && query(profile.val().gender, currentGender) && !query(profile.val().uid, currentUid)) {
+            if (query(profile.val().gender, currentGender) && !query(profile.val().uid, currentUid) && data.includes(profile.val().uid)) {
               profiles.push({ name, url, uid, location, gender, exp, sport, weight, age });
             }
           }
@@ -180,7 +178,7 @@ function Simple()  {
       };
       fetchData();
     }
-  }, [currentUid, currentLocation]);
+  }, [data, currentUid, currentLocation]);
 
   const relate = (uid, currentUid, type, status) => {
     update(ref(database, `challenges/${currentUid}/${type}`), {
@@ -224,6 +222,7 @@ function Simple()  {
   const outOfFrame = (name) => {
     setCharacters((prevCharacters) => prevCharacters.filter((character) => character.name !== name));
   };
+
 
   useEffect(() => {
     if (loaded || error) {

@@ -82,6 +82,7 @@ const about = () => {
   const [isFocusWeight, setIsFocusWeight] = useState(false);
   const [value, setValue] = useState(10);
   const [geoPoint, setGeoPoint] = useState([0,0]);
+  const [signup, setSignup] = useState(false);
 
   const getLocation = async () => {
     setText('Loading location...');
@@ -158,12 +159,15 @@ const about = () => {
           radius: value,
         }).then(async () => {
           if (geoPoint) {
-          const hash = geofire.geohashForLocation(geoPoint);
-          await setDoc(doc(ftdb, "radius", user.uid), {
-            geohash: hash,
-            lat: geoPoint[0],
-            lng: geoPoint[1]
-          });}
+            const hash = geofire.geohashForLocation(geoPoint);
+            await setDoc(doc(ftdb, "radius", user.uid), {
+              geohash: hash,
+              lat: geoPoint[0],
+              lng: geoPoint[1],
+              uid: user.uid
+            });
+            setSignup(true);
+          }
         }).then(() => {
           // console.log("Done uploading all data to Firebase Realtime Database");
           //@ts-ignore
@@ -236,6 +240,7 @@ const about = () => {
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-3xl font-bold text-center px-12">Join the boxing community</Text>
           </View>
 
+          
           <View className='flex justify-center items-center pt-10'>
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-base font-medium pb-2">Profile picture</Text>
             <View className="h-[100px] w-[100px] align-middle bg-[#efefef] rounded-full overflow-hidden shadow flex items-center justify-center">
@@ -248,18 +253,18 @@ const about = () => {
             </View>
           </View>
 
-          <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
-          <View className="w-1/2">
-            <TextInput
-              className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
-              value={age}
-              onChangeText={setAge}
-              placeholder="Age"
-              placeholderTextColor="[#ffffff]"
-            />
-          </View>
+            <View className="w-3/4">
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
+              <TextInput
+                className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
+                value={age}
+                onChangeText={setAge}
+                placeholder="Age"
+                placeholderTextColor="[#ffffff]"
+              />
+            </View>
 
-          <View className='grid grid-cols-1 gap-4 content-center justify-center py-3 w-1/2'>
+          <View className='grid grid-cols-1 gap-4 content-center justify-center py-3 w-3/4'>
             <View style={styles.container}>
               <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Sport</Text>
               <Dropdown
@@ -398,7 +403,7 @@ const about = () => {
             </View>
           </View>
 
-          <View className='py-3 w-1/2'>
+          <View className='py-3 w-3/4'>
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">Location</Text>
             <View className="flex-row justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
               <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">{text}</Text>
