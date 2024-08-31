@@ -12,6 +12,7 @@ import { StyleSheet } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import * as Location from 'expo-location';
 import UpdateLocation from '@/components/UpdateLocation';
+import Slider from '@react-native-assets/slider';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -73,6 +74,9 @@ const UserProfileTab = () => {
   const [isFocusSports, setIsFocusSports] = useState(false);
   const [sVisible, setSvisible] = useState(false);
 
+  const [radius, setRadius] = useState(0);
+  const [rVisible, setRvisible] = useState(false);
+
   const auth = getAuth();
   const navigation = useNavigation();
 
@@ -96,6 +100,7 @@ const UserProfileTab = () => {
             
             setSports(data.sport);
             setName(data.name);
+            setRadius(data.radius);
           }
         });
       }
@@ -364,6 +369,68 @@ const UserProfileTab = () => {
                       className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
                       onPress={() => {
                         setSvisible(false);
+                      }}>
+                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+          </View>
+          
+          <View className="flex flex-row items-center justify-center">
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl mr-3">Radius: {radius}</Text>
+            <TouchableOpacity onPress={ () => setRvisible(true)}>
+              <Feather name="edit" size={24} color="white" />
+            </TouchableOpacity>
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={rVisible}
+              onRequestClose={() => {
+                alert('Modal has been closed.');
+              }}>
+              <View className="flex-1 justify-center items-center  bg-opacity-50">
+                <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your radius</Text>
+                  <View className="flex justify-center items-center my-6">
+                    <View className="flex items-center justify-center">
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">{radius} KM</Text>
+                      <Slider
+                          style={{
+                            width: 600,
+                            height: 40,
+                            flexGrow: 0,
+                            borderWidth: 1,
+                            borderColor: "black",
+                            borderStyle: "solid",
+                            alignContent: "center",
+                            flex: 1,
+                          }}
+                          minimumValue={10}
+                          maximumValue={100}
+                          value={radius}
+                          step={10}
+                          onValueChange={setRadius}
+                          minimumTrackTintColor="blue"
+                          maximumTrackTintColor="red"
+                      />
+                      <TouchableOpacity
+                        className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                        onPress={() => {
+                          const re = ref(database, 'users/' + uid); // Get the user data
+                          update(re, {
+                            radius: radius
+                          }).then( () => setRvisible(false));
+                          }}>
+                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity
+                      className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                      onPress={() => {
+                        setRvisible(false);
                       }}>
                         <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
                       </TouchableOpacity>
