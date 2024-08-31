@@ -47,14 +47,12 @@ const geoquery = async (center, radiusInM) => {
       const distanceInKm = geofire.distanceBetween([lat, lng], center);
       const distanceInM = distanceInKm * 1000;
       if (distanceInM <= radiusInM) {
-        matchingDocs.push(doc.get('uid'));
+        matchingDocs.push({ uid: doc.get('uid'), distanceInKm });
       }
     }
   }
   return matchingDocs;
 }
-
-
 
 const ring = require('@/assets/images/ring.jpg');
 const glove = require('@/assets/images/gloves.png');
@@ -169,8 +167,9 @@ function Simple()  {
         snapshot.forEach((profile) => {
           if (!swipedUserIds.includes(profile.key)) {
             const { name, url, uid, location, gender, exp, sport, weight, age } = profile.val();
-            if (query(profile.val().gender, currentGender) && !query(profile.val().uid, currentUid) && data.includes(profile.val().uid)) {
-              profiles.push({ name, url, uid, location, gender, exp, sport, weight, age });
+            const distanceData = data.find(item => item.uid === profile.val().uid);
+            if (query(profile.val().gender, currentGender) && !query(profile.val().uid, currentUid) && distanceData) {
+              profiles.push({ name, url, uid, location, gender, exp, sport, weight, age, distance: distanceData.distanceInKm });
             }
           }
         });
@@ -222,7 +221,6 @@ function Simple()  {
   const outOfFrame = (name) => {
     setCharacters((prevCharacters) => prevCharacters.filter((character) => character.name !== name));
   };
-
 
   useEffect(() => {
     if (loaded || error) {
@@ -350,6 +348,7 @@ function Simple()  {
                         <View className="absolute bottom-0 left-0 right-0 p-2.5">
                           <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
                           <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.distance.toFixed(2)} km away from you!</Text>
                         </View>
                       </View>
                     </TinderCard>

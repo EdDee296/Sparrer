@@ -62,7 +62,6 @@ const about = () => {
   });
 
   const [user, setUser] = useState(null);
-  const [uid, setUid] = useState('');
   const [tooltip, setTooltip] = useState(false);
   const [loading, setLoading] = useState(true);
   const auth = getAuth();
@@ -82,7 +81,6 @@ const about = () => {
   const [isFocusWeight, setIsFocusWeight] = useState(false);
   const [value, setValue] = useState(10);
   const [geoPoint, setGeoPoint] = useState([0,0]);
-  const [signup, setSignup] = useState(false);
 
   const getLocation = async () => {
     setText('Loading location...');
@@ -166,7 +164,6 @@ const about = () => {
               lng: geoPoint[1],
               uid: user.uid
             });
-            setSignup(true);
           }
         }).then(() => {
           // console.log("Done uploading all data to Firebase Realtime Database");
@@ -183,7 +180,6 @@ const about = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
-        setUid(user.uid);
         const database = getDatabase();
         const userRef = ref(database, `users/${user.uid}`);
         onValue(userRef, async (snapshot) => {
