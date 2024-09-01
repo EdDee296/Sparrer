@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ImageBackground, Modal, Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
@@ -79,6 +79,7 @@ function Simple()  {
   const [user, setUser] = useState(null);
   const [swipedCard, setSwipedCard] = useState(null);
   const [radius, setRadius] = useState(0);
+  const positionRef = useRef([0, 0]);
   const [data, setData] = useState([]);
   const auth = getAuth();
   const navigation = useNavigation();
@@ -138,7 +139,7 @@ function Simple()  {
           setImg(data.url);
           setRadius(data.radius * 1000);
         } catch (error) {
-          console.log("there is an error when updating data", error);
+           console.log("there is an error when updating data", error);
         }
       });
     } else {
@@ -151,8 +152,8 @@ function Simple()  {
   useEffect(() => {
     if (user && radius > 0) {
       fetchData(user, radius).then((data) => {
-        console.log("All user in the range of ", radius/1000, " km");
-        console.log("data: ", data);
+        // console.log("All user in the range of ", radius/1000, " km");
+        // console.log("data: ", data);
         setData(data);
       });
     }
@@ -286,24 +287,7 @@ function Simple()  {
               </ImageBackground>
             </View>
           </Modal>
-          <Modal
-            animationType="slide"
-            visible={modalInfo}
-            transparent={true}
-            className="h-full w-full"
-          >
-            <View className="flex-1 justify-center items-center mt-6">
-              <View className="w-[300px] h-[500px] bg-[#fe1e1e] align-middle justify-center items-center relative">
-                <TouchableOpacity
-                  style={{ position: 'absolute', top: 10, right: 10 }}
-                  onPress={() => setModalInfo(false)}
-                >
-                  <Text style={{ fontSize: 18, color: 'white' }}>X</Text>
-                </TouchableOpacity>
-                <Text>more info</Text>
-              </View>
-            </View>
-          </Modal>
+          
           <View className="w-[90%] mr-10 max-w-[260px] h-auto p-0">
             {characters?.length ? (
               characters.filter(character => character.uid !== swipedCard).map((character) => (
@@ -335,23 +319,57 @@ function Simple()  {
                       update(userRef, { tooltipShown: true });}}
                     contentStyle={{ width: '100%' }}
                   >
-                    <TinderCard
-                      swipeThreshold={1}
-                      preventSwipe={["up", "down"]}
-                      key={character.uid}
-                      onSwipe={(dir) => swiped(dir, character.uid)}
-                      onCardLeftScreen={() => outOfFrame(character.name)}
-                    >
-                      <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
-                        <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
-                        </ImageBackground>
-                        <View className="absolute bottom-0 left-0 right-0 p-2.5">
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.distance.toFixed(2)} km away from you!</Text>
-                        </View>
-                      </View>
-                    </TinderCard>
+                    <TouchableOpacity 
+                      onPressIn={(evt) => {
+                        positionRef.current = [evt.nativeEvent.locationX, evt.nativeEvent.locationY];
+                        console.log(positionRef.current);
+                      }}
+                      onPressOut={(evt) => {
+                        const { locationX, locationY } = evt.nativeEvent;
+                        if (locationX === positionRef.current[0] && locationY === positionRef.current[1]) {
+                          setModalInfo(true);
+                        } 
+                      }}>
+                        <Modal
+                          animationType='slide'
+                          
+                          visible={modalInfo}
+                          transparent={true}
+                          className="h-full w-full"
+                          onRequestClose={() => {
+                            setModalInfo(false);
+                          }}
+                        >
+                          <View className="flex-1 justify-center items-center mt-6">
+                            <View className="w-[300px] h-[500px] bg-[#9d8f8f] align-middle justify-center items-center relative">
+                              <TouchableOpacity
+                                style={{ position: 'absolute', top: 10, right: 10 }}
+                                onPress={() => setModalInfo(false)}
+                              >
+                                <Text style={{ fontSize: 18 }}>X</Text>
+                              </TouchableOpacity>
+                              <Text style={{ fontFamily: 'BebasNeue' }}>more info for {character.name}</Text>
+                            </View>
+                          </View>
+                        </Modal>
+                        <TinderCard
+                          swipeThreshold={1}
+                          preventSwipe={["up", "down"]}
+                          key={character.uid}
+                          onSwipe={(dir) => swiped(dir, character.uid)}
+                          onCardLeftScreen={() => outOfFrame(character.name)}
+                        >
+                          <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
+                            <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
+                            </ImageBackground>
+                            <View className="absolute bottom-0 left-0 right-0 p-2.5">
+                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
+                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
+                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.distance.toFixed(2)} km away from you!</Text>
+                            </View>
+                          </View>
+                        </TinderCard>
+                    </TouchableOpacity>
                   </Tooltip>
                 </Tooltip>
               ))

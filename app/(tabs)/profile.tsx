@@ -378,7 +378,7 @@ const UserProfileTab = () => {
           </View>
           
           <View className="flex flex-row items-center justify-center">
-            <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl mr-3">Radius: {radius}</Text>
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl mr-3">Radius: {radius} KM</Text>
             <TouchableOpacity onPress={ () => setRvisible(true)}>
               <Feather name="edit" size={24} color="white" />
             </TouchableOpacity>
