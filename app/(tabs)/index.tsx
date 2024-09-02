@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ImageBackground, Modal, Image, Text, TouchableOpacity, View, ScrollView, TouchableWithoutFeedback } from "react-native";
+import { ImageBackground, Modal, Image, Text, TouchableOpacity, View, ScrollView, TouchableWithoutFeedback, Button } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, update } from "firebase/database";
@@ -235,167 +235,184 @@ function Simple()  {
 
   return (
     <SafeAreaView>
-      {user&&currentLocation ? (
-        <View className="flex items-center justify-center w-full">
-          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6 mb-6">🥊 Sparrer 🥊</Text>
-          <Modal
-            className="h-full"
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => {
-              alert('Modal has been closed.');
-              setModalVisible(!modalVisible);
-            }}>
-            <View className="flex-1 justify-center items-center mt-6 h-full">
-              <ImageBackground
-                source={ring}
-                className="w-full h-full ">
-                <View className=" h-full w-full rounded-2xl p-9 items-center shadow-lg shadow-black/25">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="mb-4 text-center text-white text-3xl">😈 New opp found!!! 😈</Text>
-                  <View className="flex flex-row items-center p-3">
-                    <Image
-                      source={{ uri: matchedImg }}
-                      style={{ width: width * 0.2, height: width * 0.2, borderRadius: (width * 0.2) / 2 }}
-                    />
-                    <Image
-                      source={{ uri: glove }}
-                      style={{ width: width * 0.2, height: width * 0.2, marginHorizontal: width * 0.05 }}
-                    />
-                    <Image
-                      source={{ uri: currentImg }}
-                      style={{ width: width * 0.2, height: width * 0.2, borderRadius: (width * 0.2) / 2 }}
-                    />
+      {user ? (
+        currentLocation ? (
+          <View className="flex items-center justify-center w-full">
+            <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6 mb-6">🥊 Sparrer 🥊</Text>
+            <Modal
+              className="h-full"
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                alert('Modal has been closed.');
+                setModalVisible(!modalVisible);
+              }}>
+              <View className="flex-1 justify-center items-center mt-6 h-full">
+                <ImageBackground
+                  source={ring}
+                  className="w-full h-full ">
+                  <View className=" h-full w-full rounded-2xl p-9 items-center shadow-lg shadow-black/25">
+                    <Text style={{ fontFamily: 'BebasNeue' }} className="mb-4 text-center text-white text-3xl">😈 New opp found!!! 😈</Text>
+                    <View className="flex flex-row items-center p-3">
+                      <Image
+                        source={{ uri: matchedImg }}
+                        style={{ width: width * 0.2, height: width * 0.2, borderRadius: (width * 0.2) / 2 }}
+                      />
+                      <Image
+                        source={{ uri: glove }}
+                        style={{ width: width * 0.2, height: width * 0.2, marginHorizontal: width * 0.05 }}
+                      />
+                      <Image
+                        source={{ uri: currentImg }}
+                        style={{ width: width * 0.2, height: width * 0.2, borderRadius: (width * 0.2) / 2 }}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      style={{ width: width * 0.8 }}
+                      className="rounded-2xl p-4 shadow-md bg-[#ff0000] my-6"
+                      onPress={() => {
+                        console.log("Navigate to chat screen for user with ID: ", matchedName);
+                        navigation.navigate('(screens)', { screen: 'chat', params: { name: matchedName, uid: matchedUid, url: matchedImg, userUid: currentUid } });
+                        setModalVisible(!modalVisible)
+                      }}>
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-center text-xl">🔥🔥Gloves on !!!🥊👊</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{ width: width * 0.8 }}
+                      className="rounded-2xl p-4 shadow-md bg-[#226cff]"
+                      onPress={() => setModalVisible(!modalVisible)}>
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-center text-xl">Keep looking... 🔍</Text>
+                    </TouchableOpacity>
                   </View>
-                  <TouchableOpacity
-                    style={{ width: width * 0.8 }}
-                    className="rounded-2xl p-4 shadow-md bg-[#ff0000] my-6"
-                    onPress={() => {
-                      console.log("Navigate to chat screen for user with ID: ", matchedName);
-                      navigation.navigate('(screens)', { screen: 'chat', params: { name: matchedName, uid: matchedUid, url: matchedImg, userUid: currentUid } });
-                      setModalVisible(!modalVisible)
-                    }}>
-                    <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-center text-xl">🔥🔥Gloves on !!!🥊👊</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{ width: width * 0.8 }}
-                    className="rounded-2xl p-4 shadow-md bg-[#226cff]"
-                    onPress={() => setModalVisible(!modalVisible)}>
-                    <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-center text-xl">Keep looking... 🔍</Text>
-                  </TouchableOpacity>
-                </View>
-              </ImageBackground>
-            </View>
-          </Modal>
-          
-          <View className="w-[90%] mr-10 max-w-[260px] h-auto p-0">
-            {characters?.length ? (
-              characters.filter(character => character.uid !== swipedCard).map((character) => (
-                <Tooltip
-                  key={uuid.v4().toString()}
-                  isVisible={modalOpen}
-                  content={<Text>Swipe right to match ➡️</Text>}
-                  placement="top"
-                  allowChildInteraction={false}
-                  horizontalAdjustment={100}
-                  childrenWrapperStyle={{ transform: [{ rotate: '30deg' }] }}
-                  onClose={() => {
-                    setModalOpen(false)
-                    setModalOpen2(true)
-                  }}
-                  contentStyle={{ width: '100%' }}
-                >
+                </ImageBackground>
+              </View>
+            </Modal>
+            
+            <View className="w-[90%] mr-10 max-w-[260px] h-auto p-0">
+              {characters?.length ? (
+                characters.filter(character => character.uid !== swipedCard).map((character) => (
                   <Tooltip
                     key={uuid.v4().toString()}
-                    isVisible={modalOpen2}
-                    content={<Text>⬅️ Swipe left to pass</Text>}
+                    isVisible={modalOpen}
+                    content={<Text>Swipe right to match ➡️</Text>}
                     placement="top"
                     allowChildInteraction={false}
-                    horizontalAdjustment={-350}
-                    childrenWrapperStyle={{ transform: [{ rotate: '-30deg' }], height: 300 }}
+                    horizontalAdjustment={100}
+                    childrenWrapperStyle={{ transform: [{ rotate: '30deg' }] }}
                     onClose={() => {
-                      const userRef = ref(database, `users/${user.uid}`);
-                      setModalOpen2(false); 
-                      update(userRef, { tooltipShown: true });}}
+                      setModalOpen(false)
+                      setModalOpen2(true)
+                    }}
                     contentStyle={{ width: '100%' }}
                   >
-                    <TouchableOpacity 
-                      onPressIn={(evt) => {
-                        positionRef.current = [evt.nativeEvent.locationX, evt.nativeEvent.locationY];
-                        console.log(positionRef.current);
-                      }}
-                      onPressOut={(evt) => {
-                        const { locationX, locationY } = evt.nativeEvent;
-                        if (locationX === positionRef.current[0] && locationY === positionRef.current[1]) {
-                          setModalInfo(true);
-                        } 
-                      }}>
-                        <Modal
-                          animationType='slide'
-                          visible={modalInfo}
-                          transparent={true}
-                          className="h-full w-full"
-                          onRequestClose={() => {
-                            setModalInfo(false);
-                          }}
-                        >
-                          <TouchableWithoutFeedback onPress={() => setModalInfo(false)}>
-                            <View className="flex-1 justify-center items-center bg-transparent bg-opacity-50">
-                              <SafeAreaView className="flex-1 justify-center items-center mt-6 rounded-[20px]">
-                                <ScrollView showsVerticalScrollIndicator={false}>
-                                  <View className="w-[300px] bg-[#9d8f8f] justify-start items-center relative rounded-[20px] p-4">
-                                    <TouchableOpacity
-                                      style={{ position: 'absolute', top: 10, right: 10 }}
-                                      onPress={() => setModalInfo(false)}
-                                    >
-                                      <Text style={{ fontSize: 18 }}>X</Text>
-                                    </TouchableOpacity>
-                                    <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-[#4f2727] text-2xl mb-4">
-                                      more info for {character.name}
-                                    </Text>
-                                    <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#000000] text-lg">
-                                      About: {character.about}
-                                    </Text>
-                                  </View>
-                                </ScrollView>
-                              </SafeAreaView>
+                    <Tooltip
+                      key={uuid.v4().toString()}
+                      isVisible={modalOpen2}
+                      content={<Text>⬅️ Swipe left to pass</Text>}
+                      placement="top"
+                      allowChildInteraction={false}
+                      horizontalAdjustment={-350}
+                      childrenWrapperStyle={{ transform: [{ rotate: '-30deg' }], height: 300 }}
+                      onClose={() => {
+                        const userRef = ref(database, `users/${user.uid}`);
+                        setModalOpen2(false); 
+                        update(userRef, { tooltipShown: true });}}
+                      contentStyle={{ width: '100%' }}
+                    >
+                      <TouchableOpacity 
+                        onPressIn={(evt) => {
+                          positionRef.current = [evt.nativeEvent.locationX, evt.nativeEvent.locationY];
+                          console.log(positionRef.current);
+                        }}
+                        onPressOut={(evt) => {
+                          const { locationX, locationY } = evt.nativeEvent;
+                          if (locationX === positionRef.current[0] && locationY === positionRef.current[1]) {
+                            setModalInfo(true);
+                          } 
+                        }}>
+                          <Modal
+                            animationType='slide'
+                            visible={modalInfo}
+                            transparent={true}
+                            className="h-full w-full"
+                            onRequestClose={() => {
+                              setModalInfo(false);
+                            }}
+                          >
+                            <TouchableWithoutFeedback onPress={() => setModalInfo(false)}>
+                              <View className="flex-1 justify-center items-center bg-transparent bg-opacity-50">
+                                <SafeAreaView className="flex-1 justify-center items-center mt-6 rounded-[20px]">
+                                  <ScrollView showsVerticalScrollIndicator={false}>
+                                    <View className="w-[300px] bg-[#9d8f8f] justify-start items-center relative rounded-[20px] p-4">
+                                      <TouchableOpacity
+                                        style={{ position: 'absolute', top: 10, right: 10 }}
+                                        onPress={() => setModalInfo(false)}
+                                      >
+                                        <Text style={{ fontSize: 18 }}>X</Text>
+                                      </TouchableOpacity>
+                                      <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-[#4f2727] text-2xl mb-4">
+                                        more info for {character.name}
+                                      </Text>
+                                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#000000] text-lg">
+                                        About: {character.about}
+                                      </Text>
+                                    </View>
+                                  </ScrollView>
+                                </SafeAreaView>
+                              </View>
+                            </TouchableWithoutFeedback>
+                          </Modal>
+                          <TinderCard
+                            swipeThreshold={1}
+                            preventSwipe={["up", "down"]}
+                            key={character.uid}
+                            onSwipe={(dir) => swiped(dir, character.uid)}
+                            onCardLeftScreen={() => outOfFrame(character.name)}
+                          >
+                            <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
+                              <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
+                              </ImageBackground>
+                              <View className="absolute bottom-0 left-0 right-0 p-2.5">
+                                <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
+                                <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
+                                <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.distance.toFixed(2)} km away from you!</Text>
+                              </View>
                             </View>
-                          </TouchableWithoutFeedback>
-                        </Modal>
-                        <TinderCard
-                          swipeThreshold={1}
-                          preventSwipe={["up", "down"]}
-                          key={character.uid}
-                          onSwipe={(dir) => swiped(dir, character.uid)}
-                          onCardLeftScreen={() => outOfFrame(character.name)}
-                        >
-                          <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
-                            <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
-                            </ImageBackground>
-                            <View className="absolute bottom-0 left-0 right-0 p-2.5">
-                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
-                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
-                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.distance.toFixed(2)} km away from you!</Text>
-                            </View>
-                          </View>
-                        </TinderCard>
-                    </TouchableOpacity>
+                          </TinderCard>
+                      </TouchableOpacity>
+                    </Tooltip>
                   </Tooltip>
-                </Tooltip>
-              ))
-            ) : (
-              <View className="flex justify-center items-center h-screen ml-8 pl-1 pb-20">
-                <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ml-15 ">That's it for now 🙃</Text>
-                <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-xl ">Let's get back to work! 💪🔥</Text>
-              </View>
-            )}
+                ))
+              ) : (
+                <View className="flex justify-center items-center h-screen ml-8 pl-1 pb-20">
+                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ml-15 ">That's it for now 🙃</Text>
+                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-xl ">Let's get back to work! 💪🔥</Text>
+                </View>
+              )}
+            </View>
           </View>
-        </View>
+        ) : (
+          <View className="flex items-center justify-center w-full ">
+            <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">🥊 Sparrer 🥊</Text>
+            <View className="flex justify-center items-center h-screen ">
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl py-7">Please fill in all your information to continue</Text>
+              <TouchableOpacity
+              className="rounded-2xl p-4 shadow-md bg-[#226cff]"
+              onPress={() => navigation.navigate('(auth)', { screen: 'about' })}
+            >
+              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">continue</Text>
+            </TouchableOpacity>
+            </View>
+            
+          </View>
+        )
       ) : (
         <View className="flex items-center justify-center w-full ">
           <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6">🥊 Sparrer 🥊</Text>
           <View className="flex justify-center items-center h-screen ">
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-2xl ">Please sign in to continue</Text>
+            <Button title="Sign in" onPress={() => navigation.navigate('(auth)', { screen: 'sign-in' })} />
           </View>
         </View>
       )}
