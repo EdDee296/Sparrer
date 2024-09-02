@@ -81,6 +81,7 @@ const about = () => {
   const [isFocusWeight, setIsFocusWeight] = useState(false);
   const [value, setValue] = useState(10);
   const [about, setAbout] = useState("");
+  const [wordCount, setWordCount] = useState(0);
   const [geoPoint, setGeoPoint] = useState([0,0]);
 
   const getLocation = async () => {
@@ -117,11 +118,24 @@ const about = () => {
     }
   };
 
+  const handleTextChange = (text) => {
+    const words = text.trim().split(/\s+/);
+    const count = words.filter(word => word.length > 0).length;
+    setAbout(text);
+    setWordCount(count);
+  };
+
+
   const handleSignUp = async () => {
     // Check if all fields are filled
     if ( !about || !age || !valueSports || !valueGender || !valueExp || !valueWeight || !location || !img ) {
       alert('Please fill in all fields.');
       return;
+    }
+    
+    if (wordCount > 100) {
+      alert('Error! Your description exceeds the 100-word limit.');
+      return
     }
   
     try {
@@ -253,12 +267,15 @@ const about = () => {
             <TextInput
               className='w-full bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 h-[200px]'
               value={about}
-              onChangeText={setAbout}
+              onChangeText={handleTextChange}
               placeholder="Tell us about yourself (your gym, your boxing style, ...)"
               placeholderTextColor="[#ffffff]"
               multiline={true}
               textAlignVertical="top"
             />
+            <Text style={{ marginLeft: wordCount > 100 ? wordCount > 1000 ? 1000: 1010 : 1020, color: wordCount > 100 ? 'red' : 'white' }}>
+              Word count: {wordCount}/100
+            </Text>
           </View>
 
           <View className="w-3/4">
