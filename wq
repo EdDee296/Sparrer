@@ -1,0 +1,398 @@
+[33mcommit 97f52ae9fb3a35aa25d13d28edd01a18b51e9831[m[33m ([m[1;36mHEAD -> [m[1;32mEdDee[m[33m, [m[1;31morigin/EdDee[m[33m)[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Sep 1 21:00:16 2024 -0600
+
+    small fix index tab
+
+[33mcommit 9852f855140a159da58b25847cc8179473027956[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Sep 1 20:53:19 2024 -0600
+
+    add word count to about
+
+[33mcommit d0e363755630087c8890977da47a9ab66186feb2[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Sep 1 20:37:51 2024 -0600
+
+    add about
+
+[33mcommit 3bbb81cbe903d93cd644ba1cfa52a0939d86372c[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sat Aug 31 22:02:10 2024 -0600
+
+    fix style reset
+
+[33mcommit 9d08328548e62bccc7ed19fa8fb1a9e233b52611[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sat Aug 31 21:39:44 2024 -0600
+
+    detect tap / swipe
+
+[33mcommit ad87cf300af8ef865cd01ceb018cb365d0c8270e[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Fri Aug 30 20:48:29 2024 -0600
+
+    add distance from user
+
+[33mcommit 3e644d9f5aafe79d0dd9702140aeec1d3794cbf5[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Fri Aug 30 19:36:33 2024 -0600
+
+    add change radius in profile
+
+[33mcommit 9b0bcbf0c348a9b084d365da8c265681fdd9acc4[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Thu Aug 29 19:52:08 2024 -0600
+
+    finish geo queries
+
+[33mcommit 4b1f713c0515eb0fd40816e000dd5ec1877392cd[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Aug 28 20:50:21 2024 -0600
+
+    geo queries
+
+[33mcommit 36957672517a8867314ee58e5b3e9d2f8c53b764[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Aug 28 19:40:22 2024 -0600
+
+    small fix about update pfp
+
+[33mcommit 4e93781d5c6e3b9be1cf6c2a07cddedea5de934c[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Aug 28 16:08:29 2024 -0600
+
+    finish about tab
+
+[33mcommit 2ed72600f148752584e60b22e9e70616cec25427[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Mon Aug 26 19:39:03 2024 -0600
+
+    nearly finish seperating sign up into 2 files
+
+[33mcommit 04bd208bf2f89b3e0abb6d706284b6d80bd2f2da[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 25 21:47:22 2024 -0600
+
+    starting to seperate sign up to 2 files
+
+[33mcommit 40083f772736c27148c1389476daaa8289fba908[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sat Aug 24 19:48:02 2024 -0600
+
+    fix displaying cards
+
+[33mcommit f6fefbf270d5dd9a593d69e9d39bb32f672755d3[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Fri Aug 23 19:27:57 2024 -0600
+
+    incoming info about opp
+
+[33mcommit 24019971e12235d33c1f6edc61321e60976baead[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Fri Aug 23 11:52:51 2024 -0600
+
+    add send icon
+
+[33mcommit 1fe626997da7535712a8e0bc3d233281d15fdaa1[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Thu Aug 22 22:36:32 2024 -0600
+
+    add controls videos
+
+[33mcommit c85b49826a74ca85808cd6ab1a4b128057cab8b7[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Aug 21 20:27:42 2024 -0600
+
+    finish send image and videos
+
+[33mcommit 07e5fe312da1b6b0f744e9ac98a21732990daf1f[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Aug 21 16:52:05 2024 -0600
+
+    finish send images
+
+[33mcommit 0f9226096dd0831674f3bc89ced6ea73fd74d183[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Tue Aug 20 19:41:22 2024 -0600
+
+    platform styling
+
+[33mcommit 36a62c80982becd85af2d908c10933cb34a1c468[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 18 21:33:48 2024 -0600
+
+    fix styling chat
+
+[33mcommit 0e327929b9f264c7ea006d287a0c514f3340bf4c[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 18 13:34:56 2024 -0600
+
+    fix avatar in chat, input bar
+
+[33mcommit 70ce8ea7f30128dc642ee1c1606fb5a0d5a38586[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Fri Aug 16 21:14:34 2024 -0600
+
+    add tooltip walkthrough, fix some bugs
+
+[33mcommit b91c005489823cc94ef4165570684cd98866cc38[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Thu Aug 15 20:14:05 2024 -0600
+
+    a little fix, ready to deploy
+
+[33mcommit f33537feaf9f8bd56dd2476a01a3bc95e016cc2e[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Aug 14 19:31:27 2024 -0600
+
+    add reset password
+
+[33mcommit ace931ed05565b36c15ddfdfa94c89a3edb1c061[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Aug 14 17:55:46 2024 -0600
+
+    fix log in bug
+
+[33mcommit fd3c0329b28ed66c7620e605f475b7eaaf3f80d3[m
+Merge: ec64d95 5314225
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Mon Aug 12 19:09:47 2024 -0600
+
+    Merge branch 'EdDee' of https://github.com/EdDee296/Sparrer into EdDee
+
+[33mcommit ec64d95369d1aca03a0449cb19584c8f9637b89e[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Mon Aug 12 19:08:52 2024 -0600
+
+    small fix api, add cancel button in edit, check all field bf sign up
+
+[33mcommit 5314225355057c4da1792b2c1a3d9df2a766c2ec[m
+Author: David Pham <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 11 14:32:20 2024 -0600
+
+    Delete .expo directory
+
+[33mcommit f22395845b94dbb1e995dab7ab91bca1b57f8af6[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 11 14:30:51 2024 -0600
+
+    small fix
+
+[33mcommit 22bafe754ea71a60e5b4d3a7a73893a2ab6f143f[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 11 12:17:32 2024 -0600
+
+    finish profile page
+
+[33mcommit e7d8b77fcbe60d82fd2f4d9d5ce9ef2785ef6e1b[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 11 10:41:12 2024 -0600
+
+    fix send button, fixing profile
+
+[33mcommit 323f1ea34f6c4443bff9d3154adae5dc253e13c1[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 11 09:04:46 2024 -0600
+
+    finish fetch latest msg
+
+[33mcommit 49206e33f5b26646b265b3ae96db730785c11348[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 11 08:38:54 2024 -0600
+
+    fetch latest msg and display
+
+[33mcommit 7b974219731a6e9c878a06c8206eca389c5482e1[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Aug 7 20:51:51 2024 +0700
+
+    style profile page
+
+[33mcommit 4941f9ff83736f9ceb8acf0a19f6535cdf460341[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Aug 7 20:04:03 2024 +0700
+
+    fix styling match screen
+
+[33mcommit a2bc31353a23d2e90c75ca3e568c36dee560e56b[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Tue Aug 6 20:39:11 2024 +0700
+
+    fix match screen styling
+
+[33mcommit 4294419db04ba611ac3af99077a86be0e20b04be[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Tue Aug 6 20:20:39 2024 +0700
+
+    done match screen
+
+[33mcommit 7b7609681ab81d15e574bac422d8e5e6441ad1d7[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Mon Aug 5 21:56:21 2024 +0700
+
+    match notif screen
+
+[33mcommit 3a59067d1d399a59f48cfa3ecc25f64a4c055d5e[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Aug 4 21:46:59 2024 +0700
+
+    styling
+
+[33mcommit d3082c12c4f6b4178d645e750959670461f90d48[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Jul 31 22:39:38 2024 +0700
+
+    add fonts, fix style
+
+[33mcommit 733ec7cf24d2753c39535a46df3e97a58762a905[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Jul 31 19:41:00 2024 +0700
+
+    handling case empty
+
+[33mcommit b99da25238644670613518fb8cc2821e71b40a92[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Tue Jul 30 22:50:02 2024 +0700
+
+    fix sign out last
+
+[33mcommit 356d6e6ef8779b2c00f97d314fcc63ef71463a4a[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Tue Jul 30 21:28:37 2024 +0700
+
+    fix log out again
+
+[33mcommit 83e6b4fc81169f718d0e6a79d2feb14616638161[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Tue Jul 30 21:01:02 2024 +0700
+
+    fix logging out
+
+[33mcommit ef557bdfa211e52b27babc4056a46c971d65fdda[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Tue Jul 30 18:10:25 2024 +0700
+
+    add persistent auth
+
+[33mcommit 65eb43bdb85f8c1854c27173060bbce4bbfe1067[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Mon Jul 29 22:06:41 2024 +0700
+
+    fix bg
+
+[33mcommit 9c00d86b901d617bda0e21d7b2ffb748fec478cd[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Mon Jul 29 21:56:30 2024 +0700
+
+    dont styling for lndin, sgin, sgnup page
+
+[33mcommit f1b51cb8f4f9f0037c86fb74489fbcc941f28077[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Jul 28 21:08:31 2024 +0700
+
+    small chat fix
+
+[33mcommit ad26612ddbd3dbaa01d9b07d558436977cf95dcc[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Fri Jul 26 22:30:08 2024 +0700
+
+    add avatar
+
+[33mcommit f57b2d0cb10af4e2a68ec1e916f2f379c52a004d[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Fri Jul 26 21:52:11 2024 +0700
+
+    finish chat
+
+[33mcommit 18c4414d879bce12dc56cd1ead78014772de1b37[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Thu Jul 25 21:09:58 2024 +0700
+
+    add spinning when loading msg
+
+[33mcommit 9fcb8b1db7dd053bffd778d83fa92eb8ef599eb6[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Thu Jul 25 20:32:52 2024 +0700
+
+    done routing for chat
+
+[33mcommit 4aa5ed5d99096fe7932ce9a1b8f8d2742986d054[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Jul 24 22:35:51 2024 +0700
+
+    print open chat when press a chat
+
+[33mcommit d2dfb9530db89c413b5c3a51ed75d5b61e7fe036[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Jul 24 19:06:11 2024 +0700
+
+    add little styling to chat
+
+[33mcommit 6ab499bdacc6be711e475fe2ad41b37de0760f69[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Tue Jul 23 21:55:51 2024 +0700
+
+    notify when see  new match
+
+[33mcommit f67faa018ac0da5f3f4666e2ff1f7626774c794c[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Tue Jul 23 21:31:03 2024 +0700
+
+    done matching
+
+[33mcommit 4cf57cb6bf91f2b6f17f9a5c8198e902d9200e8f[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Mon Jul 22 21:18:30 2024 +0700
+
+    implementing chat
+
+[33mcommit 034080338ea4e0017d433fe9a46ff77e31dc33cf[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Jul 21 21:04:27 2024 +0700
+
+    filter swiped cards
+
+[33mcommit 369ed5f2d6edba2f1445f32666770c571d913f08[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sun Jul 21 20:42:07 2024 +0700
+
+    matching
+
+[33mcommit 6fa9e11e746dffc19fbc544f4d65e564acd35f3e[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sat Jul 20 11:31:26 2024 +0700
+
+    style the card
+
+[33mcommit f89bea394a0a8ffb54d6be1ab1eb05e73feb778a[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sat Jul 20 10:24:59 2024 +0700
+
+    finish sign up page with all info and upload to firebase
+
+[33mcommit 2cb88ee5c2f5bafa68d6a2bcf63ec728bcf020e1[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Sat Jul 20 09:32:01 2024 +0700
+
+    working on sign up page
+
+[33mcommit 3a80e2cc1564d03895222af324f6efd864aca9b4[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Thu Jul 18 21:00:29 2024 +0700
+
+    add loading spinner
+
+[33mcommit 37bf5c194543621b94aad966e18ca45cb0775581[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Thu Jul 18 20:09:22 2024 +0700
+
+    call api through node.js
+
+[33mcommit ff1906a52d2b0921e15036a363e2ec8dbb9cf029[m
+Author: EdDee296 <109675085+EdDee296@users.noreply.github.com>
+Date:   Wed Jul 17 18:37:56 2024 +0700
+
+    Initial commit
+    
+    Generated by create-expo-app 3.0.0.

@@ -13,6 +13,7 @@ import Tooltip from 'react-native-walkthrough-tooltip';
 import uuid from 'react-native-uuid';
 import * as geofire from 'geofire-common';
 import { ftdb } from "@/FireBaseConfig";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { collection, query as Rquery, orderBy, startAt, endAt, getDocs, doc, getDoc } from 'firebase/firestore';
 
 SplashScreen.preventAutoHideAsync();
@@ -79,8 +80,9 @@ function Simple()  {
   const [user, setUser] = useState(null);
   const [swipedCard, setSwipedCard] = useState(null);
   const [radius, setRadius] = useState(0);
-  const positionRef = useRef([0, 0]);
+  const [pointerEvent, setPointerEvent] = useState("none");
   const [data, setData] = useState([]);
+
   const auth = getAuth();
   const navigation = useNavigation();
 
@@ -223,6 +225,7 @@ function Simple()  {
     setCharacters((prevCharacters) => prevCharacters.filter((character) => character.name !== name));
   };
 
+
   useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
@@ -320,67 +323,68 @@ function Simple()  {
                         update(userRef, { tooltipShown: true });}}
                       contentStyle={{ width: '100%' }}
                     >
-                      <TouchableOpacity 
-                        onPressIn={(evt) => {
-                          positionRef.current = [evt.nativeEvent.locationX, evt.nativeEvent.locationY];
-                          console.log(positionRef.current);
-                        }}
-                        onPressOut={(evt) => {
-                          const { locationX, locationY } = evt.nativeEvent;
-                          if (locationX === positionRef.current[0] && locationY === positionRef.current[1]) {
-                            setModalInfo(true);
-                          } 
-                        }}>
-                          <Modal
-                            animationType='slide'
-                            visible={modalInfo}
-                            transparent={true}
-                            className="h-full w-full"
-                            onRequestClose={() => {
-                              setModalInfo(false);
-                            }}
-                          >
-                            <TouchableWithoutFeedback onPress={() => setModalInfo(false)}>
-                              <View className="flex-1 justify-center items-center bg-transparent bg-opacity-50">
-                                <SafeAreaView className="flex-1 justify-center items-center mt-6 rounded-[20px]">
-                                  <ScrollView showsVerticalScrollIndicator={false}>
-                                    <View className="w-[300px] bg-[#9d8f8f] justify-start items-center relative rounded-[20px] p-4">
-                                      <TouchableOpacity
-                                        style={{ position: 'absolute', top: 10, right: 10 }}
-                                        onPress={() => setModalInfo(false)}
-                                      >
-                                        <Text style={{ fontSize: 18 }}>X</Text>
-                                      </TouchableOpacity>
-                                      <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-[#4f2727] text-2xl mb-4">
-                                        more info for {character.name}
-                                      </Text>
-                                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#000000] text-lg">
-                                        About: {character.about}
-                                      </Text>
-                                    </View>
-                                  </ScrollView>
-                                </SafeAreaView>
-                              </View>
-                            </TouchableWithoutFeedback>
-                          </Modal>
-                          <TinderCard
-                            swipeThreshold={1}
-                            preventSwipe={["up", "down"]}
-                            key={character.uid}
-                            onSwipe={(dir) => swiped(dir, character.uid)}
-                            onCardLeftScreen={() => outOfFrame(character.name)}
-                          >
-                            <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
-                              <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
-                              </ImageBackground>
-                              <View className="absolute bottom-0 left-0 right-0 p-2.5">
-                                <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
-                                <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
-                                <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.distance.toFixed(2)} km away from you!</Text>
+                      {!modalInfo ? (
+                        <TinderCard
+                        swipeThreshold={1}
+                        preventSwipe={["up", "down"]}
+                        key={character.uid}
+                        onSwipe={(dir) => swiped(dir, character.uid)}
+                        onCardLeftScreen={() => outOfFrame(character.name)}
+                        >
+                          <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]" style={{ pointerEvents: modalInfo ? "none" : "auto" }}>
+                            <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
+                            </ImageBackground>
+                            <View className="absolute bottom-0 left-0 right-0 p-2.5">
+                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
+                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
+                              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>
+                                  {character.distance.toFixed(2)} km away from you!
+                                </Text>
+                                <TouchableOpacity onPress={() => { setModalInfo(true); setPointerEvent("none"); }}>
+                                  <AntDesign name="upcircleo" size={24} color="black" />
+                                  
+                                </TouchableOpacity>
                               </View>
                             </View>
-                          </TinderCard>
-                      </TouchableOpacity>
+                          </View>
+                        </TinderCard>
+                      ) : ( 
+                        <Modal
+                          animationType='slide'
+                          visible={modalInfo}
+                          transparent={true}
+                          className="h-full w-full"
+                          onRequestClose={() => {
+                            setModalInfo(false);
+                            setPointerEvent("auto");
+                          }}
+                        >
+                          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <TouchableWithoutFeedback onPress={() => { setModalInfo(false); setPointerEvent("auto"); }}>
+                              <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+                            </TouchableWithoutFeedback>
+                            <SafeAreaView className="flex-1 justify-center items-center mt-6 rounded-[20px]">
+                              <ScrollView showsVerticalScrollIndicator={false}>
+                                <View className="w-[300px] bg-[#9d8f8f] justify-start items-center relative rounded-[20px] p-4">
+                                  <TouchableOpacity
+                                    style={{ position: 'absolute', top: 10, right: 10 }}
+                                    onPress={() => { setModalInfo(false); setPointerEvent("auto"); }}
+                                  >
+                                    <Text style={{ fontSize: 18 }}>X</Text>
+                                  </TouchableOpacity>
+                                  <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-[#4f2727] text-2xl mb-4">
+                                    more info for {character.name}
+                                  </Text>
+                                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#000000] text-lg">
+                                    About: {character.about}
+                                  </Text>
+                                </View>
+                              </ScrollView>
+                            </SafeAreaView>
+                          </View>
+                        </Modal>
+                      )}
                     </Tooltip>
                   </Tooltip>
                 ))
