@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ImageBackground, Modal, Image, Text, TouchableOpacity, View, ScrollView, TouchableWithoutFeedback, Button } from "react-native";
+import { ImageBackground, Modal, Image, Text, TouchableOpacity, View, ScrollView, TouchableWithoutFeedback, Button, TouchableHighlight } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, update } from "firebase/database";
@@ -73,6 +73,7 @@ function Simple()  {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
+  const [modalOpen3, setModalOpen3] = useState(true);
   const [matchedImg, setMatchedImg] = useState('');
   const [matchedName, setMatchedName] = useState('');
   const [matchedUid, setMatchedUid] = useState('');
@@ -80,7 +81,6 @@ function Simple()  {
   const [user, setUser] = useState(null);
   const [swipedCard, setSwipedCard] = useState(null);
   const [radius, setRadius] = useState(0);
-  const [pointerEvent, setPointerEvent] = useState("none");
   const [data, setData] = useState([]);
 
   const auth = getAuth();
@@ -318,9 +318,9 @@ function Simple()  {
                       horizontalAdjustment={-350}
                       childrenWrapperStyle={{ transform: [{ rotate: '-30deg' }], height: 300 }}
                       onClose={() => {
-                        const userRef = ref(database, `users/${user.uid}`);
                         setModalOpen2(false); 
-                        update(userRef, { tooltipShown: true });}}
+                        setModalOpen3(true);
+                      }}
                       contentStyle={{ width: '100%' }}
                     >
                       {!modalInfo ? (
@@ -331,7 +331,7 @@ function Simple()  {
                         onSwipe={(dir) => swiped(dir, character.uid)}
                         onCardLeftScreen={() => outOfFrame(character.name)}
                         >
-                          <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]" style={{ pointerEvents: modalInfo ? "none" : "auto" }}>
+                          <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]" >
                             <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
                             </ImageBackground>
                             <View className="absolute bottom-0 left-0 right-0 p-2.5">
@@ -341,10 +341,25 @@ function Simple()  {
                                 <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>
                                   {character.distance.toFixed(2)} km away from you!
                                 </Text>
-                                <TouchableOpacity onPress={() => { setModalInfo(true); setPointerEvent("none"); }}>
-                                  <AntDesign name="upcircleo" size={24} color="black" />
-                                  
-                                </TouchableOpacity>
+                                <Tooltip
+                                  key={uuid.v4().toString()}
+                                  isVisible={modalOpen3}
+                                  content={<Text>Tap for more info</Text>}
+                                  placement="top"
+                                  onClose={() => {
+                                    setModalOpen3(false);
+                                    const userRef = ref(database, `users/${user.uid}`);
+                                    update(userRef, { tooltipShown: true });
+                                  }}
+                                  allowChildInteraction={true}
+                                  contentStyle={{ width: 'auto', backgroundColor: 'white', padding: 10 }}
+                                  childrenWrapperStyle={{backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 100, height: '24px'}}
+                                  showChildInTooltip={true}
+                                >
+                                  <TouchableHighlight onPress={() => { setModalInfo(true); }}>
+                                    <AntDesign name="upcircleo" size={24} color="black" />
+                                  </TouchableHighlight>
+                                </Tooltip>
                               </View>
                             </View>
                           </View>
@@ -357,11 +372,10 @@ function Simple()  {
                           className="h-full w-full"
                           onRequestClose={() => {
                             setModalInfo(false);
-                            setPointerEvent("auto");
                           }}
                         >
                           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-                            <TouchableWithoutFeedback onPress={() => { setModalInfo(false); setPointerEvent("auto"); }}>
+                            <TouchableWithoutFeedback onPress={() => { setModalInfo(false); }}>
                               <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
                             </TouchableWithoutFeedback>
                             <SafeAreaView className="flex-1 justify-center items-center mt-6 rounded-[20px]">
@@ -369,7 +383,7 @@ function Simple()  {
                                 <View className="w-[300px] bg-[#9d8f8f] justify-start items-center relative rounded-[20px] p-4">
                                   <TouchableOpacity
                                     style={{ position: 'absolute', top: 10, right: 10 }}
-                                    onPress={() => { setModalInfo(false); setPointerEvent("auto"); }}
+                                    onPress={() => { setModalInfo(false); }}
                                   >
                                     <Text style={{ fontSize: 18 }}>X</Text>
                                   </TouchableOpacity>
