@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ImageBackground, Modal, Image, Text, TouchableOpacity, View } from "react-native";
+import { ImageBackground, Modal, Image, Text, TouchableOpacity, View, ScrollView, TouchableWithoutFeedback } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, update } from "firebase/database";
@@ -167,10 +167,10 @@ function Simple()  {
         let profiles = [];
         snapshot.forEach((profile) => {
           if (!swipedUserIds.includes(profile.key)) {
-            const { name, url, uid, location, gender, exp, sport, weight, age } = profile.val();
+            const { name, url, uid, location, gender, exp, sport, weight, age, about } = profile.val();
             const distanceData = data.find(item => item.uid === profile.val().uid);
             if (query(profile.val().gender, currentGender) && !query(profile.val().uid, currentUid) && distanceData) {
-              profiles.push({ name, url, uid, location, gender, exp, sport, weight, age, distance: distanceData.distanceInKm });
+              profiles.push({ name, url, uid, location, gender, exp, sport, weight, age, distance: distanceData.distanceInKm, about});
             }
           }
         });
@@ -332,7 +332,6 @@ function Simple()  {
                       }}>
                         <Modal
                           animationType='slide'
-                          
                           visible={modalInfo}
                           transparent={true}
                           className="h-full w-full"
@@ -340,17 +339,28 @@ function Simple()  {
                             setModalInfo(false);
                           }}
                         >
-                          <View className="flex-1 justify-center items-center mt-6">
-                            <View className="w-[300px] h-[500px] bg-[#9d8f8f] align-middle justify-center items-center relative">
-                              <TouchableOpacity
-                                style={{ position: 'absolute', top: 10, right: 10 }}
-                                onPress={() => setModalInfo(false)}
-                              >
-                                <Text style={{ fontSize: 18 }}>X</Text>
-                              </TouchableOpacity>
-                              <Text style={{ fontFamily: 'BebasNeue' }}>more info for {character.name}</Text>
+                          <TouchableWithoutFeedback onPress={() => setModalInfo(false)}>
+                            <View className="flex-1 justify-center items-center bg-transparent bg-opacity-50">
+                              <SafeAreaView className="flex-1 justify-center items-center mt-6 rounded-[20px]">
+                                <ScrollView showsVerticalScrollIndicator={false}>
+                                  <View className="w-[300px] bg-[#9d8f8f] justify-start items-center relative rounded-[20px] p-4">
+                                    <TouchableOpacity
+                                      style={{ position: 'absolute', top: 10, right: 10 }}
+                                      onPress={() => setModalInfo(false)}
+                                    >
+                                      <Text style={{ fontSize: 18 }}>X</Text>
+                                    </TouchableOpacity>
+                                    <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-[#4f2727] text-2xl mb-4">
+                                      more info for {character.name}
+                                    </Text>
+                                    <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#000000] text-lg">
+                                      About: {character.about}
+                                    </Text>
+                                  </View>
+                                </ScrollView>
+                              </SafeAreaView>
                             </View>
-                          </View>
+                          </TouchableWithoutFeedback>
                         </Modal>
                         <TinderCard
                           swipeThreshold={1}

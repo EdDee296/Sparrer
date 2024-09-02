@@ -80,6 +80,7 @@ const about = () => {
   const [isFocusExp, setIsFocusExp] = useState(false);
   const [isFocusWeight, setIsFocusWeight] = useState(false);
   const [value, setValue] = useState(10);
+  const [about, setAbout] = useState("");
   const [geoPoint, setGeoPoint] = useState([0,0]);
 
   const getLocation = async () => {
@@ -118,8 +119,7 @@ const about = () => {
 
   const handleSignUp = async () => {
     // Check if all fields are filled
-    if ( !age || !valueSports || !valueGender || !valueExp || !valueWeight || !location || !img
-      ) {
+    if ( !about || !age || !valueSports || !valueGender || !valueExp || !valueWeight || !location || !img ) {
       alert('Please fill in all fields.');
       return;
     }
@@ -155,6 +155,7 @@ const about = () => {
           age: age,
           weight: valueWeight,
           radius: value,
+          about: about,
         }).then(async () => {
           if (geoPoint) {
             const hash = geofire.geohashForLocation(geoPoint);
@@ -231,12 +232,10 @@ const about = () => {
       </View>
     ) : (
       <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
-        
           <View className="w-full bg-[#221111] p-4 pb-2 items-center justify-between">
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-3xl font-bold text-center px-12">Join the boxing community</Text>
           </View>
 
-          
           <View className='flex justify-center items-center pt-10'>
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-base font-medium pb-2">Profile picture</Text>
             <View className="h-[100px] w-[100px] align-middle bg-[#efefef] rounded-full overflow-hidden shadow flex items-center justify-center">
@@ -249,16 +248,29 @@ const about = () => {
             </View>
           </View>
 
-            <View className="w-3/4">
-              <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
-              <TextInput
-                className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
-                value={age}
-                onChangeText={setAge}
-                placeholder="Age"
-                placeholderTextColor="[#ffffff]"
-              />
-            </View>
+          <View className="w-3/4">
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">About you</Text>
+            <TextInput
+              className='w-full bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 h-[200px]'
+              value={about}
+              onChangeText={setAbout}
+              placeholder="Tell us about yourself (your gym, your boxing style, ...)"
+              placeholderTextColor="[#ffffff]"
+              multiline={true}
+              textAlignVertical="top"
+            />
+          </View>
+
+          <View className="w-3/4">
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 py-2">Age</Text>
+            <TextInput
+              className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4'
+              value={age}
+              onChangeText={setAge}
+              placeholder="Age"
+              placeholderTextColor="[#ffffff]"
+            />
+          </View>
 
           <View className='grid grid-cols-1 gap-4 content-center justify-center py-3 w-3/4'>
             <View style={styles.container}>
