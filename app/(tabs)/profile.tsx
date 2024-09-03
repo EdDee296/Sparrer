@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TouchableOpacity, Modal, TextInput } from 'react-native';
+import { View, Text, Button, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
 import { getAuth, signOut, updateProfile } from 'firebase/auth';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import UploadImage from '@/components/Upload';
@@ -13,6 +13,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import * as Location from 'expo-location';
 import UpdateLocation from '@/components/UpdateLocation';
 import Slider from '@react-native-assets/slider';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -76,6 +77,8 @@ const UserProfileTab = () => {
   const [radius, setRadius] = useState(0);
   const [rVisible, setRvisible] = useState(false);
 
+  const [about, setAbout] = useState('');
+
   const auth = getAuth();
   const navigation = useNavigation();
 
@@ -95,7 +98,7 @@ const UserProfileTab = () => {
             if (data.location){
               setLocation(data.location[0]);
             }
-            
+            setAbout(data.about);
             setSports(data.sport);
             setName(data.name);
             setRadius(data.radius);
@@ -151,306 +154,389 @@ const UserProfileTab = () => {
   }
 
   return (
-    <View className="flex-1 items-center justify-center bg-[#221111]">
-      {user ? (
-        <>
-          <UploadImage/>
-          <View className="flex flex-row items-center justify-center">
-            <Text style={{fontFamily: 'BebasNeue'}} className="text-lg my-5 text-[#ffffff] mr-2">Welcome champ <Text className='text-2xl'>{name}👑</Text></Text>
-            <TouchableOpacity onPress={() => setVisible(true)}>
-              <Feather name="edit" size={24} color="white" />
-            </TouchableOpacity>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={visible}
-              onRequestClose={() => {
-                alert('Modal has been closed.');
-              }}>
-              <View className="flex-1 justify-center items-center  bg-opacity-50">
-                <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl text-center">Edit your name</Text>
-                  <View className="flex justify-center items-center">
-                    <View className="flex items-center justify-center">
-                    <TextInput
-                      className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 my-6'
-                      value={user.displayName}
-                      onChangeText={(text) => {setUser({ ...user, displayName: text }); setName(text);}}
-                      placeholder="Update your name"
-                      placeholderTextColor="[#ffffff]"
-                    />
-                      <TouchableOpacity
-                        className="rounded-2xl p-4 shadow-md bg-[#ff2424]"
-                        onPress={() => {
-                          const re = ref(database, 'users/' + uid); // Get the user data
-                          updateProfile(auth.currentUser, {
-                            displayName: user.displayName,
-                          });
-                          update(re, {
-                            name: user.displayName,
-                          }).then( () => setVisible(false));
-                          }}>
-                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Save</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </Modal>
-          </View>
-
-          <View className="flex flex-row items-center justify-center">
-            <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl mr-3">Weight class: {weight}</Text>
-            <TouchableOpacity onPress={() => {setWvisible(true)}}>
-              <Feather name="edit" size={24} color="white" />
-            </TouchableOpacity>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={wVisible}
-              onRequestClose={() => {
-                alert('Modal has been closed.');
-              }}>
-              <View className="flex-1 justify-center items-center  bg-opacity-50">
-                <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your weight class</Text>
-                  <View className="flex justify-center items-center my-6">
-                    <View className="flex items-center justify-center">
-                    <Dropdown
-                    fontFamily='BebasNeue'
-                    style={[styles.dropdown, isFocusWeight && { borderColor: 'white' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={dataWeight}
-                    search
-                    maxHeight={1000}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocusWeight ? 'Select your weight class' : '...'}
-                    searchPlaceholder="Search..."
-                    value={weight}
-                    onFocus={() => setIsFocusWeight(true)}
-                    onBlur={() => setIsFocusWeight(false)}
-                    onChange={item => {
-                      setWeight(item.value);
-                      setIsFocusWeight(false);
-                      console.log(item.value);
-                    }}
-                  />
-                      <TouchableOpacity
-                        className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
-                        onPress={() => {
-                          const re = ref(database, 'users/' + uid); // Get the user data
-                          update(re, {
-                            weight: weight
-                          }).then( () => setWvisible(false));
-                          }}>
-                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                      className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
-                      onPress={() => {
-                        setWvisible(false);
-                      }}>
-                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            </Modal>
-          </View>
-
-          <View className="flex flex-row items-center justify-center">
-            <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl mr-3">Location: {location}</Text>
-            <TouchableOpacity onPress={() => setLvisible(true)}>
-              <Feather name="edit" size={24} color="white" />
-            </TouchableOpacity>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={lVisible}
-              onRequestClose={() => {
-                alert('Modal has been closed.');
-              }}>
-              <View className="flex-1 justify-center items-center  bg-opacity-50">
-                <View className="bg-[#7e7575] w-2/3 h-1/2 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-center text-white mb-6">Update your location</Text>
-                  <View className="flex justify-center items-center">
-                    <View className="flex items-center justify-center">
-                      <View className="flex justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
-                        <TouchableOpacity onPress={getLocation} className="bg-[#ff2424] p-3 rounded-lg my-4">
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">Share Location</Text>
-                        </TouchableOpacity>
-                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-white justify-center items-center text-center">{text}</Text>
+    <SafeAreaView className='flex-1'>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="flex-1 items-center justify-center bg-[#221111]">
+          {user ? (
+            <>
+              <UploadImage/>
+              <View className="flex flex-row items-center justify-center">
+                <Text style={{fontFamily: 'BebasNeue'}} className="text-lg my-5 text-[#ffffff] mr-2">Welcome champ <Text className='text-2xl'>{name}👑</Text></Text>
+                <TouchableOpacity onPress={() => setVisible(true)}>
+                  <Feather name="edit" size={24} color="white" />
+                </TouchableOpacity>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={visible}
+                  onRequestClose={() => {
+                    alert('Modal has been closed.');
+                  }}>
+                  <View className="flex-1 justify-center items-center  bg-opacity-50">
+                    <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl text-center">Edit your name</Text>
+                      <View className="flex justify-center items-center">
+                        <View className="flex items-center justify-center">
+                        <TextInput
+                          className='w-full h-14 bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 my-6'
+                          value={user.displayName}
+                          onChangeText={(text) => {setUser({ ...user, displayName: text }); setName(text);}}
+                          placeholder="Update your name"
+                          placeholderTextColor="[#ffffff]"
+                        />
+                          <TouchableOpacity
+                            className="rounded-2xl p-4 shadow-md bg-[#ff2424]"
+                            onPress={() => {
+                              const re = ref(database, 'users/' + uid); // Get the user data
+                              updateProfile(auth.currentUser, {
+                                displayName: user.displayName,
+                              });
+                              update(re, {
+                                name: user.displayName,
+                              }).then( () => setVisible(false));
+                              }}>
+                            <Text style= {{fontFamily: 'BebasNeue'}} className="text-black text-center text-xl">Save</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
-                      <TouchableOpacity
-                        className="rounded-2xl p-4 shadow-md bg-[#ff2424] my-6"
-                        onPress={() => {
-                          const re = ref(database, 'users/' + uid); // Get the user data
-                          update(re, {
-                            location: location,
-                          }).then( () => {
-                            setLocation(location[0]);
-                            setLvisible(false)});
-                          }}>
-                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl ">Save</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                      className="rounded-2xl p-4 shadow-md bg-[#ff2424]"
-                      onPress={() => {
-                        setLvisible(false);
-                      }}>
-                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
-                      </TouchableOpacity>
                     </View>
                   </View>
-                </View>
+                </Modal>
               </View>
-            </Modal>
-          </View>
 
-          <View className="flex flex-row items-center justify-center">
-            <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl mr-3">Sports: {sports}</Text>
-            <TouchableOpacity onPress={ () => setSvisible(true)}>
-              <Feather name="edit" size={24} color="white" />
-            </TouchableOpacity>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={sVisible}
-              onRequestClose={() => {
-                alert('Modal has been closed.');
-              }}>
-              <View className="flex-1 justify-center items-center  bg-opacity-50">
-                <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your sports</Text>
-                  <View className="flex justify-center items-center my-6">
-                    <View className="flex items-center justify-center">
-                    <Dropdown
-                    fontFamily='BebasNeue'
-                    style={[styles.dropdown, isFocusSports && { borderColor: 'white' }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={dataSport}
-                    search
-                    maxHeight={1000}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocusSports ? 'Select your sport' : '...'}
-                    searchPlaceholder="Search..."
-                    value={sports}
-                    onFocus={() => setIsFocusSports(true)}
-                    onBlur={() => setIsFocusSports(false)}
-                    onChange={item => {
-                      setSports(item.value);
-                      setIsFocusSports(false);
-                      console.log(item.value);
-                    }}
-                  />
-                      <TouchableOpacity
-                        className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
-                        onPress={() => {
-                          const re = ref(database, 'users/' + uid); // Get the user data
-                          update(re, {
-                            sport: sports
-                          }).then( () => setSvisible(false));
-                          }}>
-                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                      className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
-                      onPress={() => {
-                        setSvisible(false);
-                      }}>
-                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
+              <View className="flex flex-row items-center justify-center py-2">
+                <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl mr-3">Bio:</Text>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-lg mr-3">{about}</Text>
                 </View>
-              </View>
-            </Modal>
-          </View>
-          
-          <View className="flex flex-row items-center justify-center">
-            <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl mr-3">Radius: {radius} KM</Text>
-            <TouchableOpacity onPress={ () => setRvisible(true)}>
-              <Feather name="edit" size={24} color="white" />
-            </TouchableOpacity>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={rVisible}
-              onRequestClose={() => {
-                alert('Modal has been closed.');
-              }}>
-              <View className="flex-1 justify-center items-center  bg-opacity-50">
-                <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
-                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your radius</Text>
-                  <View className="flex justify-center items-center my-6">
-                    <View className="flex items-center justify-center">
-                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">{radius} KM</Text>
-                      <Slider
-                          style={{
-                            width: 600,
-                            height: 40,
-                            flexGrow: 0,
-                            borderWidth: 1,
-                            borderColor: "black",
-                            borderStyle: "solid",
-                            alignContent: "center",
-                            flex: 1,
-                          }}
-                          minimumValue={10}
-                          maximumValue={100}
-                          value={radius}
-                          step={10}
-                          onValueChange={setRadius}
-                          minimumTrackTintColor="blue"
-                          maximumTrackTintColor="red"
+                <TouchableOpacity onPress={() => { setWvisible(true) }}>
+                  <Feather name="edit" size={24} color="white" />
+                </TouchableOpacity>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={wVisible}
+                  onRequestClose={() => {
+                    alert('Modal has been closed.');
+                  }}>
+                  <View className="flex-1 justify-center items-center  bg-opacity-50">
+                    <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your weight class</Text>
+                      <View className="flex justify-center items-center my-6">
+                        <View className="flex items-center justify-center">
+                        <Dropdown
+                        fontFamily='BebasNeue'
+                        style={[styles.dropdown, isFocusWeight && { borderColor: 'white' }]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={dataWeight}
+                        search
+                        maxHeight={1000}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={!isFocusWeight ? 'Select your weight class' : '...'}
+                        searchPlaceholder="Search..."
+                        value={weight}
+                        onFocus={() => setIsFocusWeight(true)}
+                        onBlur={() => setIsFocusWeight(false)}
+                        onChange={item => {
+                          setWeight(item.value);
+                          setIsFocusWeight(false);
+                          console.log(item.value);
+                        }}
                       />
-                      <TouchableOpacity
-                        className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
-                        onPress={() => {
-                          const re = ref(database, 'users/' + uid); // Get the user data
-                          update(re, {
-                            radius: radius
-                          }).then( () => setRvisible(false));
+                          <TouchableOpacity
+                            className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                            onPress={() => {
+                              const re = ref(database, 'users/' + uid); // Get the user data
+                              update(re, {
+                                weight: weight
+                              }).then( () => setWvisible(false));
+                              }}>
+                            <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                          className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                          onPress={() => {
+                            setWvisible(false);
                           }}>
-                        <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                      className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
-                      onPress={() => {
-                        setRvisible(false);
-                      }}>
-                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
-                      </TouchableOpacity>
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
                     </View>
                   </View>
-                </View>
+                </Modal>
               </View>
-            </Modal>
-          </View>
 
-          <View className="flex justify-center items-center ">
-            <TouchableOpacity onPress={handleSignOut} className=" bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">
-              <View className="flex justify-center items-center">
-                <Text style={{ fontFamily: 'BebasNeue' }} className='w-40 text-center text-[#ffffff]  text-xl'>Sign out</Text>
+              <View className="flex flex-row items-center justify-center py-2">
+              <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl mr-3">Weight class:</Text>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-lg mr-3">{weight}</Text>
+                </View>
+                <TouchableOpacity onPress={() => {setWvisible(true)}}>
+                  <Feather name="edit" size={24} color="white" />
+                </TouchableOpacity>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={wVisible}
+                  onRequestClose={() => {
+                    alert('Modal has been closed.');
+                  }}>
+                  <View className="flex-1 justify-center items-center  bg-opacity-50">
+                    <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your weight class</Text>
+                      <View className="flex justify-center items-center my-6">
+                        <View className="flex items-center justify-center">
+                        <Dropdown
+                        fontFamily='BebasNeue'
+                        style={[styles.dropdown, isFocusWeight && { borderColor: 'white' }]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={dataWeight}
+                        search
+                        maxHeight={1000}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={!isFocusWeight ? 'Select your weight class' : '...'}
+                        searchPlaceholder="Search..."
+                        value={weight}
+                        onFocus={() => setIsFocusWeight(true)}
+                        onBlur={() => setIsFocusWeight(false)}
+                        onChange={item => {
+                          setWeight(item.value);
+                          setIsFocusWeight(false);
+                          console.log(item.value);
+                        }}
+                      />
+                          <TouchableOpacity
+                            className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                            onPress={() => {
+                              const re = ref(database, 'users/' + uid); // Get the user data
+                              update(re, {
+                                weight: weight
+                              }).then( () => setWvisible(false));
+                              }}>
+                            <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                          className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                          onPress={() => {
+                            setWvisible(false);
+                          }}>
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
               </View>
-            </TouchableOpacity>
-          </View>
-        </>
-      ): (
-        <Button title="Please Sign in" onPress={() => navigation.navigate('(auth)', { screen: 'sign-in' })} />
-      )}
-    </View>
+
+              <View className="flex flex-row items-center justify-center py-2">
+                <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl mr-3">Location:</Text>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-lg mr-3">{location}</Text>
+                </View>
+                <TouchableOpacity onPress={() => setLvisible(true)}>
+                  <Feather name="edit" size={24} color="white" />
+                </TouchableOpacity>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={lVisible}
+                  onRequestClose={() => {
+                    alert('Modal has been closed.');
+                  }}>
+                  <View className="flex-1 justify-center items-center  bg-opacity-50">
+                    <View className="bg-[#7e7575] w-2/3 h-1/2 rounded-lg">
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-center text-white mb-6">Update your location</Text>
+                      <View className="flex justify-center items-center">
+                        <View className="flex items-center justify-center">
+                          <View className="flex justify-center items-center p-2 space-x-4 border border-gray-200 rounded-xl">
+                            <TouchableOpacity onPress={getLocation} className="bg-[#ff2424] p-3 rounded-lg my-4">
+                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-center">Share Location</Text>
+                            </TouchableOpacity>
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-white justify-center items-center text-center">{text}</Text>
+                          </View>
+                          <TouchableOpacity
+                            className="rounded-2xl p-4 shadow-md bg-[#ff2424] my-6"
+                            onPress={() => {
+                              const re = ref(database, 'users/' + uid); // Get the user data
+                              update(re, {
+                                location: location,
+                              }).then( () => {
+                                setLocation(location[0]);
+                                setLvisible(false)});
+                              }}>
+                            <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl ">Save</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                          className="rounded-2xl p-4 shadow-md bg-[#ff2424]"
+                          onPress={() => {
+                            setLvisible(false);
+                          }}>
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
+              </View>
+
+              <View className="flex flex-row items-center justify-center py-2">
+                <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl mr-3">Sports:</Text>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-lg mr-3">{sports}</Text>
+                </View>
+                <TouchableOpacity onPress={ () => setSvisible(true)}>
+                  <Feather name="edit" size={24} color="white" />
+                </TouchableOpacity>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={sVisible}
+                  onRequestClose={() => {
+                    alert('Modal has been closed.');
+                  }}>
+                  <View className="flex-1 justify-center items-center  bg-opacity-50">
+                    <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your sports</Text>
+                      <View className="flex justify-center items-center my-6">
+                        <View className="flex items-center justify-center">
+                        <Dropdown
+                        fontFamily='BebasNeue'
+                        style={[styles.dropdown, isFocusSports && { borderColor: 'white' }]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={dataSport}
+                        search
+                        maxHeight={1000}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={!isFocusSports ? 'Select your sport' : '...'}
+                        searchPlaceholder="Search..."
+                        value={sports}
+                        onFocus={() => setIsFocusSports(true)}
+                        onBlur={() => setIsFocusSports(false)}
+                        onChange={item => {
+                          setSports(item.value);
+                          setIsFocusSports(false);
+                          console.log(item.value);
+                        }}
+                      />
+                          <TouchableOpacity
+                            className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                            onPress={() => {
+                              const re = ref(database, 'users/' + uid); // Get the user data
+                              update(re, {
+                                sport: sports
+                              }).then( () => setSvisible(false));
+                              }}>
+                            <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                          className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                          onPress={() => {
+                            setSvisible(false);
+                          }}>
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
+              </View>
+              
+              <View className="flex flex-row items-center justify-center py-2">
+                <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl mr-3">Radius:</Text>
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-lg mr-3">{radius} Km</Text>
+                </View>
+                <TouchableOpacity onPress={ () => setRvisible(true)}>
+                  <Feather name="edit" size={24} color="white" />
+                </TouchableOpacity>
+                <Modal
+                  animationType="slide"
+                  transparent={true}
+                  visible={rVisible}
+                  onRequestClose={() => {
+                    alert('Modal has been closed.');
+                  }}>
+                  <View className="flex-1 justify-center items-center  bg-opacity-50">
+                    <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                      <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your radius</Text>
+                      <View className="flex justify-center items-center my-6">
+                        <View className="flex items-center justify-center">
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">{radius} KM</Text>
+                          <Slider
+                              style={{
+                                width: 600,
+                                height: 40,
+                                flexGrow: 0,
+                                borderWidth: 1,
+                                borderColor: "black",
+                                borderStyle: "solid",
+                                alignContent: "center",
+                                flex: 1,
+                              }}
+                              minimumValue={10}
+                              maximumValue={100}
+                              value={radius}
+                              step={10}
+                              onValueChange={setRadius}
+                              minimumTrackTintColor="blue"
+                              maximumTrackTintColor="red"
+                          />
+                          <TouchableOpacity
+                            className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                            onPress={() => {
+                              const re = ref(database, 'users/' + uid); // Get the user data
+                              update(re, {
+                                radius: radius
+                              }).then( () => setRvisible(false));
+                              }}>
+                            <Text style= {{fontFamily: 'BebasNeue'}} className="text-white text-center text-xl">Save</Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                          className="rounded-2xl mt-6 p-4 shadow-md bg-[#ff2424]"
+                          onPress={() => {
+                            setRvisible(false);
+                          }}>
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-center text-xl ">Cancel</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
+              </View>
+
+              <View className="flex justify-center items-center ">
+                <TouchableOpacity onPress={handleSignOut} className=" bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">
+                  <View className="flex justify-center items-center">
+                    <Text style={{ fontFamily: 'BebasNeue' }} className='w-40 text-center text-[#ffffff]  text-xl'>Sign out</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </>
+          ): (
+            <Button title="Please Sign in" onPress={() => navigation.navigate('(auth)', { screen: 'sign-in' })} />
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
