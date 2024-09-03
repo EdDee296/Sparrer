@@ -16,6 +16,7 @@ import { useFonts } from 'expo-font';
 import * as geofire from 'geofire-common';
 import { ftdb } from '@/FireBaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
+import Feather from '@expo/vector-icons/Feather';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -81,6 +82,7 @@ const about = () => {
   const [isFocusWeight, setIsFocusWeight] = useState(false);
   const [value, setValue] = useState(10);
   const [about, setAbout] = useState("");
+  const [images, setImages] = useState([null, null, null, null])
   const [wordCount, setWordCount] = useState(0);
   const [geoPoint, setGeoPoint] = useState([0,0]);
 
@@ -118,6 +120,21 @@ const about = () => {
     }
   };
 
+  const addMoreImage = async (index) => {
+    let _image = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!_image.canceled) {
+      const updatedImages = [...images];
+      updatedImages[index] = _image.assets[0].uri;
+      setImages(updatedImages);
+    }
+  };
+
   const handleTextChange = (text) => {
     const words = text.trim().split(/\s+/);
     const count = words.filter(word => word.length > 0).length;
@@ -137,7 +154,12 @@ const about = () => {
       alert('Error! Your description exceeds the 100-word limit.');
       return
     }
-  
+    
+    if (!images) {
+      alert('Please upload at least one image.');
+      return;
+    }
+
     try {
       if (user) {
         const storage = getStorage();
@@ -156,7 +178,21 @@ const about = () => {
         await updateProfile(user, {
           photoURL: downloadURL,
         });
-  
+        
+        for (let i = 0; i < images.length; i++) {
+          if (images[i]) {
+            const imagePath1 = `images/${user.uid}/about_images/${images[i].substring(images[i].lastIndexOf('/') + 1)}.jpeg`;
+            const imageRef1 = storageRef(storage, imagePath1);
+      
+            // Convert the image URI to blob or file
+            const response1 = await fetch(images[i]);
+            const blob1 = await response1.blob();
+      
+            // Upload the image to Firebase Storage
+            const snapshot1 = await uploadBytes(imageRef1, blob1);
+          }
+        }
+
         // Optionally, save the user data including the image URL to Firebase Realtime Database or Firestore
         const db = getDatabase();
         const userRef = ref(db, `users/${user.uid}`);
@@ -240,11 +276,12 @@ const about = () => {
     <SafeAreaView className="flex-1 bg-[#221111]">
     <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
   {user ? (
-    tooltip ? (
-      <View>
-        <Text className='text-white'>please do change in settings</Text>
-      </View>
-    ) : (
+    // tooltip ? (
+    //   <View>
+    //     <Text className='text-white'>please do change in settings</Text>
+    //   </View>
+    // ) : 
+    (
       <SafeAreaView className="flex-1 bg-[#221111] items-center justify-start">
           <View className="w-full bg-[#221111] p-4 pb-2 items-center justify-between">
             <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-3xl font-bold text-center px-12">Join the boxing community</Text>
@@ -454,6 +491,24 @@ const about = () => {
               />
             </View>
           </View>
+
+          <View className="w-3/4 py-6">
+      <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Add more image about you</Text>
+      <View className="flex flex-1 flex-row flex-wrap justify-center items-center w-full">
+        {images.map((img, index) => (
+          <View key={index} className="w-1/2 py-10 flex justify-center items-center">
+            <View className="h-[250px] w-[200px] align-middle border-2 border-dashed border-white overflow-hidden shadow flex items-center justify-center">
+              <TouchableOpacity onPress={() => addMoreImage(index)} className="flex-1 items-center justify-center">
+                <View className="flex-1 items-center justify-center">
+                  {img && <Image source={{ uri: img }} style={{ width: 200, height: 300 }} />}
+                  <Feather name="plus-square" size={24} color="white" />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
 
           <View className="flex-1 justify-center items-center ">
             <TouchableOpacity onPress={handleSignUp} className="w-full bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">

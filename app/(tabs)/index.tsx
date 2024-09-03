@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ImageBackground, Modal, Image, Text, TouchableOpacity, View, ScrollView, TouchableWithoutFeedback, Button, TouchableHighlight } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ImageBackground, Modal, Image, Text, TouchableOpacity, View, ScrollView, TouchableWithoutFeedback, Button, TouchableHighlight, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import TinderCard from "react-tinder-card";
 import { getDatabase, onValue, ref, get, update } from "firebase/database";
@@ -15,10 +15,12 @@ import * as geofire from 'geofire-common';
 import { ftdb } from "@/FireBaseConfig";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { collection, query as Rquery, orderBy, startAt, endAt, getDocs, doc, getDoc } from 'firebase/firestore';
+import { getStorage, ref as Sref, listAll, getDownloadURL } from "firebase/storage";
 
 SplashScreen.preventAutoHideAsync();
 
 const database = getDatabase(getApp());
+const storage = getStorage();
 
 const query = (data, currentData) => {
   return JSON.stringify(data) === JSON.stringify(currentData);
@@ -55,6 +57,20 @@ const geoquery = async (center, radiusInM) => {
   return matchingDocs;
 }
 
+const getImg = async (uid) => {
+  const listRef = Sref(storage, `images/${uid}/about_images`);
+  try {
+    const res = await listAll(listRef);
+    const urls = await Promise.all(res.items.map(itemRef => getDownloadURL(itemRef)));
+    return urls;
+  } catch (error) {
+    alert("error fetching images " + error);
+    return [];
+  }
+};
+
+
+
 const ring = require('@/assets/images/ring.jpg');
 const glove = require('@/assets/images/gloves.png');
 const { width } = Dimensions.get('window');
@@ -73,7 +89,7 @@ function Simple()  {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
-  const [modalOpen3, setModalOpen3] = useState(true);
+  const [modalOpen3, setModalOpen3] = useState(false);
   const [matchedImg, setMatchedImg] = useState('');
   const [matchedName, setMatchedName] = useState('');
   const [matchedUid, setMatchedUid] = useState('');
@@ -82,6 +98,10 @@ function Simple()  {
   const [swipedCard, setSwipedCard] = useState(null);
   const [radius, setRadius] = useState(0);
   const [data, setData] = useState([]);
+  const [characterImages, setCharacterImages] = useState([]);
+  const [imgUrl, setImgUrl] = useState('');
+  const [imgVisible, setImgVisible] = useState(false);
+  const [imgVisible2, setImgVisible2] = useState(false );
 
   const auth = getAuth();
   const navigation = useNavigation();
@@ -144,6 +164,7 @@ function Simple()  {
            console.log("there is an error when updating data", error);
         }
       });
+      
     } else {
       setLocation('');
       setGender('');
@@ -224,7 +245,6 @@ function Simple()  {
   const outOfFrame = (name) => {
     setCharacters((prevCharacters) => prevCharacters.filter((character) => character.name !== name));
   };
-
 
   useEffect(() => {
     if (loaded || error) {
@@ -353,10 +373,14 @@ function Simple()  {
                                   }}
                                   allowChildInteraction={true}
                                   contentStyle={{ width: 'auto', backgroundColor: 'white', padding: 10 }}
-                                  childrenWrapperStyle={{backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 100, height: '24px'}}
+                                  childrenWrapperStyle={{backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 100, height: 24}}
                                   showChildInTooltip={true}
                                 >
-                                  <TouchableHighlight onPress={() => { setModalInfo(true); }}>
+                                  <TouchableHighlight onPress={async () => { 
+                                    const images = await getImg(character.uid);
+                                    setCharacterImages(images); // Assuming you have a state variable to store these images
+                                    setModalInfo(true); 
+                                  }}>
                                     <AntDesign name="upcircleo" size={24} color="black" />
                                   </TouchableHighlight>
                                 </Tooltip>
@@ -391,12 +415,56 @@ function Simple()  {
                                     more info for {character.name}
                                   </Text>
                                   <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#000000] text-lg">
-                                    About: {character.about}
+                                    {character.about}
                                   </Text>
+                                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+                                    {characterImages.map((url, index) => (
+                                      <View key={index} style={{ width: '48%', marginBottom: 20, alignItems: 'center' }}>
+                                        <TouchableHighlight key={index} onPress={() => {
+                                          if (Platform.OS === "ios") {
+                                          setImgUrl(url);
+                                          setTimeout(() => setImgVisible(true), 200);
+                                          } else {
+                                            setImgUrl(url);
+                                            setImgVisible2(true);
+                                          }
+                                        }}>
+                                          <Image key={index} source={{ uri: url }} style={{ width: 110, height: 200 }} />
+                                        </TouchableHighlight>
+                                      </View>
+                                    ))}
+                                  </View>
                                 </View>
                               </ScrollView>
                             </SafeAreaView>
                           </View>
+                          <Modal
+                            animationType='fade'
+                            visible={imgVisible2}
+                            className="h-full w-full"
+                            transparent={true}
+                            onRequestClose={() => {
+                              setImgVisible2(false);
+                            }}
+                          >
+                            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 10 }}>
+                              <TouchableOpacity
+                                style={{ position: 'absolute', top: 40, right: 20, zIndex: 11, padding: 10 }}
+                                onPress={() => { setImgVisible2(false); }}
+                              >
+                                <Text style={{ fontSize: 24, color: 'white' }}>X</Text>
+                              </TouchableOpacity>
+                              {imgUrl ? (
+                                <Image
+                                  source={{ uri: imgUrl }} 
+                                  style={{ width: '80%', height: '80%', resizeMode: 'contain' }} 
+                                  onError={(error) => console.log('Image Load Error:', error.nativeEvent.error)}
+                                />
+                              ) : (
+                                <Text style={{ color: 'white' }}>Image not available</Text>
+                              )}
+                            </SafeAreaView>
+                          </Modal>
                         </Modal>
                       )}
                     </Tooltip>
@@ -409,6 +477,33 @@ function Simple()  {
                 </View>
               )}
             </View>
+            <Modal
+              animationType='fade'
+              visible={imgVisible}
+              className="h-full w-full"
+              transparent={true}
+              onRequestClose={() => {
+                setImgVisible(false);
+              }}
+            >
+              <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 10 }}>
+                <TouchableOpacity
+                  style={{ position: 'absolute', top: 40, right: 20, zIndex: 11, padding: 10 }}
+                  onPress={() => { setImgVisible(false); }}
+                >
+                  <Text style={{ fontSize: 24, color: 'white' }}>X</Text>
+                </TouchableOpacity>
+                {imgUrl ? (
+                  <Image
+                    source={{ uri: imgUrl }} 
+                    style={{ width: '80%', height: '80%', resizeMode: 'contain' }} 
+                    onError={(error) => console.log('Image Load Error:', error.nativeEvent.error)}
+                  />
+                ) : (
+                  <Text style={{ color: 'white' }}>Image not available</Text>
+                )}
+              </SafeAreaView>
+            </Modal>
           </View>
         ) : (
           <View className="flex items-center justify-center w-full ">
