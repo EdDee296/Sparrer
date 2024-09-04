@@ -320,37 +320,36 @@ function Simple()  {
             <View className="w-[90%] mr-10 max-w-[260px] h-auto p-0">
               {characters?.length ? (
                 characters.filter(character => character.uid !== swipedCard).map((character) => (       
-                    <TinderCard
-                      swipeThreshold={1}
-                      preventSwipe={["up", "down"]}
-                      key={character.uid}
-                      onSwipe={(dir) => swiped(dir, character.uid)}
-                      onCardLeftScreen={() => outOfFrame(character.name)}
-                    >
-                      <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
-                        <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
-                        </ImageBackground>
-                        <View className="absolute bottom-0 left-0 right-0 p-2.5">
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
-                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
-                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>
-                              {character.distance.toFixed(2)} km away from you!
-                            </Text>
-                  
-                            <TouchableHighlight onPress={async () => {
-                              const images = await getImg(character.uid);
-                              setCharacterImages(images); // Assuming you have a state variable to store these images
-                              setSelectedCharacter(character); // Set the selected character
-                              setModalInfo(true);
-                            }}>
-                              <AntDesign name="upcircleo" size={24} color="black" />
-                            </TouchableHighlight>
-                          </View>
+                  <TinderCard
+                    swipeThreshold={1}
+                    preventSwipe={["up", "down"]}
+                    key={character.uid}
+                    onSwipe={(dir) => swiped(dir, character.uid)}
+                    onCardLeftScreen={() => outOfFrame(character.name)}
+                  >
+                    <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
+                      <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
+                      </ImageBackground>
+                      <View className="absolute bottom-0 left-0 right-0 p-2.5">
+                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
+                        <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>
+                            {character.distance.toFixed(2)} km away from you!
+                          </Text>
+                
+                          <TouchableHighlight onPress={async () => {
+                            const images = await getImg(character.uid);
+                            setCharacterImages(images); // Assuming you have a state variable to store these images
+                            setSelectedCharacter(character); // Set the selected character
+                            setModalInfo(true);
+                          }}>
+                            <AntDesign name="upcircleo" size={24} color="black" />
+                          </TouchableHighlight>
                         </View>
                       </View>
-                    </TinderCard>
-                    
+                    </View>
+                  </TinderCard>
                 ))
               ) : (
                 <View className="flex justify-center items-center h-screen ml-8 pl-1 pb-20">
@@ -402,7 +401,7 @@ function Simple()  {
                                     setImgVisible2(true);
                                   }
                                 }}>
-                                  <Image source={{ uri: url }} style={{ width: 110, height: 200 }} />
+                                  <Image source={{ uri: url }} style={{ width: 110, height: 200, marginHorizontal:15 }} />
                                 </TouchableHighlight>
                               </View>
                             ))}
@@ -449,7 +448,7 @@ function Simple()  {
                   >
                     <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 10 }}>
                       <TouchableOpacity
-                        style={{ position: 'absolute', top: 40, right: 20, zIndex: 11, padding: 10 }}
+                        style={{ position: 'absolute', top: 40, right: 20, zIndex: 11 }}
                         onPress={() => { setImgVisible2(false); }}
                       >
                         <Text style={{ fontSize: 24, color: 'white' }}>X</Text>
@@ -457,7 +456,7 @@ function Simple()  {
                       {imgUrl ? (
                         <Image
                           source={{ uri: imgUrl }} 
-                          style={{ width: '80%', height: '80%', resizeMode: 'contain' }} 
+                          style={{ width: '80%', height: '80%', resizeMode: 'contain'}} 
                           onError={(error) => console.log('Image Load Error:', error.nativeEvent.error)}
                         />
                       ) : (
