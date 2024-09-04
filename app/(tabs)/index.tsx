@@ -101,7 +101,9 @@ function Simple()  {
   const [characterImages, setCharacterImages] = useState([]);
   const [imgUrl, setImgUrl] = useState('');
   const [imgVisible, setImgVisible] = useState(false);
-  const [imgVisible2, setImgVisible2] = useState(false );
+  const [imgVisible2, setImgVisible2] = useState(false);
+  const [tooltipShown, setTooltipShown] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
 
   const auth = getAuth();
   const navigation = useNavigation();
@@ -126,6 +128,7 @@ function Simple()  {
         const userRef = ref(database, `users/${user.uid}`);
         onValue(userRef, async (snapshot) => {
           const data = await snapshot.val();
+          setTooltipShown(data.tooltipShown)
           if (data && !data.tooltipShown) {
             setModalOpen(true);
           }
@@ -203,6 +206,7 @@ function Simple()  {
     }
   }, [data, currentUid, currentLocation]);
 
+
   const relate = (uid, currentUid, type, status) => {
     update(ref(database, `challenges/${currentUid}/${type}`), {
       [uid]: status,
@@ -262,6 +266,7 @@ function Simple()  {
         currentLocation ? (
           <View className="flex items-center justify-center w-full">
             <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-white text-5xl mt-6 mb-6">🥊 Sparrer 🥊</Text>
+
             <Modal
               className="h-full"
               animationType="slide"
@@ -314,161 +319,38 @@ function Simple()  {
             
             <View className="w-[90%] mr-10 max-w-[260px] h-auto p-0">
               {characters?.length ? (
-                characters.filter(character => character.uid !== swipedCard).map((character) => (
-                  <Tooltip
-                    key={uuid.v4().toString()}
-                    isVisible={modalOpen}
-                    content={<Text>Swipe right to match ➡️</Text>}
-                    placement="top"
-                    allowChildInteraction={false}
-                    horizontalAdjustment={100}
-                    childrenWrapperStyle={{ transform: [{ rotate: '30deg' }] }}
-                    onClose={() => {
-                      setModalOpen(false)
-                      setModalOpen2(true)
-                    }}
-                    contentStyle={{ width: '100%' }}
-                  >
-                    <Tooltip
-                      key={uuid.v4().toString()}
-                      isVisible={modalOpen2}
-                      content={<Text>⬅️ Swipe left to pass</Text>}
-                      placement="top"
-                      allowChildInteraction={false}
-                      horizontalAdjustment={-350}
-                      childrenWrapperStyle={{ transform: [{ rotate: '-30deg' }], height: 300 }}
-                      onClose={() => {
-                        setModalOpen2(false); 
-                        setModalOpen3(true);
-                      }}
-                      contentStyle={{ width: '100%' }}
+                characters.filter(character => character.uid !== swipedCard).map((character) => (       
+                    <TinderCard
+                      swipeThreshold={1}
+                      preventSwipe={["up", "down"]}
+                      key={character.uid}
+                      onSwipe={(dir) => swiped(dir, character.uid)}
+                      onCardLeftScreen={() => outOfFrame(character.name)}
                     >
-                      {!modalInfo ? (
-                        <TinderCard
-                        swipeThreshold={1}
-                        preventSwipe={["up", "down"]}
-                        key={character.uid}
-                        onSwipe={(dir) => swiped(dir, character.uid)}
-                        onCardLeftScreen={() => outOfFrame(character.name)}
-                        >
-                          <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]" >
-                            <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
-                            </ImageBackground>
-                            <View className="absolute bottom-0 left-0 right-0 p-2.5">
-                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
-                              <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
-                              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>
-                                  {character.distance.toFixed(2)} km away from you!
-                                </Text>
-                                <Tooltip
-                                  key={uuid.v4().toString()}
-                                  isVisible={modalOpen3}
-                                  content={<Text>Tap for more info</Text>}
-                                  placement="top"
-                                  onClose={() => {
-                                    setModalOpen3(false);
-                                    const userRef = ref(database, `users/${user.uid}`);
-                                    update(userRef, { tooltipShown: true });
-                                  }}
-                                  allowChildInteraction={true}
-                                  contentStyle={{ width: 'auto', backgroundColor: 'white', padding: 10 }}
-                                  childrenWrapperStyle={{backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 100, height: 24}}
-                                  showChildInTooltip={true}
-                                >
-                                  <TouchableHighlight onPress={async () => { 
-                                    const images = await getImg(character.uid);
-                                    setCharacterImages(images); // Assuming you have a state variable to store these images
-                                    setModalInfo(true); 
-                                  }}>
-                                    <AntDesign name="upcircleo" size={24} color="black" />
-                                  </TouchableHighlight>
-                                </Tooltip>
-                              </View>
-                            </View>
+                      <View className="absolute bg-white w-[300px] h-[500px] shadow-lg shadow-black/20 rounded-[20px] pb-[100px]">
+                        <ImageBackground className="w-full h-full overflow-hidden rounded-[20px]" source={{ uri: character.url }}>
+                        </ImageBackground>
+                        <View className="absolute bottom-0 left-0 right-0 p-2.5">
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-xl" selectable={false}>{character.name}, {character.age}</Text>
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>{character.sport}, {character.weight}</Text>
+                          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Text style={{ fontFamily: 'BebasNeue' }} className="text-black text-base" selectable={false}>
+                              {character.distance.toFixed(2)} km away from you!
+                            </Text>
+                  
+                            <TouchableHighlight onPress={async () => {
+                              const images = await getImg(character.uid);
+                              setCharacterImages(images); // Assuming you have a state variable to store these images
+                              setSelectedCharacter(character); // Set the selected character
+                              setModalInfo(true);
+                            }}>
+                              <AntDesign name="upcircleo" size={24} color="black" />
+                            </TouchableHighlight>
                           </View>
-                        </TinderCard>
-                      ) : ( 
-                        <Modal
-                          animationType='slide'
-                          visible={modalInfo}
-                          transparent={true}
-                          className="h-full w-full"
-                          onRequestClose={() => {
-                            setModalInfo(false);
-                          }}
-                        >
-                          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-                            <TouchableWithoutFeedback onPress={() => { setModalInfo(false); }}>
-                              <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
-                            </TouchableWithoutFeedback>
-                            <SafeAreaView className="flex-1 justify-center items-center mt-6 rounded-[20px]">
-                              <ScrollView showsVerticalScrollIndicator={false}>
-                                <View className="w-[300px] bg-[#9d8f8f] justify-start items-center relative rounded-[20px] p-4">
-                                  <TouchableOpacity
-                                    style={{ position: 'absolute', top: 10, right: 10 }}
-                                    onPress={() => { setModalInfo(false); }}
-                                  >
-                                    <Text style={{ fontSize: 18 }}>X</Text>
-                                  </TouchableOpacity>
-                                  <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-[#4f2727] text-2xl mb-4">
-                                    more info for {character.name}
-                                  </Text>
-                                  <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#000000] text-lg">
-                                    {character.about}
-                                  </Text>
-                                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
-                                    {characterImages.map((url, index) => (
-                                      <View key={index} style={{ width: '48%', marginBottom: 20, alignItems: 'center' }}>
-                                        <TouchableHighlight key={index} onPress={() => {
-                                          if (Platform.OS === "ios") {
-                                          setImgUrl(url);
-                                          setTimeout(() => setImgVisible(true), 200);
-                                          } else {
-                                            setImgUrl(url);
-                                            setImgVisible2(true);
-                                          }
-                                        }}>
-                                          <Image key={index} source={{ uri: url }} style={{ width: 110, height: 200 }} />
-                                        </TouchableHighlight>
-                                      </View>
-                                    ))}
-                                  </View>
-                                </View>
-                              </ScrollView>
-                            </SafeAreaView>
-                          </View>
-                          <Modal
-                            animationType='fade'
-                            visible={imgVisible2}
-                            className="h-full w-full"
-                            transparent={true}
-                            onRequestClose={() => {
-                              setImgVisible2(false);
-                            }}
-                          >
-                            <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 10 }}>
-                              <TouchableOpacity
-                                style={{ position: 'absolute', top: 40, right: 20, zIndex: 11, padding: 10 }}
-                                onPress={() => { setImgVisible2(false); }}
-                              >
-                                <Text style={{ fontSize: 24, color: 'white' }}>X</Text>
-                              </TouchableOpacity>
-                              {imgUrl ? (
-                                <Image
-                                  source={{ uri: imgUrl }} 
-                                  style={{ width: '80%', height: '80%', resizeMode: 'contain' }} 
-                                  onError={(error) => console.log('Image Load Error:', error.nativeEvent.error)}
-                                />
-                              ) : (
-                                <Text style={{ color: 'white' }}>Image not available</Text>
-                              )}
-                            </SafeAreaView>
-                          </Modal>
-                        </Modal>
-                      )}
-                    </Tooltip>
-                  </Tooltip>
+                        </View>
+                      </View>
+                    </TinderCard>
+                    
                 ))
               ) : (
                 <View className="flex justify-center items-center h-screen ml-8 pl-1 pb-20">
@@ -476,34 +358,116 @@ function Simple()  {
                   <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-xl ">Let's get back to work! 💪🔥</Text>
                 </View>
               )}
-            </View>
-            <Modal
-              animationType='fade'
-              visible={imgVisible}
-              className="h-full w-full"
-              transparent={true}
-              onRequestClose={() => {
-                setImgVisible(false);
-              }}
-            >
-              <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 10 }}>
-                <TouchableOpacity
-                  style={{ position: 'absolute', top: 40, right: 20, zIndex: 11, padding: 10 }}
-                  onPress={() => { setImgVisible(false); }}
+
+              {selectedCharacter && (
+                <Modal
+                  animationType='slide'
+                  visible={modalInfo}
+                  transparent={true}
+                  className="h-full w-full"
+                  onRequestClose={() => {
+                    setModalInfo(false);
+                    setSelectedCharacter(null); // Clear the selected character
+                  }}
                 >
-                  <Text style={{ fontSize: 24, color: 'white' }}>X</Text>
-                </TouchableOpacity>
-                {imgUrl ? (
-                  <Image
-                    source={{ uri: imgUrl }} 
-                    style={{ width: '80%', height: '80%', resizeMode: 'contain' }} 
-                    onError={(error) => console.log('Image Load Error:', error.nativeEvent.error)}
-                  />
-                ) : (
-                  <Text style={{ color: 'white' }}>Image not available</Text>
-                )}
-              </SafeAreaView>
-            </Modal>
+                  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                    <TouchableWithoutFeedback onPress={() => { setModalInfo(false); setSelectedCharacter(null); }}>
+                      <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />
+                    </TouchableWithoutFeedback>
+                    <SafeAreaView className="flex-1 justify-center items-center mt-6 rounded-[20px]">
+                      <ScrollView showsVerticalScrollIndicator={false}>
+                        <View className="w-[300px] bg-[#9d8f8f] justify-start items-center relative rounded-[20px] p-4">
+                          <TouchableOpacity
+                            style={{ position: 'absolute', top: 10, right: 10 }}
+                            onPress={() => { setModalInfo(false); setSelectedCharacter(null); }}
+                          >
+                            <Text style={{ fontSize: 18 }}>X</Text>
+                          </TouchableOpacity>
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-[#4f2727] text-2xl mb-4">
+                            more info for {selectedCharacter.name}
+                          </Text>
+                          <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#000000] text-lg">
+                            {selectedCharacter.about}
+                          </Text>
+                          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+                            {characterImages.map((url, index) => (
+                              <View key={index} style={{ width: '48%', marginBottom: 20, alignItems: 'center' }}>
+                                <TouchableHighlight key={uuid.v4().toString()} onPress={() => {
+                                  console.log('Image pressed:', url);
+                                  if (Platform.OS === "ios" || Platform.OS === "android") {
+                                    setImgUrl(url);
+                                    setImgVisible(true);
+                                  } else {
+                                    setImgUrl(url);
+                                    setImgVisible2(true);
+                                  }
+                                }}>
+                                  <Image source={{ uri: url }} style={{ width: 110, height: 200 }} />
+                                </TouchableHighlight>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      </ScrollView>
+                    </SafeAreaView>
+                  </View>
+                  <Modal
+                    animationType='fade'
+                    visible={imgVisible}
+                    className="h-full w-full"
+                    transparent={true}
+                    onRequestClose={() => {
+                      setImgVisible(false);
+                    }}
+                  >
+                    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 10 }}>
+                      <TouchableOpacity
+                        style={{ position: 'absolute', top: 40, right: 20, zIndex: 11, padding: 10 }}
+                        onPress={() => { setImgVisible(false); }}
+                      >
+                        <Text style={{ fontSize: 24, color: 'white' }}>X</Text>
+                      </TouchableOpacity>
+                      {imgUrl ? (
+                        <Image
+                          source={{ uri: imgUrl }} 
+                          style={{ width: '80%', height: '80%', resizeMode: 'contain' }} 
+                          onError={(error) => console.log('Image Load Error:', error.nativeEvent.error)}
+                        />
+                      ) : (
+                        <Text style={{ color: 'white' }}>Image not available</Text>
+                      )}
+                    </SafeAreaView>
+                  </Modal>
+                  <Modal
+                    animationType='fade'
+                    visible={imgVisible2}
+                    className="h-full w-full"
+                    transparent={true}
+                    onRequestClose={() => {
+                      setImgVisible2(false);
+                    }}
+                  >
+                    <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 10 }}>
+                      <TouchableOpacity
+                        style={{ position: 'absolute', top: 40, right: 20, zIndex: 11, padding: 10 }}
+                        onPress={() => { setImgVisible2(false); }}
+                      >
+                        <Text style={{ fontSize: 24, color: 'white' }}>X</Text>
+                      </TouchableOpacity>
+                      {imgUrl ? (
+                        <Image
+                          source={{ uri: imgUrl }} 
+                          style={{ width: '80%', height: '80%', resizeMode: 'contain' }} 
+                          onError={(error) => console.log('Image Load Error:', error.nativeEvent.error)}
+                        />
+                      ) : (
+                        <Text style={{ color: 'white' }}>Image not available</Text>
+                      )}
+                    </SafeAreaView>
+                  </Modal>
+                </Modal>
+              )}
+            </View>
           </View>
         ) : (
           <View className="flex items-center justify-center w-full ">

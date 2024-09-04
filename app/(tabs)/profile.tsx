@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
+import { View, Text, Button, TouchableOpacity, Modal, TextInput, ScrollView, Image, Platform } from 'react-native';
 import { getAuth, signOut, updateProfile } from 'firebase/auth';
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import UploadImage from '@/components/Upload';
@@ -14,6 +14,7 @@ import * as Location from 'expo-location';
 import UpdateLocation from '@/components/UpdateLocation';
 import Slider from '@react-native-assets/slider';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getStorage, ref as Sref, listAll, getDownloadURL } from "firebase/storage";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -44,7 +45,7 @@ const dataWeight = [
 ];
 
 const database = getDatabase(getApp());
-
+const storage = getStorage(getApp());
 
 const UserProfileTab = () => {
   const [loaded, error] = useFonts({
@@ -82,11 +83,25 @@ const UserProfileTab = () => {
   const [aVisible, setAvisible] = useState(false);
   const [wordCount, setWordCount] = useState(0);
 
+  const[img, setImg] = useState([]);
+
   const auth = getAuth();
   const navigation = useNavigation();
 
+  const getImg = async (uid) => {
+    const listRef = Sref(storage, `images/${uid}/about_images`);
+    try {
+      const res = await listAll(listRef);
+      const urls = await Promise.all(res.items.map(itemRef => getDownloadURL(itemRef)));
+      return urls;
+    } catch (error) {
+      alert("error fetching images " + error);
+      return [];
+    }
+  };
+
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
       if (authUser) {
         setUser({
           displayName: authUser.displayName,
@@ -106,14 +121,22 @@ const UserProfileTab = () => {
             setSports(data.sport);
             setName(data.name);
             setRadius(data.radius);
+          } else {
+            // User is signed out, reset state
+            setUser(null);
+            setUid(null);
+            setWeight(null);
+            setLocation(null);
           }
-        });
+        })
+        const images = await getImg(authUser.uid);
+        setImg(images);
       }
     });
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [auth]);
+  }, [auth, img]);
 
   const handleSignOut = () => {
     signOut(auth)
@@ -184,7 +207,7 @@ const UserProfileTab = () => {
                     alert('Modal has been closed.');
                   }}>
                   <View className="flex-1 justify-center items-center  bg-opacity-50">
-                    <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                    <View className="bg-[#7e7575] w-full h-1/2 rounded-lg">
                       <Text style={{ fontFamily: 'BebasNeue' }} className="text-white text-xl text-center">Edit your name</Text>
                       <View className="flex justify-center items-center">
                         <View className="flex items-center justify-center">
@@ -231,7 +254,7 @@ const UserProfileTab = () => {
                     alert('Modal has been closed.');
                   }}>
                   <View className="flex-1 justify-center items-center bg-opacity-50">
-                    <View className="bg-[#7e7575] w-3/4 h-auto rounded-lg p-6">
+                    <View className="bg-[#7e7575] w-full h-auto rounded-lg p-6">
                       <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center mb-4">Edit your bio</Text>
                       <TextInput
                         className="w-full bg-[#221111] border border-[#7b7b7b] rounded-xl text-[#ffffff] p-4 mb-4"
@@ -293,7 +316,7 @@ const UserProfileTab = () => {
                     alert('Modal has been closed.');
                   }}>
                   <View className="flex-1 justify-center items-center  bg-opacity-50">
-                    <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                    <View className="bg-[#7e7575] w-full h-1/2 rounded-lg">
                       <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your weight class</Text>
                       <View className="flex justify-center items-center my-6">
                         <View className="flex items-center justify-center">
@@ -360,7 +383,7 @@ const UserProfileTab = () => {
                     alert('Modal has been closed.');
                   }}>
                   <View className="flex-1 justify-center items-center  bg-opacity-50">
-                    <View className="bg-[#7e7575] w-2/3 h-1/2 rounded-lg">
+                    <View className="bg-[#7e7575] w-full h-1/2 rounded-lg">
                       <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-center text-white mb-6">Update your location</Text>
                       <View className="flex justify-center items-center">
                         <View className="flex items-center justify-center">
@@ -412,7 +435,7 @@ const UserProfileTab = () => {
                     alert('Modal has been closed.');
                   }}>
                   <View className="flex-1 justify-center items-center  bg-opacity-50">
-                    <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                    <View className="bg-[#7e7575] w-full h-1/2 rounded-lg">
                       <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your sports</Text>
                       <View className="flex justify-center items-center my-6">
                         <View className="flex items-center justify-center">
@@ -480,14 +503,14 @@ const UserProfileTab = () => {
                     alert('Modal has been closed.');
                   }}>
                   <View className="flex-1 justify-center items-center  bg-opacity-50">
-                    <View className="bg-[#7e7575] w-2/4 h-1/2 rounded-lg">
+                    <View className="bg-[#7e7575] w-full h-1/2 rounded-lg">
                       <Text style={{ fontFamily: 'BebasNeue' }} className="text-xl text-white text-center">Edit your radius</Text>
                       <View className="flex justify-center items-center my-6">
                         <View className="flex items-center justify-center">
                           <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">{radius} KM</Text>
                           <Slider
                               style={{
-                                width: 600,
+                                width: Platform.OS === 'web' ? 600 : 400,
                                 height: 40,
                                 flexGrow: 0,
                                 borderWidth: 1,
@@ -529,6 +552,18 @@ const UserProfileTab = () => {
                 </Modal>
               </View>
 
+              <View style={{ alignItems: 'center', paddingVertical: 10 }}>
+                <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl mb-3">Your Photos:</Text>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  {img?.length ? (img.map((url, index) => (
+                    <View key={index} style={{ width: 210, margin: 10, alignItems: 'center' }}>
+                      <Image source={{ uri: url }} style={{ width: 210, height: 300 }} />
+                    </View>
+                  ))) : 
+                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl">No images found</Text>}
+                </View>
+              </View>
+              
               <View className="flex justify-center items-center ">
                 <TouchableOpacity onPress={handleSignOut} className=" bg-[#ff2424] p-4 mx-4 my-6 rounded-xl">
                   <View className="flex justify-center items-center">
@@ -536,6 +571,7 @@ const UserProfileTab = () => {
                   </View>
                 </TouchableOpacity>
               </View>
+
             </>
           ): (
             <Button title="Please Sign in" onPress={() => navigation.navigate('(auth)', { screen: 'sign-in' })} />

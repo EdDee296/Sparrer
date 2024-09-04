@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ScrollView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ScrollView, Image, ActivityIndicator, Platform } from 'react-native';
 import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/core';
@@ -474,20 +474,22 @@ const about = () => {
           </View>
         </View>
 
-        <View className='py-3 w-1/2'>
-          <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">Radius for searching</Text>
+        <View className='py-3 w-3/4'>
+          <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Radius for searching</Text>
           <View className="flex justify-center items-center">
-            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2 ">{value} KM</Text>
-            <Slider
-              style={styles.slider}
-              minimumValue={10}
-              maximumValue={100}
-              value={value}
-              step={10}
-              onValueChange={setValue}
-              minimumTrackTintColor="blue"
-              maximumTrackTintColor="red"
-            />
+            <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">{value} KM</Text>
+            <View style={styles.sliderContainer}>
+              <Slider
+                style={styles.slider}
+                minimumValue={10}
+                maximumValue={100}
+                value={value}
+                step={10}
+                onValueChange={setValue}
+                minimumTrackTintColor="blue"
+                maximumTrackTintColor="red"
+              />
+            </View>
           </View>
         </View>
 
@@ -495,16 +497,16 @@ const about = () => {
           <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#ffffff] text-lg font-medium pb-2">Add more image about you</Text>
           <View className="flex flex-1 flex-row flex-wrap justify-center items-center w-full">
             {images.map((img, index) => (
-              <View key={index} className="w-1/2 py-10 flex justify-center items-center">
-                <View className="h-[250px] w-[200px] align-middle border-2 border-dashed border-white overflow-hidden shadow flex items-center justify-center">
-                  <TouchableOpacity onPress={() => addMoreImage(index)} className="flex-1 items-center justify-center">
-                    <View className="flex-1 items-center justify-center">
-                      {img && <Image source={{ uri: img }} style={{ width: 200, height: 300 }} />}
-                      <Feather name="plus-square" size={24} color="white" />
-                    </View>
-                  </TouchableOpacity>
-                </View>
+              <View key={index} style={{ width: Platform.OS === 'ios' || Platform.OS ==='android' ? '100%' : '50%', paddingVertical: 10, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ height: 250, width: 200, alignItems: 'center', borderWidth: 2, borderStyle: 'dashed', borderColor: 'white', overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, display: 'flex', justifyContent: 'center' }}>
+                <TouchableOpacity onPress={() => addMoreImage(index)} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {img && <Image source={{ uri: img }} style={{ width: 200, height: 350, resizeMode: 'cover' }} />}
+                    <Feather name="plus-square" size={24} color="white" />
+                  </View>
+                </TouchableOpacity>
               </View>
+            </View>
             ))}
           </View>
         </View>
@@ -532,8 +534,12 @@ export default about;
 
 
 const styles = StyleSheet.create({
+  sliderContainer: {
+    width: '80%', // Adjust the width as needed
+    alignItems: 'center',
+  },
   slider: {
-    width: 600,
+    width: Platform.OS === 'web' ? '100%' : 350, // Adjust the width based on platform
     height: 40,
     flexGrow: 0,
     borderWidth: 1,
