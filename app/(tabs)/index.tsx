@@ -383,7 +383,7 @@ function Simple()  {
                             <Text style={{ fontSize: 18 }}>X</Text>
                           </TouchableOpacity>
                           <Text style={{ fontFamily: 'BebasNeue' }} className="font-bold text-[#4f2727] text-2xl mb-4">
-                            more info for {selectedCharacter.name}
+                            more info about {selectedCharacter.name}
                           </Text>
                           <Text style={{ fontFamily: 'BebasNeue' }} className="text-[#000000] text-lg">
                             {selectedCharacter.about}
