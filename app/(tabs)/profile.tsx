@@ -14,7 +14,8 @@ import * as Location from 'expo-location';
 import UpdateLocation from '@/components/UpdateLocation';
 import Slider from '@react-native-assets/slider';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getStorage, ref as Sref, listAll, getDownloadURL } from "firebase/storage";
+import * as ImagePicker from 'expo-image-picker';
+import { getStorage, ref as Sref, listAll, getDownloadURL, uploadBytes, getMetadata } from "firebase/storage";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -83,7 +84,7 @@ const UserProfileTab = () => {
   const [aVisible, setAvisible] = useState(false);
   const [wordCount, setWordCount] = useState(0);
 
-  const[img, setImg] = useState([]);
+  const[img, setImg] = useState([null, null, null, null]);
 
   const auth = getAuth();
   const navigation = useNavigation();
@@ -93,11 +94,39 @@ const UserProfileTab = () => {
     try {
       const res = await listAll(listRef);
       const urls = await Promise.all(res.items.map(itemRef => getDownloadURL(itemRef)));
-      return urls;
+      const metadata = await Promise.all(res.items.map(itemRef => getMetadata(itemRef)));
+      return [urls, metadata];
     } catch (error) {
       alert("error fetching images " + error);
       return [];
     }
+  };
+
+  const addMoreImage = async (index) => {
+    let _image = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!_image.canceled) {
+      const updatedImages = [...img];
+      updatedImages[index] = _image.assets[0].uri;
+      setImg(updatedImages);
+      const a = await getImg(uid);
+      const b = a[1];
+      console.log(b[index].fullPath.split("/")[3]);
+      const path = b[index].fullPath.split("/")[3].replace('.jpeg', '');
+      const imgPath = `images/${uid}/about_images/${path.substring(path.lastIndexOf('/') + 1)}.jpeg`;
+      const imageRef = Sref(storage, imgPath);
+      const response1 = await fetch(_image.assets[0].uri);
+      const blob1 = await response1.blob();
+
+      // Upload the image to Firebase Storage
+      const snapshot1 = await uploadBytes(imageRef, blob1);
+    }
+    
   };
 
   useEffect(() => {
@@ -130,7 +159,8 @@ const UserProfileTab = () => {
           }
         })
         const images = await getImg(authUser.uid);
-        setImg(images);
+        const img = images[0];
+        setImg(img);
       }
     });
 
@@ -556,9 +586,9 @@ const UserProfileTab = () => {
                 <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl mb-3">Your Photos:</Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
                   {img?.length ? (img.map((url, index) => (
-                    <View key={index} style={{ width: 210, margin: 10, alignItems: 'center' }}>
+                    <TouchableOpacity key={index} style={{ width: 210, margin: 10, alignItems: 'center' }} onPress={() => {console.log(url); addMoreImage(index)}}>
                       <Image source={{ uri: url }} style={{ width: 210, height: 300 }} />
-                    </View>
+                    </TouchableOpacity>
                   ))) : 
                   <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl">No images found</Text>}
                 </View>

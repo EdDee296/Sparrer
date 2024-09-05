@@ -498,7 +498,7 @@ const about = () => {
           <View className="flex flex-1 flex-row flex-wrap justify-center items-center w-full">
             {images.map((img, index) => (
               <View key={index} style={{ width: Platform.OS === 'ios' || Platform.OS ==='android' ? '100%' : '50%', paddingVertical: 10, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <View style={{ height: 250, width: 200, alignItems: 'center', borderWidth: 2, borderStyle: 'dashed', borderColor: 'white', overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, display: 'flex', justifyContent: 'center' }}>
+                <View style={{ height: 250, width: 200, alignItems: 'center', borderWidth: 2, borderStyle: 'dashed', borderColor: 'white', overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, display: 'flex', justifyContent: 'center' }}>
                 <TouchableOpacity onPress={() => addMoreImage(index)} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     {img && <Image source={{ uri: img }} style={{ width: 200, height: 350, resizeMode: 'cover' }} />}
