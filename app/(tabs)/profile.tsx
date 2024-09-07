@@ -84,7 +84,8 @@ const UserProfileTab = () => {
   const [aVisible, setAvisible] = useState(false);
   const [wordCount, setWordCount] = useState(0);
 
-  const[img, setImg] = useState([null, null, null, null]);
+  const [img, setImg] = useState([null, null, null, null]);
+  const [names, setNames] = useState([null, null, null, null]);
 
   const auth = getAuth();
   const navigation = useNavigation();
@@ -95,38 +96,50 @@ const UserProfileTab = () => {
       const res = await listAll(listRef);
       const urls = await Promise.all(res.items.map(itemRef => getDownloadURL(itemRef)));
       const metadata = await Promise.all(res.items.map(itemRef => getMetadata(itemRef)));
-      return [urls, metadata];
+      const names = metadata.map(meta => meta.name);
+      return [urls, names];
     } catch (error) {
       alert("error fetching images " + error);
       return [];
     }
   };
 
-  const addMoreImage = async (index) => {
-    let _image = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  const addMoreImage = async (url, index) => {
+    try {
+      let _image = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+  
+      if (!_image.canceled) {
+        console.log('Image selected:', _image.assets[0].uri);
+  
+        const updatedImages = [...img];
+        updatedImages[index] = _image.assets[0].uri;
+        setImg(updatedImages);
 
-    if (!_image.canceled) {
-      const updatedImages = [...img];
-      updatedImages[index] = _image.assets[0].uri;
-      setImg(updatedImages);
-      const a = await getImg(uid);
-      const b = a[1];
-      console.log(b[index].fullPath.split("/")[3]);
-      const path = b[index].fullPath.split("/")[3].replace('.jpeg', '');
-      const imgPath = `images/${uid}/about_images/${path.substring(path.lastIndexOf('/') + 1)}.jpeg`;
-      const imageRef = Sref(storage, imgPath);
-      const response1 = await fetch(_image.assets[0].uri);
-      const blob1 = await response1.blob();
-
-      // Upload the image to Firebase Storage
-      const snapshot1 = await uploadBytes(imageRef, blob1);
+        if (url) {
+          const imgRef = Sref(storage, `images/${uid}/about_images/${names[index]}`);
+          // Convert the image URI to blob or file
+          const response1 = await fetch(_image.assets[0].uri);
+          const blob1 = await response1.blob();
+          await uploadBytes(imgRef, blob1, { contentType: 'image/jpeg' });
+        } else {
+          const imgRef = Sref(storage, `images/${uid}/about_images/${updatedImages[index].substring(updatedImages[index].lastIndexOf('/') + 1)}.jpeg`);
+          // Convert the image URI to blob or file
+          const response1 = await fetch(_image.assets[0].uri);
+          const blob1 = await response1.blob();
+          await uploadBytes(imgRef, blob1, { contentType: 'image/jpeg' });
+        }
+        
+      } else {
+        console.log('Image selection canceled');
+      }
+    } catch (error) {
+      console.error('Error in addMoreImage:', error);
     }
-    
   };
 
   useEffect(() => {
@@ -159,14 +172,22 @@ const UserProfileTab = () => {
           }
         })
         const images = await getImg(authUser.uid);
-        const img = images[0];
+        let img = images[0];
+        let names = images[1];
+
+        // Ensure the img array always has 4 elements
+        while (img.length < 4) {
+          img.push(null);
+          names.push(null);
+        }
+        setNames(names);
         setImg(img);
       }
     });
 
     // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, [auth, img]);
+  }, [auth]);
 
   const handleSignOut = () => {
     signOut(auth)
@@ -585,12 +606,18 @@ const UserProfileTab = () => {
               <View style={{ alignItems: 'center', paddingVertical: 10 }}>
                 <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl mb-3">Your Photos:</Text>
                 <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  {img?.length ? (img.map((url, index) => (
-                    <TouchableOpacity key={index} style={{ width: 210, margin: 10, alignItems: 'center' }} onPress={() => {console.log(url); addMoreImage(index)}}>
-                      <Image source={{ uri: url }} style={{ width: 210, height: 300 }} />
-                    </TouchableOpacity>
-                  ))) : 
-                  <Text style={{ fontFamily: 'BebasNeue', textAlign: 'center' }} className="text-white text-xl">No images found</Text>}
+                  {img.map((img, index) => (
+                    <View key={index} style={{ width: Platform.OS === 'ios' || Platform.OS ==='android' ? '100%' : '50%', paddingVertical: 10, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <View style={{ height: 250, width: 200, alignItems: 'center', borderWidth: 2, borderStyle: 'dashed', borderColor: 'white', overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84, elevation: 5, display: 'flex', justifyContent: 'center' }}>
+                      <TouchableOpacity onPress={() => {addMoreImage(img, index); console.log(img)}} style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          {img && <Image source={{ uri: img }} style={{ width: 200, height: 350, resizeMode: 'cover' }} />}
+                          <Feather name="plus-square" size={24} color="white" />
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  ))}
                 </View>
               </View>
               
